@@ -38,11 +38,24 @@ Interesting projects:
 - [Instantly generate C# models and helper methods from JSON](https://quicktype.io/csharp/)
 
 Tutorials about some tools and best practices:
+
 - [Efficient api calls with HttpClient and JSON.NET
 ](https://johnthiriet.com/efficient-api-calls/)
 - [xUnit.net: Global setup + teardown?](https://stackoverflow.com/questions/12976319/xunit-net-global-setup-teardown)
+- [Tutorial: Create a web API with ASP.NET Core](https://docs.microsoft.com/en-us/aspnet/core/tutorials/first-web-api?view=aspnetcore-3.1&tabs=visual-studio)
+- [Create web APIs with ASP.NET Core](https://docs.microsoft.com/en-us/aspnet/core/web-api/?view=aspnetcore-3.1)
+
+Database setup:
+
+- [Npgsql getting started](https://www.npgsql.org/efcore/)
+- [ASP.NET Core, Entity Framework Core with PostgreSQL Code First](https://medium.com/faun/asp-net-core-entity-framework-core-with-postgresql-code-first-d99b909796d7)
 
 Articles which I'll use to refactor this project after its initial release:
 
 - [Tackle Business Complexity in a Microservice with DDD and CQRS Patterns](https://docs.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/)
   - [zkavtaskin/Domain-Driven-Design-Example](https://github.com/zkavtaskin/Domain-Driven-Design-Example)
+ 
+ About Rider IDE:
+ 
+ - [NuGet Package Manager Console Support](https://rider-support.jetbrains.com/hc/en-us/community/posts/360001346579/comments/360000194879)
+ - [Running Entity Framework (Core) commands in Rider](https://blog.jetbrains.com/dotnet/2017/08/09/running-entity-framework-core-commands-rider/)  
