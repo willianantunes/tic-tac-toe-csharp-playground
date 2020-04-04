@@ -35,3 +35,8 @@ Interesting projects:
 - [json-api-dotnet/JsonApiDotNetCore](https://github.com/json-api-dotnet/JsonApiDotNetCore)
 - [cwetanow/DailyCodingProblem](https://github.com/cwetanow/DailyCodingProblem)
 - [RyuzakiH/CloudflareSolverRe](https://github.com/RyuzakiH/CloudflareSolverRe)
+
+Articles which I'll use to refactor this project after its initial release:
+
+- [Tackle Business Complexity in a Microservice with DDD and CQRS Patterns](https://docs.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/)
+  - [zkavtaskin/Domain-Driven-Design-Example](https://github.com/zkavtaskin/Domain-Driven-Design-Example)
