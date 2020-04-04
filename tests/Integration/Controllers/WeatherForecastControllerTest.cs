@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
@@ -30,6 +31,14 @@ namespace tests.Integration.Controllers
             var weatherForecasts = JsonConvert.DeserializeObject<List<WeatherForecast>>(content);
 
             weatherForecasts.Should().HaveCount(5);
+            weatherForecasts.ForEach(weatherForecast =>
+            {
+                weatherForecast.Date.Should().BeAfter(DateTime.Now);
+                weatherForecast.Summary.Should().NotBeEmpty();
+                weatherForecast.TemperatureC.Should().BeInRange(-22, 55);
+                var expectedTempFValue = 32 + (int) (weatherForecast.TemperatureC / 0.5556);
+                weatherForecast.TemperatureF.Should().Be(expectedTempFValue);
+            });
         }
     }
 }
