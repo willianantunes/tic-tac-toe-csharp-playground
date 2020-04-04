@@ -35,6 +35,12 @@ Interesting projects:
 - [json-api-dotnet/JsonApiDotNetCore](https://github.com/json-api-dotnet/JsonApiDotNetCore)
 - [cwetanow/DailyCodingProblem](https://github.com/cwetanow/DailyCodingProblem)
 - [RyuzakiH/CloudflareSolverRe](https://github.com/RyuzakiH/CloudflareSolverRe)
+- [Instantly generate C# models and helper methods from JSON](https://quicktype.io/csharp/)
+
+Tutorials about some tools and best practices:
+- [Efficient api calls with HttpClient and JSON.NET
+](https://johnthiriet.com/efficient-api-calls/)
+- [xUnit.net: Global setup + teardown?](https://stackoverflow.com/questions/12976319/xunit-net-global-setup-teardown)
 
 Articles which I'll use to refactor this project after its initial release:
 

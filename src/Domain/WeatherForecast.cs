@@ -1,6 +1,6 @@
 using System;
 
-namespace src
+namespace src.Domain
 {
     public class WeatherForecast
     {
