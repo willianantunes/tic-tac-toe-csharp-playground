@@ -4,7 +4,7 @@ I'm working on it, so this is WIP.
 
 ## What you'll see here
 
-A Tic Tac Toe game playable through REST endpoints. Some contracts:
+There are other endpoints like `TodoItemsController` and the `WeatherForecastController` that I played with, but the most important one is the a Tic Tac Toe game playable through REST endpoints. Some contracts:
 
 - `GET /players`: return all players configured
 - `POST /players`: create a new player
@@ -23,6 +23,24 @@ First you must do the following:
     docker-compose up -d db
     
 Then you can execute the project in your IDE.
+
+To create a `TodoItem`:
+
+```
+curl --location --request POST 'http://localhost:5000/api/TodoItems' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+  "name":"walk dog",
+  "isComplete":true
+}'
+```
+
+How to retrieve all `TodoItems`:
+
+```
+curl --location --request GET 'http://localhost:5000/api/TodoItems' \
+--header 'Accept: application/json'
+```
 
 ## Useful links
 
@@ -80,6 +98,17 @@ In order to use Entity Framework commands, I had to install through the followin
  
     dotnet tool install --global dotnet-ef
 
-Then I could issue the commands:
+Then I could issue the command:
 
     dotnet ef migrations add InitialCreate
+    
+To scaffold a controller, first install these guys in `src`:
+
+    dotnet add package Microsoft.VisualStudio.Web.CodeGeneration.Design
+    dotnet add package Microsoft.EntityFrameworkCore.SqlServer
+    dotnet tool install --global dotnet-aspnet-codegenerator
+
+The package `Microsoft.EntityFrameworkCore.SqlServer` can be uninstalled afterwards as we're using Postgres. Then you can do:
+
+    dotnet aspnet-codegenerator controller -name TodoItemsController --useAsyncActions --restWithNoViews \
+    --model TodoItem --dataContext CSharpPlaygroundContext -outDir Controllers
