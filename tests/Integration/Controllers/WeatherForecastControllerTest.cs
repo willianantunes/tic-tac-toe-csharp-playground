@@ -11,14 +11,13 @@ using Xunit;
 
 namespace tests.Integration.Controllers
 {
-    public class WeatherForecastControllerTest
+    public class WeatherForecastControllerTest : IClassFixture<DatabaseAndTestServerFixture>
     {
-        private readonly HttpClient _httpClient;
+        private HttpClient _httpClient;
 
-        public WeatherForecastControllerTest()
+        public WeatherForecastControllerTest(DatabaseAndTestServerFixture testServerFixture)
         {
-            var testContext = new TestContext();
-            _httpClient = testContext.Client;
+            _httpClient = testServerFixture.HttpClient;
         }
 
         [Fact(DisplayName ="Should consult [controller] placeholder and receive 5 weather forecasts")]
