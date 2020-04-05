@@ -6,6 +6,7 @@ namespace src.Repository
     {
         public CSharpPlaygroundContext(DbContextOptions<CSharpPlaygroundContext> options) : base(options)
         {
+            // TODO: Apply logging maybe
         }
 
         public DbSet<User> Users { get; set; }

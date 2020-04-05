@@ -19,4 +19,12 @@
       <ProjectReference Include="..\src\src.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Content Include="Resources\appsettings.json">
+        <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      </Content>
+    </ItemGroup>
+
 </Project>
