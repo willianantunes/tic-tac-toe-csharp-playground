@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace src.Repository
@@ -25,5 +26,38 @@ namespace src.Repository
         public Guid Id { get; set; }
         public string Name { get; set; }
         public bool IsComplete { get; set; }
+    }
+
+    public class Player
+    {
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public Guid Id { get; set; }
+    }
+    
+    public class Board
+    {
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public Guid Id { get; set; }
+    }
+    
+    public class Game
+    {
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public Guid Id { get; set; }
+
+        public bool isFinished()
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool PositionIsNotAvailable(in int movementPosition)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IList<int> AvailablePositions()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

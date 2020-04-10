@@ -82,6 +82,18 @@ Database setup:
 - [Automatically Upgrading on Application Startup (MigrateDatabaseToLatestVersion Initializer)](https://docs.microsoft.com/en-us/ef/ef6/modeling/code-first/migrations/#automatically-upgrading-on-application-startup-migratedatabasetolatestversion-initializer)
 - [Entity Framework Core](https://docs.microsoft.com/en-us/ef/core/), which enables [apply migrations at runtime](https://docs.microsoft.com/en-us/ef/core/managing-schemas/migrations/?tabs=dotnet-core-cli#apply-migrations-at-runtime)
 
+Logging:
+
+- [Logging in .NET Core and ASP.NET Core](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/logging/?view=aspnetcore-3.1)
+
+Testing:
+
+- [Unit test controller logic in ASP.NET Core](https://docs.microsoft.com/en-us/aspnet/core/mvc/controllers/testing?view=aspnetcore-3.1)
+
+How to handle errors:
+
+- [Handling errors in an ASP.NET Core Web API](https://www.devtrends.co.uk/blog/handling-errors-in-asp.net-core-web-api)
+
 Articles which I'll use to refactor this project after its initial release:
 
 - [Tackle Business Complexity in a Microservice with DDD and CQRS Patterns](https://docs.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/)
