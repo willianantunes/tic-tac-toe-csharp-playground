@@ -6,6 +6,6 @@ namespace src.Business
     public interface IGameDealer
     {
         Task<Game> GetGameByBoard(Board board);
-        Task<Game> ExecuteMovementAndEvaluateResult(IGameDealer gameDealer, int movementPosition);
+        Task<Game> ExecuteMovementAndEvaluateResult(Game gameDealer, int movementPosition);
     }
 }

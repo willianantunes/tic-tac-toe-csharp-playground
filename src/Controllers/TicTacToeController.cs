@@ -89,7 +89,7 @@ namespace src.Controllers
             }
 
             logger.Info("Executing movement and evaluating game...");
-            var evaluatedGame = await _gameDealer.ExecuteMovementAndEvaluateResult(_gameDealer, movementPosition);
+            var evaluatedGame = await _gameDealer.ExecuteMovementAndEvaluateResult(game, movementPosition);
 
             logger.Info("Evaluated game: {EvaluatedGame}", evaluatedGame);
             return evaluatedGame;
