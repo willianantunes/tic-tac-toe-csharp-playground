@@ -7,5 +7,6 @@ namespace src.Repository
     {
         Task<Player> GetPlayerByItsId(Guid playerId);
         Task<Board> GetBoardByItsId(Guid boardId);
+        Task<Game> GetGameByItsBoard(Board board);
     }
 }

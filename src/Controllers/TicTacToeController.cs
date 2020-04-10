@@ -80,7 +80,7 @@ namespace src.Controllers
             logger.I("Searching for a game");
             var game = await _gameDealer.GetGameByBoard(board);
 
-            if (game.isFinished())
+            if (game.IsFinished())
                 throw new InvalidBoardIsNotPlayableAnymoreException();
             if (game.PositionIsNotAvailable(movementPosition))
             {
