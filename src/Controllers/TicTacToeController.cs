@@ -43,7 +43,7 @@ namespace src.Controllers
 
         public async Task<ActionResult<Board>> CreateNewBoard(string? boardSize, Guid playerId)
         {
-            logger.Info("Received board and playerId: {BoardSize} / {PlayerId}", boardSize, playerId);
+            logger.I("Received board and playerId: {BoardSize} / {PlayerId}", boardSize, playerId);
 
             if (_boardDealer.NotValidOrUnsupportedBoardSize(boardSize))
                 throw new InvalidBoardConfigurationException();
@@ -53,7 +53,7 @@ namespace src.Controllers
             if (player is null)
                 throw new InvalidPlayerNotFoundException();
 
-            logger.Info("Board setup and player: {BoardSize} / {Player}", boardSize, player);
+            logger.I("Board setup and player: {BoardSize} / {Player}", boardSize, player);
             var createdBoard = await _boardDealer.CreateNewBoard(boardSize, player);
 
             return CreatedAtAction("GetSpecificBoard", new {id = createdBoard.Id}, createdBoard);
@@ -71,13 +71,13 @@ namespace src.Controllers
 
         public async Task<ActionResult<Game>> ApplyMovementToTheGame(Guid boardId, int movementPosition)
         {
-            logger.Info("Received board and movement: {BoardId} / {MovementPosition}", boardId, movementPosition);
+            logger.I("Received board and movement: {BoardId} / {MovementPosition}", boardId, movementPosition);
             var board = await _ticTacToeRepository.GetBoardByItsId(boardId);
 
             if (board is null)
                 throw new InvalidBoardNotFoundToBePlayedException();
 
-            logger.Info("Searching for a game");
+            logger.I("Searching for a game");
             var game = await _gameDealer.GetGameByBoard(board);
 
             if (game.isFinished())
@@ -88,10 +88,10 @@ namespace src.Controllers
                 return BadRequest($"Available positions: {position}");
             }
 
-            logger.Info("Executing movement and evaluating game...");
+            logger.I("Executing movement and evaluating game...");
             var evaluatedGame = await _gameDealer.ExecuteMovementAndEvaluateResult(game, movementPosition);
 
-            logger.Info("Evaluated game: {EvaluatedGame}", evaluatedGame);
+            logger.I("Evaluated game: {EvaluatedGame}", evaluatedGame);
             return evaluatedGame;
         }
     }
