@@ -6,5 +6,10 @@ namespace src.Helper
         {
             return targetObject == null;
         }
+        
+        public static bool IsNull(this object targetObject)
+        {
+            return targetObject == null;
+        }
     }
 }

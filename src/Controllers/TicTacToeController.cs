@@ -41,20 +41,25 @@ namespace src.Controllers
             // TODO
         }
 
-        public async Task<ActionResult<Board>> CreateNewBoard(string? boardSize, Guid playerId)
+        public async Task<ActionResult<Board>> CreateNewBoard(string? boardSize, Guid firstPlayerId,
+            Guid? secondPlayerId)
         {
-            logger.I("Received board and playerId: {BoardSize} / {PlayerId}", boardSize, playerId);
+            var logMessage = "Received board and players: {BoardSize} / {FirstPlayer} / {SecondPlayer}";
+            logger.I(logMessage, boardSize, firstPlayerId, secondPlayerId);
 
             if (_boardDealer.NotValidOrUnsupportedBoardSize(boardSize))
                 throw new InvalidBoardConfigurationException();
 
-            var player = await _ticTacToeRepository.GetPlayerByItsId(playerId);
+            var playerOne = await _ticTacToeRepository.GetPlayerByItsId(firstPlayerId);
 
-            if (player is null)
+            if (playerOne.IsNull())
                 throw new InvalidPlayerNotFoundException();
 
-            logger.I("Board setup and player: {BoardSize} / {Player}", boardSize, player);
-            var createdBoard = await _boardDealer.CreateNewBoard(boardSize, player);
+            var playerTwo = await _ticTacToeRepository.GetPlayerByItsId(firstPlayerId);
+
+            logMessage = "Board setup and players: {BoardSize} / {PlayerOne} / {PlayerTwo}";
+            logger.I(logMessage, boardSize, playerOne, playerTwo);
+            var createdBoard = await _boardDealer.CreateNewBoard(boardSize, playerOne, playerTwo);
 
             return CreatedAtAction("GetSpecificBoard", new {id = createdBoard.Id}, createdBoard);
         }
@@ -69,36 +74,45 @@ namespace src.Controllers
             // TODO
         }
 
-        public async Task<ActionResult<Game>> ApplyMovementToTheGame(Guid boardId, int movementPosition)
+        public async Task<ActionResult<Game>> ApplyMovementToTheGame(Guid boardId, int movementPosition, Guid playerId)
         {
-            logger.I("Received board and movement: {BoardId} / {MovementPosition}", boardId, movementPosition);
+            var firstLogMessage = "Received board, movement and player: {BoardId} / {MovementPosition} / {PlayerId}";
+            logger.I(firstLogMessage, boardId, movementPosition, playerId);
+
+            logger.I("Searching board and player...");
             var board = await _ticTacToeRepository.GetBoardByItsId(boardId);
-
-            if (board is null)
+            if (board.IsNull())
                 throw new InvalidBoardNotFoundToBePlayedException();
+            var player = await _ticTacToeRepository.GetPlayerByItsId(playerId);
+            if (player.IsNull())
+                throw new InvalidPlayerNotFoundException();
 
-            logger.I("Searching for a game");
+            logger.I("Searching for a game...");
             var game = await _gameDealer.GetGameByBoard(board);
-
             if (game.IsFinished())
-                throw new InvalidBoardIsNotPlayableAnymoreException();
-            if (game.PositionIsNotAvailable(movementPosition))
+                throw new InvalidGameIsNotPlayableAnymoreException();
+
+            if (_gameDealer.PositionIsNotAvailable(game, movementPosition))
             {
-                IList<int> position = game.AvailablePositions();
+                IList<int> position = _gameDealer.AvailablePositions(game);
                 return BadRequest($"Available positions: {position}");
             }
 
             logger.I("Executing movement and evaluating game...");
-            var evaluatedGame = await _gameDealer.ExecuteMovementAndEvaluateResult(game, movementPosition);
+            var evaluatedGame = await _gameDealer.ExecuteMovementAndEvaluateResult(game, movementPosition, player);
 
-            logger.I("Evaluated game: {EvaluatedGame}", evaluatedGame);
+            if (evaluatedGame.IsFinished())
+                logger.I("Game conclusion: {EvaluatedGame}", evaluatedGame);
+            else
+                logger.I("Game hasn't finished yet!");
+
             return evaluatedGame;
         }
     }
 
     #region Exceptions
 
-    public class InvalidBoardIsNotPlayableAnymoreException : Exception
+    public class InvalidGameIsNotPlayableAnymoreException : Exception
     {
     }
 
