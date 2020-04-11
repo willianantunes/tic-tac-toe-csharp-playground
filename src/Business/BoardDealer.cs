@@ -94,9 +94,9 @@ namespace src.Business
         {
             var fields = gameConfiguredBoard.FieldsConfiguration;
 
-            bool wonHorizontally = _boardJudge.WonHorizontally(fields, lastMovementPosition);
-            bool wonVertically = _boardJudge.WonVertically(fields, lastMovementPosition);
-            bool wonDiagonally = _boardJudge.WonDiagonally(fields, lastMovementPosition);
+            bool wonHorizontally = _boardJudge.WonHorizontally(fields, gameConfiguredBoard, lastMovementPosition);
+            bool wonVertically = _boardJudge.WonVertically(fields, gameConfiguredBoard, lastMovementPosition);
+            bool wonDiagonally = _boardJudge.WonDiagonally(fields, gameConfiguredBoard, lastMovementPosition);
 
             var boardSituation = new BoardSituation();
             
