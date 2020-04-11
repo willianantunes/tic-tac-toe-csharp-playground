@@ -17,6 +17,12 @@ namespace src.Business
     class GameDealer : IGameDealer
     {
         private readonly ITicTacToeRepository _ticTacToeRepository;
+        private readonly IBoardDealer _boardDealer;
+
+        public GameDealer(ITicTacToeRepository ticTacToeRepository)
+        {
+            _ticTacToeRepository = ticTacToeRepository;
+        }
 
         public async Task<Game> GetGameByBoard(Board board)
         {
@@ -25,6 +31,8 @@ namespace src.Business
             if (game is null)
                 game = new Game(board);
 
+            _boardDealer.InitializeBoardConfiguration(board);
+
             return game;
         }
 
@@ -32,7 +40,10 @@ namespace src.Business
         {
             var movement = new Movement();
             movement.Position = movementPosition;
+            movement.WhoMade = player;
             game.ConfiguredBoard.Movements.Add(movement);
+            
+            
 
             throw new System.NotImplementedException();
         }

@@ -4,7 +4,7 @@ namespace src.Helper
     {
         public static bool IsNotNull(this object targetObject)
         {
-            return targetObject == null;
+            return targetObject != null;
         }
         
         public static bool IsNull(this object targetObject)
