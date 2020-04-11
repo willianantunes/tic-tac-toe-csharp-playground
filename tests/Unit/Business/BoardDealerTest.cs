@@ -50,22 +50,28 @@ namespace tests.Unit.Business
         public void ShouldInitializeBoardConfigurationGivenItsSetupAndItWasFirstTime()
         {
             var someBoard = new Board();
+            someBoard.Movements = new List<Movement>();
             someBoard.NumberOfRows = 3;
             someBoard.NumberOfColumn = 3;
             var boardDealer = new BoardDealer();
             
             boardDealer.InitializeBoardConfiguration(someBoard);
 
-            someBoard.CurrentConfiguration.Should().HaveCount(3);
-            someBoard.CurrentConfiguration[0].Should().HaveCount(3);
-            foreach (var somePlayer in someBoard.CurrentConfiguration[0])
+            someBoard.FieldsConfiguration.Should().HaveCount(3);
+            someBoard.FieldsConfiguration[0].Should().HaveCount(3);
+            foreach (var somePlayer in someBoard.FieldsConfiguration[0])
                 somePlayer.IsNull().Should().BeTrue();
-            someBoard.CurrentConfiguration[1].Should().HaveCount(3);
-            foreach (var somePlayer in someBoard.CurrentConfiguration[1])
+            someBoard.FieldsConfiguration[1].Should().HaveCount(3);
+            foreach (var somePlayer in someBoard.FieldsConfiguration[1])
                 somePlayer.IsNull().Should().BeTrue();
-            someBoard.CurrentConfiguration[2].Should().HaveCount(3);
-            foreach (var somePlayer in someBoard.CurrentConfiguration[2])
-                somePlayer.IsNull().Should().BeTrue();            
+            someBoard.FieldsConfiguration[2].Should().HaveCount(3);
+            foreach (var somePlayer in someBoard.FieldsConfiguration[2])
+                somePlayer.IsNull().Should().BeTrue();
+            someBoard.FreeFields.Count.Should().Be(9);
+            for (int position = 1; position <= someBoard.FreeFields.Count; position++)
+                someBoard.FreeFields[position - 1].Should().Be(position);
+
+
         }
 
         /**
@@ -93,16 +99,16 @@ namespace tests.Unit.Business
             
             boardDealer.InitializeBoardConfiguration(someBoard);
 
-            someBoard.CurrentConfiguration.Should().HaveCount(3);
-            someBoard.CurrentConfiguration[0].Should().HaveCount(3);
-            someBoard.CurrentConfiguration[0][0].IsNull().Should().BeTrue();
-            someBoard.CurrentConfiguration[0][1].Should().Be(jafar);
-            someBoard.CurrentConfiguration[0][2].IsNull().Should().BeTrue();
-            someBoard.CurrentConfiguration[1].Should().HaveCount(3);
-            foreach (var somePlayer in someBoard.CurrentConfiguration[1])
+            someBoard.FieldsConfiguration.Should().HaveCount(3);
+            someBoard.FieldsConfiguration[0].Should().HaveCount(3);
+            someBoard.FieldsConfiguration[0][0].IsNull().Should().BeTrue();
+            someBoard.FieldsConfiguration[0][1].Should().Be(jafar);
+            someBoard.FieldsConfiguration[0][2].IsNull().Should().BeTrue();
+            someBoard.FieldsConfiguration[1].Should().HaveCount(3);
+            foreach (var somePlayer in someBoard.FieldsConfiguration[1])
                 somePlayer.IsNull().Should().BeTrue();
-            someBoard.CurrentConfiguration[2].Should().HaveCount(3);
-            foreach (var somePlayer in someBoard.CurrentConfiguration[2])
+            someBoard.FieldsConfiguration[2].Should().HaveCount(3);
+            foreach (var somePlayer in someBoard.FieldsConfiguration[2])
                 somePlayer.IsNull().Should().BeTrue(); 
         }
         
@@ -143,19 +149,19 @@ namespace tests.Unit.Business
             
             boardDealer.InitializeBoardConfiguration(someBoard);
 
-            someBoard.CurrentConfiguration.Should().HaveCount(3);
-            someBoard.CurrentConfiguration[0].Should().HaveCount(3);
-            someBoard.CurrentConfiguration[0][0].IsNull().Should().BeTrue();
-            someBoard.CurrentConfiguration[0][1].Should().Be(jafar);
-            someBoard.CurrentConfiguration[0][2].Should().Be(jafar);
-            someBoard.CurrentConfiguration[1].Should().HaveCount(3);
-            someBoard.CurrentConfiguration[1][0].IsNull().Should().BeTrue();
-            someBoard.CurrentConfiguration[1][1].IsNull().Should().BeTrue();
-            someBoard.CurrentConfiguration[1][2].Should().Be(jafar);
-            someBoard.CurrentConfiguration[2].Should().HaveCount(3);
-            someBoard.CurrentConfiguration[2][0].Should().Be(jafar);
-            someBoard.CurrentConfiguration[2][1].IsNull().Should().BeTrue();
-            someBoard.CurrentConfiguration[2][2].IsNull().Should().BeTrue();
+            someBoard.FieldsConfiguration.Should().HaveCount(3);
+            someBoard.FieldsConfiguration[0].Should().HaveCount(3);
+            someBoard.FieldsConfiguration[0][0].IsNull().Should().BeTrue();
+            someBoard.FieldsConfiguration[0][1].Should().Be(jafar);
+            someBoard.FieldsConfiguration[0][2].Should().Be(jafar);
+            someBoard.FieldsConfiguration[1].Should().HaveCount(3);
+            someBoard.FieldsConfiguration[1][0].IsNull().Should().BeTrue();
+            someBoard.FieldsConfiguration[1][1].IsNull().Should().BeTrue();
+            someBoard.FieldsConfiguration[1][2].Should().Be(jafar);
+            someBoard.FieldsConfiguration[2].Should().HaveCount(3);
+            someBoard.FieldsConfiguration[2][0].Should().Be(jafar);
+            someBoard.FieldsConfiguration[2][1].IsNull().Should().BeTrue();
+            someBoard.FieldsConfiguration[2][2].IsNull().Should().BeTrue();
         }
     }
     

@@ -1,7 +1,5 @@
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using src.Helper;
 using src.Repository;
 
 namespace src.Business
@@ -10,8 +8,6 @@ namespace src.Business
     {
         Task<Game> GetGameByBoard(Board board);
         Task<Game> ExecuteMovementAndEvaluateResult(Game game, int movementPosition, Player player);
-        bool PositionIsNotAvailable(Game game, in int movementPosition);
-        IList<int> AvailablePositions(Game game);
     }
 
     class GameDealer : IGameDealer
@@ -38,47 +34,39 @@ namespace src.Business
 
         public Task<Game> ExecuteMovementAndEvaluateResult(Game game, int movementPosition, Player player)
         {
-            var movement = new Movement();
-            movement.Position = movementPosition;
-            movement.WhoMade = player;
-            game.ConfiguredBoard.Movements.Add(movement);
-            
-            
-
-            throw new System.NotImplementedException();
-        }
-
-        public bool PositionIsNotAvailable(Game game, in int movementPosition)
-        {
-            var copiedMovementPosition = movementPosition;
-            var foundMovement = game.ConfiguredBoard.Movements.First(m => m.Position.Equals(copiedMovementPosition));
-
-            if (foundMovement.IsNotNull())
-                return true;
-
-            return AvailablePositions(game).Contains(copiedMovementPosition);
-        }
-
-        public IList<int> AvailablePositions(Game game)
-        {
             var gameConfiguredBoard = game.ConfiguredBoard;
-            var availablePosition = new List<int>();
-            var positionCount = 1;
-            
-            for (int column = 1; column <= gameConfiguredBoard.NumberOfColumn; column++)
+            _boardDealer.ApplyMovement(gameConfiguredBoard, movementPosition, player);
+            BoardSituation boardSituation = _boardDealer.EvaluateTheSituation(gameConfiguredBoard);
+
+            if (boardSituation.Concluded)
+                UpdateGameGivenItsResult(game, boardSituation);
+            else
+                ExecuteComputerMovementIfApplicable(player, gameConfiguredBoard);
+
+            return _ticTacToeRepository.RefreshGameState(game);
+        }
+
+        private void ExecuteComputerMovementIfApplicable(Player player, Board gameConfiguredBoard)
+        {
+            if (player.isNotComputer() && _boardDealer.HasComputerPlayer(gameConfiguredBoard))
             {
-                for (int row = 1; row <= gameConfiguredBoard.NumberOfRows; row++)
-                {
-                    var hasNoPosition = gameConfiguredBoard.Movements.None(m => m.Position == positionCount);
-
-                    if (hasNoPosition)
-                        availablePosition.Add(positionCount);
-
-                    positionCount++;
-                }
+                var somePosition = _boardDealer.AvailablePositions(gameConfiguredBoard).First();
+                _boardDealer.ApplyMovementForComputer(gameConfiguredBoard, somePosition);
             }
+        }
 
-            return availablePosition;
+        private static void UpdateGameGivenItsResult(Game game, BoardSituation boardSituation)
+        {
+            if (boardSituation.SadlyFinishedWithDraw)
+            {
+                game.Draw = true;
+                game.Finished = true;
+            }
+            else if (boardSituation.HasAWinner)
+            {
+                game.Winner = boardSituation.Winner;
+                game.Finished = true;
+            }
         }
     }
 }

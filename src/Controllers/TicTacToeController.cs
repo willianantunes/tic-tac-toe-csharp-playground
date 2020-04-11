@@ -83,6 +83,7 @@ namespace src.Controllers
             var board = await _ticTacToeRepository.GetBoardByItsId(boardId);
             if (board.IsNull())
                 throw new InvalidBoardNotFoundToBePlayedException();
+            // TODO player must not be a computer
             var player = await _ticTacToeRepository.GetPlayerByItsId(playerId);
             if (player.IsNull())
                 throw new InvalidPlayerNotFoundException();
@@ -92,9 +93,9 @@ namespace src.Controllers
             if (game.IsFinished())
                 throw new InvalidGameIsNotPlayableAnymoreException();
 
-            if (_gameDealer.PositionIsNotAvailable(game, movementPosition))
+            if (_boardDealer.PositionIsNotAvailable(game.ConfiguredBoard, movementPosition))
             {
-                IList<int> position = _gameDealer.AvailablePositions(game);
+                IList<int> position = _boardDealer.AvailablePositions(game.ConfiguredBoard);
                 return BadRequest($"Available positions: {position}");
             }
 

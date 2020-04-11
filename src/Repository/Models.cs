@@ -41,6 +41,11 @@ namespace src.Repository
         public IList<PlayerBoard> PlayerBoards { get; set; }
         public string Name { get; set; }
         public bool Computer { get; set; }
+
+        public bool isNotComputer()
+        {
+            return !Computer;
+        }
     }
 
     public class PlayerBoard
@@ -65,7 +70,9 @@ namespace src.Repository
         public int NumberOfColumn { get; set; }
         public int NumberOfRows { get; set; }
         [NotMapped]
-        public IList<IList<Player?>> CurrentConfiguration { get; set; }
+        public IList<IList<Player?>> FieldsConfiguration { get; set; }
+        [NotMapped]
+        public IList<int> FreeFields { get; set; }
     }
 
     public class Game
@@ -75,7 +82,7 @@ namespace src.Repository
 
         public Player Winner { get; set; }
         public bool Draw { get; set; }
-        private bool Finished;
+        public bool Finished { get; set; }
         public Board ConfiguredBoard { get; set; }
 
         public Game()

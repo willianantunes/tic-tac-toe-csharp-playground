@@ -12,6 +12,12 @@ namespace src.Business
         bool NotValidOrUnsupportedBoardSize(string? boardSize);
         Task<Board> CreateNewBoard(string? boardSize, Player playerOne, Player playerTwo = null);
         void InitializeBoardConfiguration(Board board);
+        bool PositionIsNotAvailable(Board gameConfiguredBoard, in int movementPosition);
+        IList<int> AvailablePositions(Board gameConfiguredBoard);
+        void ApplyMovement(Board gameConfiguredBoard, in int movementPosition, Player player);
+        BoardSituation EvaluateTheSituation(Board gameConfiguredBoard);
+        bool HasComputerPlayer(Board gameConfiguredBoard);
+        void ApplyMovementForComputer(Board gameConfiguredBoard, in int somePosition);
     }
 
     public class BoardDealer : IBoardDealer
@@ -36,6 +42,7 @@ namespace src.Business
 
         public void InitializeBoardConfiguration(Board board)
         {
+            var freeFields = new List<int>();
             var boardConfiguration = new List<IList<Player?>>();
             var positionCount = 1;
 
@@ -45,15 +52,60 @@ namespace src.Business
                 for (int indexColumn = 0; indexColumn < board.NumberOfColumn; indexColumn++)
                 {
                     var movement = board.Movements.FirstOrDefault(m => m.Position == positionCount);
+                    
                     if (movement.IsNotNull())
                         boardConfiguration[indexRow].Add(movement.WhoMade);
                     else
+                    {
                         boardConfiguration[indexRow].Add(null);
+                        freeFields.Add(positionCount);
+                    }
+
                     positionCount++;
                 }
             }
 
-            board.CurrentConfiguration = boardConfiguration;
+            board.FieldsConfiguration = boardConfiguration;
+            board.FreeFields = freeFields;
         }
+
+        public bool PositionIsNotAvailable(Board board, in int movementPosition)
+        {
+            var copiedMovementPosition = movementPosition;
+            return board.FreeFields.Any(position => position == copiedMovementPosition);
+        }
+
+        public IList<int> AvailablePositions(Board board)
+        {
+            return board.FreeFields;
+        }
+
+        public void ApplyMovement(Board gameConfiguredBoard, in int movementPosition, Player player)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public BoardSituation EvaluateTheSituation(Board gameConfiguredBoard)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public bool HasComputerPlayer(Board gameConfiguredBoard)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void ApplyMovementForComputer(Board gameConfiguredBoard, in int somePosition)
+        {
+            throw new System.NotImplementedException();
+        }
+    }
+    
+    public class BoardSituation
+    {
+        public bool SadlyFinishedWithDraw { get; set; }
+        public bool HasAWinner { get; set; }
+        public Player Winner { get; set; }
+        public bool Concluded { get; set; }
     }
 }
