@@ -2,12 +2,15 @@ using System.Collections.Generic;
 using FluentAssertions;
 using src.Business;
 using src.Repository;
+using tests.Resources;
 using Xunit;
 
 namespace tests.Unit.Business
 {
     public class BoardJudgeTest
     {
+        private readonly IBoardJudge _boardJudge = new BoardJudge();
+        
         [Fact]
         public void ShouldReturnRowAndColumnGivenSpecificPositionForBoard3X3()
         {
@@ -48,7 +51,35 @@ namespace tests.Unit.Business
         [Fact]
         public void ShouldReturnTrueGivenThePlayerIsPresentInAllHorizontalFieldsScenarioBoard3X3Row0Column0()
         {
-            throw new System.NotImplementedException();
+            var iago = new Player();
+            
+            var board = new BoardBuilder()
+                .BoardSize(3)
+                .WithPlayer(iago)
+                .GivenRow(0)
+                .FilledAllColumnsUntilColumn(2)
+                .build();
+
+            var wonDiagonally = _boardJudge.WonHorizontally(board, 1);
+            
+            wonDiagonally.Should().BeTrue();
+        }
+
+        [Fact]
+        public void ShouldReturnFalseGivenThePlayerIsPresentInAllHorizontalFieldsScenarioBoard3X3Row0Column0()
+        {
+            var iago = new Player();
+            
+            var board = new BoardBuilder()
+                .BoardSize(3)
+                .WithPlayer(iago)
+                .GivenRow(0)
+                .FilledAllColumnsUntilColumn(1)
+                .build();
+
+            var wonDiagonally = _boardJudge.WonHorizontally(board, 1);
+            
+            wonDiagonally.Should().BeFalse();
         }
         
         [Fact]

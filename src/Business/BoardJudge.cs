@@ -33,7 +33,7 @@ namespace src.Business
 
             var fields = gameConfiguredBoard.FieldsConfiguration;
             var playerUsedToEvaluate = fields[row].First();
-            var isPlayerPresentInAllHorizontalFields = fields[row].All(p => p.Equals(playerUsedToEvaluate));
+            var isPlayerPresentInAllHorizontalFields = fields[row].All(p => p.IsNotNull() && p.Equals(playerUsedToEvaluate));
 
             return isPlayerPresentInAllHorizontalFields;
         }
