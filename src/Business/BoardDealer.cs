@@ -52,7 +52,7 @@ namespace src.Business
                 for (int indexColumn = 0; indexColumn < board.NumberOfColumn; indexColumn++)
                 {
                     var movement = board.Movements.FirstOrDefault(m => m.Position == positionCount);
-                    
+
                     if (movement.IsNotNull())
                         boardConfiguration[indexRow].Add(movement.WhoMade);
                     else
@@ -82,7 +82,11 @@ namespace src.Business
 
         public void ApplyMovement(Board gameConfiguredBoard, in int movementPosition, Player player)
         {
-            throw new System.NotImplementedException();
+            var (row, col) = GetRowAndColGivenAPosition(movementPosition, gameConfiguredBoard);
+
+            gameConfiguredBoard.FieldsConfiguration[row][col] = player;
+            // TODO raise exception if remove action returns false
+            gameConfiguredBoard.FreeFields.Remove(movementPosition);
         }
 
         public BoardSituation EvaluateTheSituation(Board gameConfiguredBoard)
@@ -92,15 +96,29 @@ namespace src.Business
 
         public bool HasComputerPlayer(Board gameConfiguredBoard)
         {
-            throw new System.NotImplementedException();
+            return gameConfiguredBoard.PlayerBoards.Any(pb => !pb.Player.isNotComputer());
         }
 
         public void ApplyMovementForComputer(Board gameConfiguredBoard, in int somePosition)
         {
-            throw new System.NotImplementedException();
+            var (row, col) = GetRowAndColGivenAPosition(somePosition, gameConfiguredBoard);
+            var pBoard = gameConfiguredBoard.PlayerBoards.First(pb => !pb.Player.isNotComputer());
+            gameConfiguredBoard.FieldsConfiguration[row][col] = pBoard.Player;
+            // TODO raise exception if remove action returns false
+            gameConfiguredBoard.FreeFields.Remove(somePosition);
+        }
+
+        public (int, int) GetRowAndColGivenAPosition(in int movementPosition, Board gameConfiguredBoard)
+        {
+            var refreshedMovementPosition = movementPosition - 1;
+            
+            var row = refreshedMovementPosition / gameConfiguredBoard.NumberOfColumn;
+            var col = refreshedMovementPosition % gameConfiguredBoard.NumberOfColumn;
+
+            return (row, col);
         }
     }
-    
+
     public class BoardSituation
     {
         public bool SadlyFinishedWithDraw { get; set; }

@@ -31,7 +31,7 @@ namespace tests.Unit.Business
             boardDealer.NotValidOrUnsupportedBoardSize("3v3").Should().BeTrue();
             boardDealer.NotValidOrUnsupportedBoardSize("4x3").Should().BeTrue();
         }
-        
+
         [Fact]
         public void ShouldReturnTrueIfBoardSizeHasColumnAndRowsGreaterThan2AndAreEqualAndLessThan10()
         {
@@ -45,7 +45,7 @@ namespace tests.Unit.Business
             boardDealer.NotValidOrUnsupportedBoardSize("9x9").Should().BeFalse();
             boardDealer.NotValidOrUnsupportedBoardSize("10x10").Should().BeTrue();
         }
-        
+
         [Fact]
         public void ShouldInitializeBoardConfigurationGivenItsSetupAndItWasFirstTime()
         {
@@ -54,7 +54,7 @@ namespace tests.Unit.Business
             someBoard.NumberOfRows = 3;
             someBoard.NumberOfColumn = 3;
             var boardDealer = new BoardDealer();
-            
+
             boardDealer.InitializeBoardConfiguration(someBoard);
 
             someBoard.FieldsConfiguration.Should().HaveCount(3);
@@ -70,8 +70,6 @@ namespace tests.Unit.Business
             someBoard.FreeFields.Count.Should().Be(9);
             for (int position = 1; position <= someBoard.FreeFields.Count; position++)
                 someBoard.FreeFields[position - 1].Should().Be(position);
-
-
         }
 
         /**
@@ -92,11 +90,11 @@ namespace tests.Unit.Business
             movement.Position = 2;
             var jafar = new Player();
             movement.WhoMade = jafar;
-            someBoard.Movements.Add(movement);    
+            someBoard.Movements.Add(movement);
             someBoard.NumberOfRows = 3;
             someBoard.NumberOfColumn = 3;
             var boardDealer = new BoardDealer();
-            
+
             boardDealer.InitializeBoardConfiguration(someBoard);
 
             someBoard.FieldsConfiguration.Should().HaveCount(3);
@@ -109,9 +107,9 @@ namespace tests.Unit.Business
                 somePlayer.IsNull().Should().BeTrue();
             someBoard.FieldsConfiguration[2].Should().HaveCount(3);
             foreach (var somePlayer in someBoard.FieldsConfiguration[2])
-                somePlayer.IsNull().Should().BeTrue(); 
+                somePlayer.IsNull().Should().BeTrue();
         }
-        
+
         /**
          * See each number below like a place in a tic tac toe board.
          * In this scenario the user chose the position 2, 3, 6 and 7.
@@ -135,10 +133,10 @@ namespace tests.Unit.Business
             movement3.WhoMade = jafar;
             var movement6 = new Movement();
             movement6.Position = 6;
-            movement6.WhoMade = jafar;  
+            movement6.WhoMade = jafar;
             var movement7 = new Movement();
             movement7.Position = 7;
-            movement7.WhoMade = jafar; 
+            movement7.WhoMade = jafar;
             someBoard.Movements.Add(movement2);
             someBoard.Movements.Add(movement3);
             someBoard.Movements.Add(movement6);
@@ -146,7 +144,7 @@ namespace tests.Unit.Business
             someBoard.NumberOfRows = 3;
             someBoard.NumberOfColumn = 3;
             var boardDealer = new BoardDealer();
-            
+
             boardDealer.InitializeBoardConfiguration(someBoard);
 
             someBoard.FieldsConfiguration.Should().HaveCount(3);
@@ -163,7 +161,42 @@ namespace tests.Unit.Business
             someBoard.FieldsConfiguration[2][1].IsNull().Should().BeTrue();
             someBoard.FieldsConfiguration[2][2].IsNull().Should().BeTrue();
         }
+
+        [Fact]
+        public void ShouldReturnRowAndColumnGivenSpecificPositionForBoard3x3()
+        {
+            var board = new Board();
+            board.NumberOfColumn = 3;
+            board.NumberOfRows = 3;
+            var boardDealer = new BoardDealer();
+
+            var (row, col) = boardDealer.GetRowAndColGivenAPosition(1, board);
+            row.Should().Be(0);
+            col.Should().Be(0);
+            (row, col) = boardDealer.GetRowAndColGivenAPosition(2, board);
+            row.Should().Be(0);
+            col.Should().Be(1);
+            (row, col) = boardDealer.GetRowAndColGivenAPosition(3, board);
+            row.Should().Be(0);
+            col.Should().Be(2);
+            (row, col) = boardDealer.GetRowAndColGivenAPosition(4, board);
+            row.Should().Be(1);
+            col.Should().Be(0);
+            (row, col) = boardDealer.GetRowAndColGivenAPosition(5, board);
+            row.Should().Be(1);
+            col.Should().Be(1);
+            (row, col) = boardDealer.GetRowAndColGivenAPosition(6, board);
+            row.Should().Be(1);
+            col.Should().Be(2);
+            (row, col) = boardDealer.GetRowAndColGivenAPosition(7, board);
+            row.Should().Be(2);
+            col.Should().Be(0);
+            (row, col) = boardDealer.GetRowAndColGivenAPosition(8, board);
+            row.Should().Be(2);
+            col.Should().Be(1);
+            (row, col) = boardDealer.GetRowAndColGivenAPosition(9, board);
+            row.Should().Be(2);
+            col.Should().Be(1);            
+        }
     }
-    
-    
 }
