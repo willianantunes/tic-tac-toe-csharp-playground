@@ -8,9 +8,10 @@ namespace src.Business
     public interface IBoardJudge
     {
         public (int, int) GetRowAndColGivenAPosition(in int position, Board gameConfiguredBoard);
-        bool WonHorizontally(IList<IList<Player?>> fields, Board gameConfiguredBoard, in int lastMovementPosition);
-        bool WonVertically(IList<IList<Player?>> fields, Board gameConfiguredBoard, in int lastMovementPosition);
-        bool WonDiagonally(IList<IList<Player?>> fields, Board gameConfiguredBoard, in int lastMovementPosition);
+        bool WonHorizontally(Board gameConfiguredBoard, in int lastMovementPosition);
+        bool WonVertically(Board gameConfiguredBoard, in int lastMovementPosition);
+        bool WonDiagonally(Board gameConfiguredBoard, in int lastMovementPosition);
+        bool WonReverseDiagonally(Board gameConfiguredBoard, in int lastMovementPosition);
         bool DrawGame(IList<IList<Player?>> fields);
     }
 
@@ -26,17 +27,43 @@ namespace src.Business
             return (row, col);
         }
 
-        public bool WonHorizontally(IList<IList<Player?>> fields, Board gameConfiguredBoard, in int lastMovementPosition)
+        public bool WonHorizontally(Board gameConfiguredBoard, in int lastMovementPosition)
         {
-            throw new System.NotImplementedException();
+            var (row, _) = GetRowAndColGivenAPosition(lastMovementPosition, gameConfiguredBoard);
+
+            var fields = gameConfiguredBoard.FieldsConfiguration;
+            var playerUsedToEvaluate = fields[row].First();
+            var isPlayerPresentInAllHorizontalFields = fields[row].All(p => p.Equals(playerUsedToEvaluate));
+
+            return isPlayerPresentInAllHorizontalFields;
         }
 
-        public bool WonVertically(IList<IList<Player?>> fields, Board gameConfiguredBoard, in int lastMovementPosition)
+        public bool WonVertically(Board gameConfiguredBoard, in int lastMovementPosition)
         {
-            throw new System.NotImplementedException();
+            var (row, col) = GetRowAndColGivenAPosition(lastMovementPosition, gameConfiguredBoard);
+            
+            var fields = gameConfiguredBoard.FieldsConfiguration;
+            var playerUsedToEvaluate = fields[row][col];
+            var isPlayerPresentInAllVerticalFields = fields.All(slice => slice[col].Equals(playerUsedToEvaluate));
+
+            return isPlayerPresentInAllVerticalFields;
         }
 
-        public bool WonDiagonally(IList<IList<Player?>> fields, Board gameConfiguredBoard, in int lastMovementPosition)
+        public bool WonDiagonally(Board gameConfiguredBoard, in int lastMovementPosition)
+        {
+            var (row, col) = GetRowAndColGivenAPosition(lastMovementPosition, gameConfiguredBoard);
+
+            if (row != col)
+                return false;
+            
+            var fields = gameConfiguredBoard.FieldsConfiguration;
+            var playerUsedToEvaluate = fields[row][col];
+            var columnCounter = 0;
+
+            return fields.All(slice => slice[columnCounter++].Equals(playerUsedToEvaluate));
+        }
+
+        public bool WonReverseDiagonally(Board gameConfiguredBoard, in int lastMovementPosition)
         {
             throw new System.NotImplementedException();
         }

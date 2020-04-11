@@ -92,19 +92,19 @@ namespace src.Business
 
         public BoardSituation EvaluateTheSituation(Board gameConfiguredBoard, in int lastMovementPosition)
         {
-            var fields = gameConfiguredBoard.FieldsConfiguration;
-
-            bool wonHorizontally = _boardJudge.WonHorizontally(fields, gameConfiguredBoard, lastMovementPosition);
-            bool wonVertically = _boardJudge.WonVertically(fields, gameConfiguredBoard, lastMovementPosition);
-            bool wonDiagonally = _boardJudge.WonDiagonally(fields, gameConfiguredBoard, lastMovementPosition);
+            bool wonHorizontally = _boardJudge.WonHorizontally(gameConfiguredBoard, lastMovementPosition);
+            bool wonVertically = _boardJudge.WonVertically(gameConfiguredBoard, lastMovementPosition);
+            bool wonDiagonally = _boardJudge.WonDiagonally(gameConfiguredBoard, lastMovementPosition);
+            bool wonReverseDiagonally = _boardJudge.WonReverseDiagonally(gameConfiguredBoard, lastMovementPosition);
 
             var boardSituation = new BoardSituation();
             
-            boardSituation.HasAWinner = wonHorizontally || wonVertically || wonDiagonally;
+            boardSituation.HasAWinner = wonHorizontally || wonVertically || wonDiagonally || wonReverseDiagonally;
             if (boardSituation.HasAWinner)
                 boardSituation.Winner = new Player();
             else
             {
+                var fields = gameConfiguredBoard.FieldsConfiguration;
                 bool drawGame = _boardJudge.DrawGame(fields);
                 if (drawGame)
                     boardSituation.SadlyFinishedWithDraw = true;
