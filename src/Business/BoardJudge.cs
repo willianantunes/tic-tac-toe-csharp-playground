@@ -65,7 +65,18 @@ namespace src.Business
 
         public bool WonReverseDiagonally(Board gameConfiguredBoard, in int lastMovementPosition)
         {
-            throw new System.NotImplementedException();
+            var (row, col) = GetRowAndColGivenAPosition(lastMovementPosition, gameConfiguredBoard);
+
+            var isNotEligible = (row + col) != (gameConfiguredBoard.NumberOfRows - 1);
+            
+            if (isNotEligible)
+                return false;
+            
+            var fields = gameConfiguredBoard.FieldsConfiguration;
+            var playerUsedToEvaluate = fields[row][col];
+            var columnCounter = fields[row].Count;
+            
+            return fields.All(slice => slice[columnCounter--].Equals(playerUsedToEvaluate));
         }
 
         public bool DrawGame(IList<IList<Player?>> fields)
