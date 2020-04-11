@@ -36,23 +36,37 @@ namespace src.Business
         {
             var gameConfiguredBoard = game.ConfiguredBoard;
             _boardDealer.ApplyMovement(gameConfiguredBoard, movementPosition, player);
-            BoardSituation boardSituation = _boardDealer.EvaluateTheSituation(gameConfiguredBoard);
+            BoardSituation boardSituation = _boardDealer.EvaluateTheSituation(gameConfiguredBoard, movementPosition);
 
-            if (boardSituation.Concluded)
+            if (boardSituation.HasAWinner || boardSituation.SadlyFinishedWithDraw)
+            {
                 UpdateGameGivenItsResult(game, boardSituation);
-            else
-                ExecuteComputerMovementIfApplicable(player, gameConfiguredBoard);
+                return _ticTacToeRepository.RefreshGameState(game);
+            }
+            if (_boardDealer.AvailablePositions(gameConfiguredBoard).Count <= 0)
+                return _ticTacToeRepository.RefreshGameState(game);
+            
+            var executed = ExecuteComputerMovementIfApplicable(player, gameConfiguredBoard);
+            if (executed)
+            {
+                boardSituation = _boardDealer.EvaluateTheSituation(gameConfiguredBoard, movementPosition);
+                UpdateGameGivenItsResult(game, boardSituation);    
+            }
+            
 
             return _ticTacToeRepository.RefreshGameState(game);
         }
 
-        private void ExecuteComputerMovementIfApplicable(Player player, Board gameConfiguredBoard)
+        private bool ExecuteComputerMovementIfApplicable(Player player, Board gameConfiguredBoard)
         {
             if (player.isNotComputer() && _boardDealer.HasComputerPlayer(gameConfiguredBoard))
             {
                 var somePosition = _boardDealer.AvailablePositions(gameConfiguredBoard).First();
                 _boardDealer.ApplyMovementForComputer(gameConfiguredBoard, somePosition);
+                return true;
             }
+
+            return false;
         }
 
         private static void UpdateGameGivenItsResult(Game game, BoardSituation boardSituation)

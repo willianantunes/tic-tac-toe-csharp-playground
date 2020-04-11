@@ -161,42 +161,5 @@ namespace tests.Unit.Business
             someBoard.FieldsConfiguration[2][1].IsNull().Should().BeTrue();
             someBoard.FieldsConfiguration[2][2].IsNull().Should().BeTrue();
         }
-
-        [Fact]
-        public void ShouldReturnRowAndColumnGivenSpecificPositionForBoard3x3()
-        {
-            var board = new Board();
-            board.NumberOfColumn = 3;
-            board.NumberOfRows = 3;
-            var boardDealer = new BoardDealer();
-
-            var (row, col) = boardDealer.GetRowAndColGivenAPosition(1, board);
-            row.Should().Be(0);
-            col.Should().Be(0);
-            (row, col) = boardDealer.GetRowAndColGivenAPosition(2, board);
-            row.Should().Be(0);
-            col.Should().Be(1);
-            (row, col) = boardDealer.GetRowAndColGivenAPosition(3, board);
-            row.Should().Be(0);
-            col.Should().Be(2);
-            (row, col) = boardDealer.GetRowAndColGivenAPosition(4, board);
-            row.Should().Be(1);
-            col.Should().Be(0);
-            (row, col) = boardDealer.GetRowAndColGivenAPosition(5, board);
-            row.Should().Be(1);
-            col.Should().Be(1);
-            (row, col) = boardDealer.GetRowAndColGivenAPosition(6, board);
-            row.Should().Be(1);
-            col.Should().Be(2);
-            (row, col) = boardDealer.GetRowAndColGivenAPosition(7, board);
-            row.Should().Be(2);
-            col.Should().Be(0);
-            (row, col) = boardDealer.GetRowAndColGivenAPosition(8, board);
-            row.Should().Be(2);
-            col.Should().Be(1);
-            (row, col) = boardDealer.GetRowAndColGivenAPosition(9, board);
-            row.Should().Be(2);
-            col.Should().Be(1);            
-        }
     }
 }

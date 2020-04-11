@@ -15,13 +15,14 @@ namespace src.Business
         bool PositionIsNotAvailable(Board gameConfiguredBoard, in int movementPosition);
         IList<int> AvailablePositions(Board gameConfiguredBoard);
         void ApplyMovement(Board gameConfiguredBoard, in int movementPosition, Player player);
-        BoardSituation EvaluateTheSituation(Board gameConfiguredBoard);
+        BoardSituation EvaluateTheSituation(Board gameConfiguredBoard, in int lastMovementPosition);
         bool HasComputerPlayer(Board gameConfiguredBoard);
         void ApplyMovementForComputer(Board gameConfiguredBoard, in int somePosition);
     }
 
     public class BoardDealer : IBoardDealer
     {
+        private IBoardJudge _boardJudge;
         private Regex _almostValidBoardSetup = new Regex(@"[3-9]x[3-9]");
 
         public bool NotValidOrUnsupportedBoardSize(string? boardSize)
@@ -82,16 +83,34 @@ namespace src.Business
 
         public void ApplyMovement(Board gameConfiguredBoard, in int movementPosition, Player player)
         {
-            var (row, col) = GetRowAndColGivenAPosition(movementPosition, gameConfiguredBoard);
+            var (row, col) = _boardJudge.GetRowAndColGivenAPosition(movementPosition, gameConfiguredBoard);
 
             gameConfiguredBoard.FieldsConfiguration[row][col] = player;
             // TODO raise exception if remove action returns false
             gameConfiguredBoard.FreeFields.Remove(movementPosition);
         }
 
-        public BoardSituation EvaluateTheSituation(Board gameConfiguredBoard)
+        public BoardSituation EvaluateTheSituation(Board gameConfiguredBoard, in int lastMovementPosition)
         {
-            throw new System.NotImplementedException();
+            var fields = gameConfiguredBoard.FieldsConfiguration;
+
+            bool wonHorizontally = _boardJudge.WonHorizontally(fields, lastMovementPosition);
+            bool wonVertically = _boardJudge.WonVertically(fields, lastMovementPosition);
+            bool wonDiagonally = _boardJudge.WonDiagonally(fields, lastMovementPosition);
+
+            var boardSituation = new BoardSituation();
+            
+            boardSituation.HasAWinner = wonHorizontally || wonVertically || wonDiagonally;
+            if (boardSituation.HasAWinner)
+                boardSituation.Winner = new Player();
+            else
+            {
+                bool drawGame = _boardJudge.DrawGame(fields);
+                if (drawGame)
+                    boardSituation.SadlyFinishedWithDraw = true;
+            }
+
+            return boardSituation;
         }
 
         public bool HasComputerPlayer(Board gameConfiguredBoard)
@@ -101,21 +120,11 @@ namespace src.Business
 
         public void ApplyMovementForComputer(Board gameConfiguredBoard, in int somePosition)
         {
-            var (row, col) = GetRowAndColGivenAPosition(somePosition, gameConfiguredBoard);
+            var (row, col) = _boardJudge.GetRowAndColGivenAPosition(somePosition, gameConfiguredBoard);
             var pBoard = gameConfiguredBoard.PlayerBoards.First(pb => !pb.Player.isNotComputer());
             gameConfiguredBoard.FieldsConfiguration[row][col] = pBoard.Player;
             // TODO raise exception if remove action returns false
             gameConfiguredBoard.FreeFields.Remove(somePosition);
-        }
-
-        public (int, int) GetRowAndColGivenAPosition(in int movementPosition, Board gameConfiguredBoard)
-        {
-            var refreshedMovementPosition = movementPosition - 1;
-            
-            var row = refreshedMovementPosition / gameConfiguredBoard.NumberOfColumn;
-            var col = refreshedMovementPosition % gameConfiguredBoard.NumberOfColumn;
-
-            return (row, col);
         }
     }
 
