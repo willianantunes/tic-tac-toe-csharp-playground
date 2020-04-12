@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using src.Business;
+using src.Helper;
 using src.Repository;
 
 namespace tests.Resources
@@ -10,6 +11,9 @@ namespace tests.Resources
         private Player _player;
         private int _rowToStartFilling;
         private int _fillUntilColumn;
+        private int _startFromRow;
+        private int _defaultColumn;
+        private int _fillUntilRow;
 
         public BoardBuilder BoardSize(int boardSize)
         {
@@ -35,6 +39,19 @@ namespace tests.Resources
             return this;
         }
 
+        public BoardBuilder GivenColumnAndRow(int row, int col)
+        {
+            _startFromRow = row;
+            _defaultColumn = col;
+            return this;
+        }
+
+        public BoardBuilder FilledAllRowsUntilRows(int fillUntilRow)
+        {
+            _fillUntilRow = fillUntilRow;
+            return this;
+        }
+
         public Board build()
         {
             var board = new Board();
@@ -44,11 +61,27 @@ namespace tests.Resources
             var boardDealer = new BoardDealer();
             boardDealer.InitializeBoardConfiguration(board);
 
-            var fields = board.FieldsConfiguration;
-            for (var column = 0; column <= _fillUntilColumn; column++)
-                fields[_rowToStartFilling][column] = _player;
+            if (_fillUntilRow.IsNotNull())
+            {
+                var fields = board.FieldsConfiguration;
+                for (var row = _startFromRow; row <= _fillUntilRow; row++)
+                {
+                    fields[row][_defaultColumn] = _player;
+                }
 
-            return board;
+                return board;
+            }
+
+            if (_fillUntilColumn.IsNotNull())
+            {
+                var fields = board.FieldsConfiguration;
+                for (var column = 0; column <= _fillUntilColumn; column++)
+                    fields[_rowToStartFilling][column] = _player;
+
+                return board;
+            }
+
+            throw new System.NotImplementedException();
         }
     }
 }

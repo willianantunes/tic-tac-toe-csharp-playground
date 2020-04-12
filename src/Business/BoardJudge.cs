@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using src.Helper;
@@ -33,7 +34,8 @@ namespace src.Business
 
             var fields = gameConfiguredBoard.FieldsConfiguration;
             var playerUsedToEvaluate = fields[row].First();
-            var isPlayerPresentInAllHorizontalFields = fields[row].All(p => p.IsNotNull() && p.Equals(playerUsedToEvaluate));
+            Func<Player?, bool> predicate = p => p.IsNotNull() && p.Equals(playerUsedToEvaluate);
+            var isPlayerPresentInAllHorizontalFields = fields[row].All(predicate);
 
             return isPlayerPresentInAllHorizontalFields;
         }
@@ -41,10 +43,11 @@ namespace src.Business
         public bool WonVertically(Board gameConfiguredBoard, in int lastMovementPosition)
         {
             var (row, col) = GetRowAndColGivenAPosition(lastMovementPosition, gameConfiguredBoard);
-            
+
             var fields = gameConfiguredBoard.FieldsConfiguration;
             var playerUsedToEvaluate = fields[row][col];
-            var isPlayerPresentInAllVerticalFields = fields.All(slice => slice[col].Equals(playerUsedToEvaluate));
+            Func<IList<Player?>, bool> predicate = row => row[col].IsNotNull() && row[col].Equals(playerUsedToEvaluate);
+            var isPlayerPresentInAllVerticalFields = fields.All(predicate);
 
             return isPlayerPresentInAllVerticalFields;
         }
@@ -55,7 +58,7 @@ namespace src.Business
 
             if (row != col)
                 return false;
-            
+
             var fields = gameConfiguredBoard.FieldsConfiguration;
             var playerUsedToEvaluate = fields[row][col];
             var columnCounter = 0;
@@ -68,14 +71,14 @@ namespace src.Business
             var (row, col) = GetRowAndColGivenAPosition(lastMovementPosition, gameConfiguredBoard);
 
             var isNotEligible = (row + col) != (gameConfiguredBoard.NumberOfRows - 1);
-            
+
             if (isNotEligible)
                 return false;
-            
+
             var fields = gameConfiguredBoard.FieldsConfiguration;
             var playerUsedToEvaluate = fields[row][col];
             var columnCounter = fields[row].Count;
-            
+
             return fields.All(slice => slice[columnCounter--].Equals(playerUsedToEvaluate));
         }
 
