@@ -15,6 +15,10 @@ namespace src.Business
         private readonly ITicTacToeRepository _ticTacToeRepository;
         private readonly IBoardDealer _boardDealer;
 
+        public GameDealer()
+        {
+        }
+        
         public GameDealer(ITicTacToeRepository ticTacToeRepository, IBoardDealer boardDealer)
         {
             _ticTacToeRepository = ticTacToeRepository;

@@ -1,16 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+using src.Business;
 using src.Repository;
 
 namespace src
@@ -33,9 +27,13 @@ namespace src
                 var connectionString = Configuration.GetConnectionString("connectionDetails");
                 optionsBuilder.UseNpgsql(connectionString);
             });
-            
+
             // Repositories
             services.AddScoped<ITicTacToeRepository, TicTacToeRepository>();
+            // Businesses
+            services.AddSingleton<IBoardJudge, BoardJudge>();
+            services.AddScoped<IBoardDealer, BoardDealer>();
+            services.AddScoped<IGameDealer, GameDealer>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

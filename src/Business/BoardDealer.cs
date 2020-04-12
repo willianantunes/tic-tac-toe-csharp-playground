@@ -25,6 +25,15 @@ namespace src.Business
         private IBoardJudge _boardJudge;
         private Regex _almostValidBoardSetup = new Regex(@"[3-9]x[3-9]");
 
+        public BoardDealer()
+        {
+        }
+        
+        public BoardDealer(IBoardJudge boardJudge)
+        {
+            _boardJudge = boardJudge;
+        }
+
         public bool NotValidOrUnsupportedBoardSize(string? boardSize)
         {
             if (boardSize.IsNull() || _almostValidBoardSetup.Match(boardSize).NotSuccess())

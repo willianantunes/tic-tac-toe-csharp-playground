@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using src.Business;
 using src.Helper;
@@ -9,43 +10,74 @@ using src.Repository;
 
 namespace src.Controllers
 {
+    [Route("tic-tac-toe")]
+    [ApiController]
     public class TicTacToeController : ControllerBase
     {
         private readonly ITicTacToeRepository _ticTacToeRepository;
         private readonly IBoardDealer _boardDealer;
         private readonly IGameDealer _gameDealer;
-        private readonly ILogger<TicTacToeController> logger;
+        private readonly ILogger<TicTacToeController> _logger;
+        private readonly CSharpPlaygroundContext _context;
 
-        public void GetAllPlayers()
+        public TicTacToeController(ITicTacToeRepository ticTacToeRepository, IBoardDealer boardDealer,
+            IGameDealer gameDealer, ILogger<TicTacToeController> logger, CSharpPlaygroundContext context)
         {
-            // TODO
+            _ticTacToeRepository = ticTacToeRepository;
+            _boardDealer = boardDealer;
+            _gameDealer = gameDealer;
+            _logger = logger;
+            _context = context;
         }
 
-        public void GetSpecificPlayer()
+        [HttpGet("players")]
+        public async Task<ActionResult<IEnumerable<Player>>> GetAllPlayers()
         {
-            // TODO
+            // TODO: Apply pagination
+            return await _context.Players.ToListAsync();
         }
 
-        public void CreateNewPlayer()
+        [HttpGet("players/{id}")]
+        public async Task<ActionResult<Player>> GetSpecificPlayer(Guid id)
         {
-            // TODO
+            var player = await _context.Players.FindAsync(id);
+
+            if (player.IsNull())
+                return NotFound();
+
+            return player;
         }
 
-        public void GetAllBoards()
+        [Route("players")]
+        [HttpPost]
+        public async Task<ActionResult<Player>> CreateNewPlayer(Player player)
         {
-            // TODO
+            if (player.Name.IsNull())
+                return BadRequest("Name is required to create a player");
+
+            _context.Players.Add(player);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction("GetSpecificPlayer", new {id = player.Id}, player);
         }
 
-        public void GetSpecificBoard()
+        [HttpGet("boards")]
+        public async Task<ActionResult<IEnumerable<Board>>> GetAllBoards()
         {
-            // TODO
+            throw new NotImplementedException();
+        }
+
+        [HttpGet("boards/{id}")]
+        public async Task<ActionResult<Player>> GetSpecificBoard()
+        {
+            throw new NotImplementedException();
         }
 
         public async Task<ActionResult<Board>> CreateNewBoard(string? boardSize, Guid firstPlayerId,
             Guid? secondPlayerId)
         {
             var logMessage = "Received board and players: {BoardSize} / {FirstPlayer} / {SecondPlayer}";
-            logger.I(logMessage, boardSize, firstPlayerId, secondPlayerId);
+            _logger.I(logMessage, boardSize, firstPlayerId, secondPlayerId);
 
             if (_boardDealer.NotValidOrUnsupportedBoardSize(boardSize))
                 throw new InvalidBoardConfigurationException();
@@ -58,28 +90,31 @@ namespace src.Controllers
             var playerTwo = await _ticTacToeRepository.GetPlayerByItsId(firstPlayerId);
 
             logMessage = "Board setup and players: {BoardSize} / {PlayerOne} / {PlayerTwo}";
-            logger.I(logMessage, boardSize, playerOne, playerTwo);
+            _logger.I(logMessage, boardSize, playerOne, playerTwo);
             var createdBoard = await _boardDealer.CreateNewBoard(boardSize, playerOne, playerTwo);
 
             return CreatedAtAction("GetSpecificBoard", new {id = createdBoard.Id}, createdBoard);
         }
 
-        public void GetAllGames()
+        [HttpGet("games")]
+        public async Task<ActionResult<IEnumerable<Game>>> GetAllGames()
         {
-            // TODO
+            throw new NotImplementedException();
         }
 
-        public void GetCurrentGameStatus()
+        [HttpGet("games/{id}")]
+        public async Task<ActionResult<Game>> GetCurrentGameStatus()
         {
-            // TODO
+            throw new NotImplementedException();
         }
 
+        [HttpPost("games/{boardId}/{playerId}/{movementPosition}")]
         public async Task<ActionResult<Game>> ApplyMovementToTheGame(Guid boardId, int movementPosition, Guid playerId)
         {
             var firstLogMessage = "Received board, movement and player: {BoardId} / {MovementPosition} / {PlayerId}";
-            logger.I(firstLogMessage, boardId, movementPosition, playerId);
+            _logger.I(firstLogMessage, boardId, movementPosition, playerId);
 
-            logger.I("Searching board and player...");
+            _logger.I("Searching board and player...");
             var board = await _ticTacToeRepository.GetBoardByItsId(boardId);
             if (board.IsNull())
                 throw new InvalidBoardNotFoundToBePlayedException();
@@ -88,7 +123,7 @@ namespace src.Controllers
             if (player.IsNull())
                 throw new InvalidPlayerNotFoundException();
 
-            logger.I("Searching for a game...");
+            _logger.I("Searching for a game...");
             var game = await _gameDealer.GetGameByBoard(board);
             if (game.IsFinished())
                 throw new InvalidGameIsNotPlayableAnymoreException();
@@ -99,13 +134,13 @@ namespace src.Controllers
                 return BadRequest($"Available positions: {position}");
             }
 
-            logger.I("Executing movement and evaluating game...");
+            _logger.I("Executing movement and evaluating game...");
             var evaluatedGame = await _gameDealer.ExecuteMovementAndEvaluateResult(game, movementPosition, player);
 
             if (evaluatedGame.IsFinished())
-                logger.I("Game conclusion: {EvaluatedGame}", evaluatedGame);
+                _logger.I("Game conclusion: {EvaluatedGame}", evaluatedGame);
             else
-                logger.I("Game hasn't finished yet!");
+                _logger.I("Game hasn't finished yet!");
 
             return evaluatedGame;
         }
