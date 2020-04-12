@@ -60,10 +60,15 @@ namespace src.Business
                 return false;
 
             var fields = gameConfiguredBoard.FieldsConfiguration;
-            var playerUsedToEvaluate = fields[row][col];
+            var foundPlayer = fields[row][col];
             var columnCounter = 0;
+            Func<IList<Player?>, bool> predicate = row =>
+            {
+                var maybeAPlayerHere = row[columnCounter++];
+                return maybeAPlayerHere.IsNotNull() && maybeAPlayerHere.Equals(foundPlayer);
+            };
 
-            return fields.All(slice => slice[columnCounter++].Equals(playerUsedToEvaluate));
+            return fields.All(predicate);
         }
 
         public bool WonReverseDiagonally(Board gameConfiguredBoard, in int lastMovementPosition)
@@ -76,10 +81,15 @@ namespace src.Business
                 return false;
 
             var fields = gameConfiguredBoard.FieldsConfiguration;
-            var playerUsedToEvaluate = fields[row][col];
-            var columnCounter = fields[row].Count;
+            var foundPlayer = fields[row][col];
+            var columnCounter = fields[row].Count - 1;
+            Func<IList<Player?>, bool> predicate = row =>
+            {
+                var maybeAPlayerHere = row[columnCounter--];
+                return maybeAPlayerHere.IsNotNull() && maybeAPlayerHere.Equals(foundPlayer);
+            };
 
-            return fields.All(slice => slice[columnCounter--].Equals(playerUsedToEvaluate));
+            return fields.All(predicate);
         }
 
         public bool DrawGame(IList<IList<Player?>> fields)

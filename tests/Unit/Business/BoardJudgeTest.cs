@@ -57,7 +57,7 @@ namespace tests.Unit.Business
                 .BoardSize(3)
                 .WithPlayer(iago)
                 .GivenRow(0)
-                .FilledAllColumnsUntilColumn(2)
+                .FillAllColumnsUntilColumn(2)
                 .build();
 
             var wonDiagonally = _boardJudge.WonHorizontally(board, 1);
@@ -74,7 +74,7 @@ namespace tests.Unit.Business
                 .BoardSize(3)
                 .WithPlayer(iago)
                 .GivenRow(0)
-                .FilledAllColumnsUntilColumn(1)
+                .FillAllColumnsUntilColumn(1)
                 .build();
 
             var wonDiagonally = _boardJudge.WonHorizontally(board, 1);
@@ -91,7 +91,7 @@ namespace tests.Unit.Business
                 .BoardSize(3)
                 .WithPlayer(jasmine)
                 .GivenRow(0)
-                .FilledAllColumnsUntilColumn(2)
+                .FillAllColumnsUntilColumn(2)
                 .build();
 
             var wonDiagonally = _boardJudge.WonHorizontally(board, 3);
@@ -108,7 +108,7 @@ namespace tests.Unit.Business
                 .BoardSize(3)
                 .WithPlayer(saltedGuy)
                 .GivenRow(1)
-                .FilledAllColumnsUntilColumn(2)
+                .FillAllColumnsUntilColumn(2)
                 .build();
 
             var wonDiagonally = _boardJudge.WonHorizontally(board, 5);
@@ -125,7 +125,7 @@ namespace tests.Unit.Business
                 .BoardSize(3)
                 .WithPlayer(saltedGuy)
                 .GivenRow(1)
-                .FilledAllColumnsUntilColumn(1)
+                .FillAllColumnsUntilColumn(1)
                 .build();
 
             var wonDiagonally = _boardJudge.WonHorizontally(board, 5);
@@ -142,7 +142,7 @@ namespace tests.Unit.Business
                 .BoardSize(3)
                 .WithPlayer(salParadise)
                 .GivenRow(2)
-                .FilledAllColumnsUntilColumn(2)
+                .FillAllColumnsUntilColumn(2)
                 .build();
 
             var wonDiagonally = _boardJudge.WonHorizontally(board, 7);
@@ -158,37 +158,149 @@ namespace tests.Unit.Business
             var board = new BoardBuilder()
                 .BoardSize(3)
                 .WithPlayer(gandalf)
-                .GivenColumnAndRow(0, 0)
-                .FilledAllRowsUntilRows(2)
+                .GivenRowAndColumn(0, 0)
+                .FillAllRowsUntilRows(2)
                 .build();
 
             var wonVertically = _boardJudge.WonVertically(board, 1);
 
             wonVertically.Should().BeTrue();
         }
+
+        [Fact]
+        public void ShouldReturnFalseGivenThePlayerIsNotPresentInAllVerticalFieldsScenarioBoard3X3Row0Column0()
+        {
+            var manwe = new Player();
+            
+            var board = new BoardBuilder()
+                .BoardSize(3)
+                .WithPlayer(manwe)
+                .GivenRowAndColumn(0, 0)
+                .FillAllRowsUntilRows(1)
+                .build();
+
+            var wonVertically = _boardJudge.WonVertically(board, 1);
+
+            wonVertically.Should().BeFalse();
+        }
         
         [Fact]
         public void ShouldReturnTrueGivenThePlayerIsPresentInAllVerticalFieldsScenarioBoard3X3Row0Column1()
         {
-            throw new System.NotImplementedException();
+            var gandalf = new Player();
+            
+            var board = new BoardBuilder()
+                .BoardSize(3)
+                .WithPlayer(gandalf)
+                .GivenRowAndColumn(0, 1)
+                .FillAllRowsUntilRows(2)
+                .build();
+
+            var wonVertically = _boardJudge.WonVertically(board, 2);
+
+            wonVertically.Should().BeTrue();
         } 
         
         [Fact]
         public void ShouldReturnTrueGivenThePlayerIsPresentInAllVerticalFieldsScenarioBoard3X3Row0Column2()
         {
-            throw new System.NotImplementedException();
+            var gandalf = new Player();
+            
+            var board = new BoardBuilder()
+                .BoardSize(3)
+                .WithPlayer(gandalf)
+                .GivenRowAndColumn(0, 2)
+                .FillAllRowsUntilRows(2)
+                .build();
+
+            var wonVertically = _boardJudge.WonVertically(board, 3);
+
+            wonVertically.Should().BeTrue();
         } 
         
         [Fact]
         public void ShouldReturnTrueGivenThePlayerIsPresentInAllVerticalFieldsScenarioBoard3X3Row2Column1()
         {
-            throw new System.NotImplementedException();
+            var gandalf = new Player();
+            
+            var board = new BoardBuilder()
+                .BoardSize(3)
+                .WithPlayer(gandalf)
+                .GivenRowAndColumn(0, 1)
+                .FillAllRowsUntilRows(2)
+                .build();
+
+            var wonVertically = _boardJudge.WonVertically(board, 8);
+
+            wonVertically.Should().BeTrue();
         } 
         
         [Fact]
         public void ShouldReturnTrueGivenThePlayerIsPresentInAllDiagonalFieldsScenarioBoard3X3Row0Column0()
         {
-            throw new System.NotImplementedException();
+            var faramir = new Player();
+            
+            var board = new BoardBuilder()
+                .BoardSize(3)
+                .WithPlayer(faramir)
+                .GivenRowAndColumn(0, 0)
+                .FillDiagonallyUntilRow(2)
+                .build();
+
+            var wonVertically = _boardJudge.WonDiagonally(board, 1);
+
+            wonVertically.Should().BeTrue();
+        } 
+        
+        [Fact]
+        public void ShouldReturnFalseGivenThePlayerIsNotPresentInAllDiagonalFieldsScenarioBoard3X3Row0Column0()
+        {
+            var faramir = new Player();
+            
+            var board = new BoardBuilder()
+                .BoardSize(3)
+                .WithPlayer(faramir)
+                .GivenRowAndColumn(0, 0)
+                .FillDiagonallyUntilRow(1)
+                .build();
+
+            var wonVertically = _boardJudge.WonDiagonally(board, 1);
+
+            wonVertically.Should().BeFalse();
+        }  
+        
+        [Fact]
+        public void ShouldReturnTrueGivenThePlayerIsPresentInAllReverseDiagonalFieldsScenarioBoard3X3Row0Column2()
+        {
+            var boromir = new Player();
+            
+            var board = new BoardBuilder()
+                .BoardSize(3)
+                .WithPlayer(boromir)
+                .GivenRowAndColumn(0, 2)
+                .FillReverseDiagonallyUntilRow(2)
+                .build();
+
+            var wonReverseVertically = _boardJudge.WonReverseDiagonally(board, 3);
+
+            wonReverseVertically.Should().BeTrue();
+        } 
+        
+        [Fact]
+        public void ShouldReturnFalseGivenThePlayerIsNotPresentInAllReverseDiagonalFieldsScenarioBoard3X3Row0Column2()
+        {
+            var boromir = new Player();
+            
+            var board = new BoardBuilder()
+                .BoardSize(3)
+                .WithPlayer(boromir)
+                .GivenRowAndColumn(0, 2)
+                .FillReverseDiagonallyUntilRow(1)
+                .build();
+
+            var wonReverseVertically = _boardJudge.WonReverseDiagonally(board, 3);
+
+            wonReverseVertically.Should().BeFalse();
         } 
         
         [Fact]

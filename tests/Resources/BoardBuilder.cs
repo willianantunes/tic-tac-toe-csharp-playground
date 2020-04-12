@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using src.Business;
 using src.Helper;
@@ -9,11 +10,13 @@ namespace tests.Resources
     {
         private int _boardSize;
         private Player _player;
-        private int _rowToStartFilling;
-        private int _fillUntilColumn;
-        private int _startFromRow;
-        private int _defaultColumn;
-        private int _fillUntilRow;
+        private int _rowToStartFilling = -1;
+        private int _fillUntilColumn = -1;
+        private int _startFromRow = -1;
+        private int _defaultColumn = -1;
+        private int _fillUntilRow = -1;
+        private int _fillDiagonallyUntilRow = -1;
+        private int _fillReverseDiagonallyUntilRow = -1;
 
         public BoardBuilder BoardSize(int boardSize)
         {
@@ -33,22 +36,34 @@ namespace tests.Resources
             return this;
         }
 
-        public BoardBuilder FilledAllColumnsUntilColumn(int fillUntilColumn)
+        public BoardBuilder FillAllColumnsUntilColumn(Int16 fillUntilColumn)
         {
             _fillUntilColumn = fillUntilColumn;
             return this;
         }
 
-        public BoardBuilder GivenColumnAndRow(int row, int col)
+        public BoardBuilder GivenRowAndColumn(int row, int col)
         {
             _startFromRow = row;
             _defaultColumn = col;
             return this;
         }
 
-        public BoardBuilder FilledAllRowsUntilRows(int fillUntilRow)
+        public BoardBuilder FillAllRowsUntilRows(int fillUntilRow)
         {
             _fillUntilRow = fillUntilRow;
+            return this;
+        }
+        
+        public BoardBuilder FillDiagonallyUntilRow(int row)
+        {
+            _fillDiagonallyUntilRow = row;
+            return this;
+        }
+        
+        public BoardBuilder FillReverseDiagonallyUntilRow(int row)
+        {
+            _fillReverseDiagonallyUntilRow = row;
             return this;
         }
 
@@ -60,21 +75,34 @@ namespace tests.Resources
             board.NumberOfColumn = _boardSize;
             var boardDealer = new BoardDealer();
             boardDealer.InitializeBoardConfiguration(board);
+            var fields = board.FieldsConfiguration;
 
-            if (_fillUntilRow.IsNotNull())
+            if (_fillReverseDiagonallyUntilRow >= 0)
             {
-                var fields = board.FieldsConfiguration;
+                for (var row = _startFromRow; row <= _fillReverseDiagonallyUntilRow; row++)
+                    fields[row][_defaultColumn--] = _player;
+                
+                return board;
+            }
+            
+            if (_fillDiagonallyUntilRow >= 0)
+            {
+                for (var row = _startFromRow; row <= _fillDiagonallyUntilRow; row++)
+                    fields[row][_defaultColumn++] = _player;
+
+                return board;
+            }
+            
+            if (_fillUntilRow >= 0)
+            {
                 for (var row = _startFromRow; row <= _fillUntilRow; row++)
-                {
                     fields[row][_defaultColumn] = _player;
-                }
 
                 return board;
             }
 
-            if (_fillUntilColumn.IsNotNull())
+            if (_fillUntilColumn >= 0)
             {
-                var fields = board.FieldsConfiguration;
                 for (var column = 0; column <= _fillUntilColumn; column++)
                     fields[_rowToStartFilling][column] = _player;
 
