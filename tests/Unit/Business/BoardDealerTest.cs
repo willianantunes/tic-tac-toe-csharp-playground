@@ -9,67 +9,62 @@ namespace tests.Unit.Business
 {
     public class BoardDealerTest
     {
+        private readonly IBoardDealer _boardDealer = new BoardDealer();
+
         [Fact]
         public void ShouldReturnFalseIfBoardSizeIsNull()
         {
-            var boardDealer = new BoardDealer();
-
-            boardDealer.NotValidOrUnsupportedBoardSize(null).Should().BeTrue();
+            _boardDealer.NotValidOrUnsupportedBoardSize(null).Should().BeTrue();
         }
 
         [Fact]
         public void ShouldReturnFalseIfBoardSizeDoesNotMatchRegex()
         {
-            var boardDealer = new BoardDealer();
-
-            boardDealer.NotValidOrUnsupportedBoardSize("Calopsita").Should().BeTrue();
-            boardDealer.NotValidOrUnsupportedBoardSize("1").Should().BeTrue();
-            boardDealer.NotValidOrUnsupportedBoardSize("2").Should().BeTrue();
-            boardDealer.NotValidOrUnsupportedBoardSize("3").Should().BeTrue();
-            boardDealer.NotValidOrUnsupportedBoardSize("1v1").Should().BeTrue();
-            boardDealer.NotValidOrUnsupportedBoardSize("2v2").Should().BeTrue();
-            boardDealer.NotValidOrUnsupportedBoardSize("3v3").Should().BeTrue();
-            boardDealer.NotValidOrUnsupportedBoardSize("4x3").Should().BeTrue();
+            _boardDealer.NotValidOrUnsupportedBoardSize("Calopsita").Should().BeTrue();
+            _boardDealer.NotValidOrUnsupportedBoardSize("1").Should().BeTrue();
+            _boardDealer.NotValidOrUnsupportedBoardSize("2").Should().BeTrue();
+            _boardDealer.NotValidOrUnsupportedBoardSize("3").Should().BeTrue();
+            _boardDealer.NotValidOrUnsupportedBoardSize("1v1").Should().BeTrue();
+            _boardDealer.NotValidOrUnsupportedBoardSize("2v2").Should().BeTrue();
+            _boardDealer.NotValidOrUnsupportedBoardSize("3v3").Should().BeTrue();
+            _boardDealer.NotValidOrUnsupportedBoardSize("4x3").Should().BeTrue();
         }
 
         [Fact]
         public void ShouldReturnTrueIfBoardSizeHasColumnAndRowsGreaterThan2AndAreEqualAndLessThan10()
         {
-            var boardDealer = new BoardDealer();
-
             // TODO: A loop can be used here
-            boardDealer.NotValidOrUnsupportedBoardSize("1x1").Should().BeTrue();
-            boardDealer.NotValidOrUnsupportedBoardSize("2x2").Should().BeTrue();
-            boardDealer.NotValidOrUnsupportedBoardSize("3x3").Should().BeFalse();
-            boardDealer.NotValidOrUnsupportedBoardSize("4x4").Should().BeFalse();
-            boardDealer.NotValidOrUnsupportedBoardSize("9x9").Should().BeFalse();
-            boardDealer.NotValidOrUnsupportedBoardSize("10x10").Should().BeTrue();
+            _boardDealer.NotValidOrUnsupportedBoardSize("1x1").Should().BeTrue();
+            _boardDealer.NotValidOrUnsupportedBoardSize("2x2").Should().BeTrue();
+            _boardDealer.NotValidOrUnsupportedBoardSize("3x3").Should().BeFalse();
+            _boardDealer.NotValidOrUnsupportedBoardSize("4x4").Should().BeFalse();
+            _boardDealer.NotValidOrUnsupportedBoardSize("9x9").Should().BeFalse();
+            _boardDealer.NotValidOrUnsupportedBoardSize("10x10").Should().BeTrue();
         }
 
         [Fact]
         public void ShouldInitializeBoardConfigurationGivenItsSetupAndItWasFirstTime()
         {
-            var someBoard = new Board();
-            someBoard.Movements = new List<Movement>();
-            someBoard.NumberOfRows = 3;
-            someBoard.NumberOfColumn = 3;
-            var boardDealer = new BoardDealer();
+            var board = new Board();
+            board.Movements = new List<Movement>();
+            board.NumberOfRows = 3;
+            board.NumberOfColumn = 3;
 
-            boardDealer.InitializeBoardConfiguration(someBoard);
+            _boardDealer.InitializeBoardConfiguration(board);
 
-            someBoard.FieldsConfiguration.Should().HaveCount(3);
-            someBoard.FieldsConfiguration[0].Should().HaveCount(3);
-            foreach (var somePlayer in someBoard.FieldsConfiguration[0])
+            board.FieldsConfiguration.Should().HaveCount(3);
+            board.FieldsConfiguration[0].Should().HaveCount(3);
+            foreach (var somePlayer in board.FieldsConfiguration[0])
                 somePlayer.IsNull().Should().BeTrue();
-            someBoard.FieldsConfiguration[1].Should().HaveCount(3);
-            foreach (var somePlayer in someBoard.FieldsConfiguration[1])
+            board.FieldsConfiguration[1].Should().HaveCount(3);
+            foreach (var somePlayer in board.FieldsConfiguration[1])
                 somePlayer.IsNull().Should().BeTrue();
-            someBoard.FieldsConfiguration[2].Should().HaveCount(3);
-            foreach (var somePlayer in someBoard.FieldsConfiguration[2])
+            board.FieldsConfiguration[2].Should().HaveCount(3);
+            foreach (var somePlayer in board.FieldsConfiguration[2])
                 somePlayer.IsNull().Should().BeTrue();
-            someBoard.FreeFields.Count.Should().Be(9);
-            for (int position = 1; position <= someBoard.FreeFields.Count; position++)
-                someBoard.FreeFields[position - 1].Should().Be(position);
+            board.FreeFields.Count.Should().Be(9);
+            for (int position = 1; position <= board.FreeFields.Count; position++)
+                board.FreeFields[position - 1].Should().Be(position);
         }
 
         /**
@@ -84,29 +79,28 @@ namespace tests.Unit.Business
         [Fact]
         public void ShouldInitializeBoardConfigurationGivenItsSetupAndSomePlayerAppliedMovementScenario1()
         {
-            var someBoard = new Board();
-            someBoard.Movements = new List<Movement>();
+            var board = new Board();
+            board.Movements = new List<Movement>();
             var movement = new Movement();
             movement.Position = 2;
             var jafar = new Player();
             movement.WhoMade = jafar;
-            someBoard.Movements.Add(movement);
-            someBoard.NumberOfRows = 3;
-            someBoard.NumberOfColumn = 3;
-            var boardDealer = new BoardDealer();
+            board.Movements.Add(movement);
+            board.NumberOfRows = 3;
+            board.NumberOfColumn = 3;
 
-            boardDealer.InitializeBoardConfiguration(someBoard);
+            _boardDealer.InitializeBoardConfiguration(board);
 
-            someBoard.FieldsConfiguration.Should().HaveCount(3);
-            someBoard.FieldsConfiguration[0].Should().HaveCount(3);
-            someBoard.FieldsConfiguration[0][0].IsNull().Should().BeTrue();
-            someBoard.FieldsConfiguration[0][1].Should().Be(jafar);
-            someBoard.FieldsConfiguration[0][2].IsNull().Should().BeTrue();
-            someBoard.FieldsConfiguration[1].Should().HaveCount(3);
-            foreach (var somePlayer in someBoard.FieldsConfiguration[1])
+            board.FieldsConfiguration.Should().HaveCount(3);
+            board.FieldsConfiguration[0].Should().HaveCount(3);
+            board.FieldsConfiguration[0][0].IsNull().Should().BeTrue();
+            board.FieldsConfiguration[0][1].Should().Be(jafar);
+            board.FieldsConfiguration[0][2].IsNull().Should().BeTrue();
+            board.FieldsConfiguration[1].Should().HaveCount(3);
+            foreach (var somePlayer in board.FieldsConfiguration[1])
                 somePlayer.IsNull().Should().BeTrue();
-            someBoard.FieldsConfiguration[2].Should().HaveCount(3);
-            foreach (var somePlayer in someBoard.FieldsConfiguration[2])
+            board.FieldsConfiguration[2].Should().HaveCount(3);
+            foreach (var somePlayer in board.FieldsConfiguration[2])
                 somePlayer.IsNull().Should().BeTrue();
         }
 
@@ -122,9 +116,9 @@ namespace tests.Unit.Business
         [Fact]
         public void ShouldInitializeBoardConfigurationGivenItsSetupAndSomePlayerAppliedMovementScenario2()
         {
-            var someBoard = new Board();
+            var board = new Board();
             var jafar = new Player();
-            someBoard.Movements = new List<Movement>();
+            board.Movements = new List<Movement>();
             var movement2 = new Movement();
             movement2.Position = 2;
             movement2.WhoMade = jafar;
@@ -137,29 +131,28 @@ namespace tests.Unit.Business
             var movement7 = new Movement();
             movement7.Position = 7;
             movement7.WhoMade = jafar;
-            someBoard.Movements.Add(movement2);
-            someBoard.Movements.Add(movement3);
-            someBoard.Movements.Add(movement6);
-            someBoard.Movements.Add(movement7);
-            someBoard.NumberOfRows = 3;
-            someBoard.NumberOfColumn = 3;
-            var boardDealer = new BoardDealer();
+            board.Movements.Add(movement2);
+            board.Movements.Add(movement3);
+            board.Movements.Add(movement6);
+            board.Movements.Add(movement7);
+            board.NumberOfRows = 3;
+            board.NumberOfColumn = 3;
 
-            boardDealer.InitializeBoardConfiguration(someBoard);
+            _boardDealer.InitializeBoardConfiguration(board);
 
-            someBoard.FieldsConfiguration.Should().HaveCount(3);
-            someBoard.FieldsConfiguration[0].Should().HaveCount(3);
-            someBoard.FieldsConfiguration[0][0].IsNull().Should().BeTrue();
-            someBoard.FieldsConfiguration[0][1].Should().Be(jafar);
-            someBoard.FieldsConfiguration[0][2].Should().Be(jafar);
-            someBoard.FieldsConfiguration[1].Should().HaveCount(3);
-            someBoard.FieldsConfiguration[1][0].IsNull().Should().BeTrue();
-            someBoard.FieldsConfiguration[1][1].IsNull().Should().BeTrue();
-            someBoard.FieldsConfiguration[1][2].Should().Be(jafar);
-            someBoard.FieldsConfiguration[2].Should().HaveCount(3);
-            someBoard.FieldsConfiguration[2][0].Should().Be(jafar);
-            someBoard.FieldsConfiguration[2][1].IsNull().Should().BeTrue();
-            someBoard.FieldsConfiguration[2][2].IsNull().Should().BeTrue();
+            board.FieldsConfiguration.Should().HaveCount(3);
+            board.FieldsConfiguration[0].Should().HaveCount(3);
+            board.FieldsConfiguration[0][0].IsNull().Should().BeTrue();
+            board.FieldsConfiguration[0][1].Should().Be(jafar);
+            board.FieldsConfiguration[0][2].Should().Be(jafar);
+            board.FieldsConfiguration[1].Should().HaveCount(3);
+            board.FieldsConfiguration[1][0].IsNull().Should().BeTrue();
+            board.FieldsConfiguration[1][1].IsNull().Should().BeTrue();
+            board.FieldsConfiguration[1][2].Should().Be(jafar);
+            board.FieldsConfiguration[2].Should().HaveCount(3);
+            board.FieldsConfiguration[2][0].Should().Be(jafar);
+            board.FieldsConfiguration[2][1].IsNull().Should().BeTrue();
+            board.FieldsConfiguration[2][2].IsNull().Should().BeTrue();
         }
     }
 }
