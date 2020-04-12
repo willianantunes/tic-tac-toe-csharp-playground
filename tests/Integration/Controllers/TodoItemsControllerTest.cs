@@ -5,23 +5,23 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using src.Repository;
-using tests.Resources;
 using Xunit;
 
 namespace tests.Integration.Controllers
 {
-    public class TodoItemsControllerTest : IClassFixture<DatabaseAndTestServerFixture>
+    public class TodoItemsControllerTest : IClassFixture<WebApplicationFactory<src.Startup>>
     {
-        private readonly DatabaseAndTestServerFixture _testServerFixture;
         private HttpClient _httpClient;
-        private CSharpPlaygroundContext _context;
+        private WebApplicationFactory<src.Startup> _factory;
 
-        public TodoItemsControllerTest(DatabaseAndTestServerFixture testServerFixture)
+        public TodoItemsControllerTest(WebApplicationFactory<src.Startup> factory)
         {
-            _httpClient = testServerFixture.HttpClient;
-            _context = testServerFixture.CSharpPlaygroundContext;
+            _factory = factory;
+            _httpClient = factory.CreateClient();
         }
 
         [Fact(DisplayName = "Should create new TodoItem and receive 201")]
@@ -45,10 +45,17 @@ namespace tests.Integration.Controllers
         [Fact(DisplayName = "Should retrieve TodoItems saved previously")]
         public async void ShouldRetrieveTodoItemSavedPreviously()
         {
+            using var testPreparationScope = _factory.Services.CreateScope();
+            var context = testPreparationScope.ServiceProvider.GetRequiredService<CSharpPlaygroundContext>();
+            // CLEAR OLD DATA
+            context.TodoItems.RemoveRange(context.TodoItems);
+            await context.SaveChangesAsync();
+            // PREPARE TEST
             var createdTodoItem = new TodoItem {Name = "Jafar", IsComplete = true};
-            _context.TodoItems.Add(createdTodoItem);
-            await _context.SaveChangesAsync();
+            context.TodoItems.Add(createdTodoItem);
+            await context.SaveChangesAsync();
 
+            // EVALUATION
             var response = await _httpClient.GetAsync("/api/TodoItems/");
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -65,9 +72,11 @@ namespace tests.Integration.Controllers
         [Fact(DisplayName = "Should update TodoItem")]
         public async void ShouldUpdateTodoItemSavedPreviously()
         {
+            using var testPreparationScope = _factory.Services.CreateScope();
+            var context = testPreparationScope.ServiceProvider.GetRequiredService<CSharpPlaygroundContext>();
             var createdTodoItem = new TodoItem {Name = "Jafar", IsComplete = true};
-            _context.TodoItems.Add(createdTodoItem);
-            await _context.SaveChangesAsync();
+            context.TodoItems.Add(createdTodoItem);
+            await context.SaveChangesAsync();
 
             var newValuesForCreatedTodoItem = new
             {
@@ -90,9 +99,11 @@ namespace tests.Integration.Controllers
         [Fact(DisplayName = "Should delete TodoItem")]
         public async void ShouldDeleteTodoItem()
         {
+            using var testPreparationScope = _factory.Services.CreateScope();
+            var context = testPreparationScope.ServiceProvider.GetRequiredService<CSharpPlaygroundContext>();
             var createdTodoItem = new TodoItem {Name = "Aladdin", IsComplete = true};
-            _context.TodoItems.Add(createdTodoItem);
-            await _context.SaveChangesAsync();
+            context.TodoItems.Add(createdTodoItem);
+            await context.SaveChangesAsync();
 
             var response = await _httpClient.DeleteAsync($"/api/TodoItems/{createdTodoItem.Id}");
             response.StatusCode.Should().Be(HttpStatusCode.OK);

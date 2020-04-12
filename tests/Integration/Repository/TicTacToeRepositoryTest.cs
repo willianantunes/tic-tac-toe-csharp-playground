@@ -42,9 +42,9 @@ namespace tests.Integration.Repository
                 .Build();
 
             var createdBoard = boards.First();
-
             using var testScope = _factory.Services.CreateScope();
             var ticTacToeRepository = testScope.ServiceProvider.GetRequiredService<ITicTacToeRepository>();
+            
             var foundBoard = await ticTacToeRepository.GetBoardByItsId(createdBoard.Id);
 
             foundBoard.Should().Equals(createdBoard);

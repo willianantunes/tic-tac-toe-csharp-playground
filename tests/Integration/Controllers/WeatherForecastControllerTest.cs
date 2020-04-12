@@ -4,20 +4,20 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.AspNetCore.Mvc.Testing;
 using Newtonsoft.Json;
 using src.Domain;
-using tests.Resources;
 using Xunit;
 
 namespace tests.Integration.Controllers
 {
-    public class WeatherForecastControllerTest : IClassFixture<DatabaseAndTestServerFixture>
+    public class WeatherForecastControllerTest : IClassFixture<WebApplicationFactory<src.Startup>>
     {
         private HttpClient _httpClient;
 
-        public WeatherForecastControllerTest(DatabaseAndTestServerFixture testServerFixture)
+        public WeatherForecastControllerTest(WebApplicationFactory<src.Startup> factory)
         {
-            _httpClient = testServerFixture.HttpClient;
+            _httpClient = factory.CreateClient();
         }
 
         [Fact(DisplayName ="Should consult [controller] placeholder and receive 5 weather forecasts")]
