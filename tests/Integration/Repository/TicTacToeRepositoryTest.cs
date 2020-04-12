@@ -29,5 +29,21 @@ namespace tests.Integration.Repository
 
             board.Should().BeNull();
         }
+
+        [Fact]
+        public async Task ShouldReturnBoardGivenItsId()
+        {
+            using var testPreparationScope = _factory.Services.CreateScope();
+            var context = testPreparationScope.ServiceProvider.GetRequiredService<CSharpPlaygroundContext>();
+            var createdBoard = new Board();
+            context.Boards.Add(createdBoard);
+            await context.SaveChangesAsync();
+            
+            using var testScope = _factory.Services.CreateScope();
+            var ticTacToeRepository = testScope.ServiceProvider.GetRequiredService<ITicTacToeRepository>();
+            var foundBoard = await ticTacToeRepository.GetBoardByItsId(createdBoard.Id);
+
+            foundBoard.Should().Equals(createdBoard);
+        }
     }
 }
