@@ -10,14 +10,15 @@ namespace src.Business
         Task<Game> ExecuteMovementAndEvaluateResult(Game game, int movementPosition, Player player);
     }
 
-    class GameDealer : IGameDealer
+    public class GameDealer : IGameDealer
     {
         private readonly ITicTacToeRepository _ticTacToeRepository;
         private readonly IBoardDealer _boardDealer;
 
-        public GameDealer(ITicTacToeRepository ticTacToeRepository)
+        public GameDealer(ITicTacToeRepository ticTacToeRepository, IBoardDealer boardDealer)
         {
             _ticTacToeRepository = ticTacToeRepository;
+            _boardDealer = boardDealer;
         }
 
         public async Task<Game> GetGameByBoard(Board board)
