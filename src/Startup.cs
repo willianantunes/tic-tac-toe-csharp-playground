@@ -33,6 +33,9 @@ namespace src
                 var connectionString = Configuration.GetConnectionString("connectionDetails");
                 optionsBuilder.UseNpgsql(connectionString);
             });
+            
+            // Repositories
+            services.AddScoped<ITicTacToeRepository, TicTacToeRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
