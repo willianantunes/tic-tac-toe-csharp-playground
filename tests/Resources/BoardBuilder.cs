@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using src.Business;
 using src.Helper;
 using src.Repository;
@@ -110,6 +112,42 @@ namespace tests.Resources
             }
 
             throw new System.NotImplementedException();
+        }
+
+        public BoardBuilderDatabaseCreator WithCreatedScopeFromServiceProvider(IServiceProvider serviceProvider)
+        {
+            return new BoardBuilderDatabaseCreator(serviceProvider);
+        }
+
+        public class BoardBuilderDatabaseCreator
+        {
+            private IServiceProvider _serviceProvider;
+            private IList<Board> _boards = new List<Board>();
+
+            public BoardBuilderDatabaseCreator(IServiceProvider serviceProvider)
+            {
+                _serviceProvider = serviceProvider;
+            }
+
+            public BoardBuilderDatabaseCreator CreateBoard()
+            {
+                _boards.Add(new Board());
+                return this;
+            }
+
+            public async Task<IList<Board>> Build()
+            {
+                using var testPreparationScope = _serviceProvider.CreateScope();
+                var context = testPreparationScope.ServiceProvider.GetRequiredService<CSharpPlaygroundContext>();
+                foreach (var board in _boards)
+                {
+                    context.Boards.Add(board);
+                }
+
+                var entriesSaved = await context.SaveChangesAsync();
+
+                return _boards;
+            }
         }
     }
 }
