@@ -11,6 +11,7 @@ namespace src.Repository
         ValueTask<Board> GetBoardByItsId(Guid boardId);
         Task<Game> GetGameByItsBoard(Board board);
         Task<Game> RefreshGameState(Game game);
+        Task<Player> GetSomeComputerPlayer();
     }
 
     public class TicTacToeRepository : ITicTacToeRepository
@@ -45,6 +46,11 @@ namespace src.Repository
             var stateEntriesWrittenToTheDatabase = await _playgroundContext.SaveChangesAsync();
             // TODO: Maybe log stateEntriesWrittenToTheDatabase?
             return entityEntry.Entity;
+        }
+
+        public async Task<Player> GetSomeComputerPlayer()
+        {
+            return await _playgroundContext.Players.FirstAsync(p => p.Computer);
         }
     }
 }

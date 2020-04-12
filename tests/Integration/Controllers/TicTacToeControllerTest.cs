@@ -76,7 +76,7 @@ namespace tests.Integration.Controllers
         }
 
         [Fact]
-        public async Task ShoudlReturnAllPlayers()
+        public async Task ShouldReturnAllPlayers()
         {
             using var testPreparationScope = _factory.Services.CreateScope();
             var context = testPreparationScope.ServiceProvider.GetRequiredService<CSharpPlaygroundContext>();
@@ -92,6 +92,54 @@ namespace tests.Integration.Controllers
             var players = await response.Content.ReadAsAsync<List<Player>>();
 
             players.Count.Should().Be(2);
+        }
+
+        [Fact]
+        public async Task ShouldCreateBoardGivenAtLeastOnePlayerWasProvidedAndWithProvidedBoardSetup()
+        {
+            using var testPreparationScope = _factory.Services.CreateScope();
+            var context = testPreparationScope.ServiceProvider.GetRequiredService<CSharpPlaygroundContext>();
+            // CLEAR OLD DATA
+            context.Players.RemoveRange(context.Players);
+            await context.SaveChangesAsync();
+            // ADD DATA
+            var antunes = new Player {Name = "Antunes"};
+            var rose = new Player {Name = "Rose", Computer = true};
+            context.Players.AddRange(antunes, rose);
+            await context.SaveChangesAsync();
+
+            var postData = new 
+            {
+                boardSize= "4x4",
+                firstPlayerId= antunes.Id.ToString(),
+            };
+            
+            var response = await _httpClient.PostAsJsonAsync("/tic-tac-toe/boards", postData);
+            response.StatusCode.Should().Be(HttpStatusCode.OK); // TODO: UNFINISHED
+        }
+
+        [Fact]
+        public async Task ShouldCreateBoardWithStandardSetupGivenTwoPlayersProvided()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        [Fact]
+        public async Task ShouldCreateGameGivenFirstMovementIsBeingExecuted()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        [Fact]
+        public async Task ShouldExecuteTwoMovements()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        [Fact]
+        public async Task ShouldExecuteThreeMovementsAndWinTheGame()
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

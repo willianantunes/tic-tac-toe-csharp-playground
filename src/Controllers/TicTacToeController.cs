@@ -73,25 +73,35 @@ namespace src.Controllers
             throw new NotImplementedException();
         }
 
-        public async Task<ActionResult<Board>> CreateNewBoard(string? boardSize, Guid firstPlayerId,
-            Guid? secondPlayerId)
+        [HttpPost("boards")]
+        public async Task<ActionResult<Board>> CreateNewBoard(CreateBoardDto createBoardDto)
         {
-            var logMessage = "Received board and players: {BoardSize} / {FirstPlayer} / {SecondPlayer}";
-            _logger.I(logMessage, boardSize, firstPlayerId, secondPlayerId);
+            _logger.I("Received board request object: {CreateBoardDto}", createBoardDto);
 
-            if (_boardDealer.NotValidOrUnsupportedBoardSize(boardSize))
+            if (_boardDealer.NotValidOrUnsupportedBoardSize(createBoardDto.BoardSize))
                 throw new InvalidBoardConfigurationException();
 
-            var playerOne = await _ticTacToeRepository.GetPlayerByItsId(firstPlayerId);
+            var playerOne = await _ticTacToeRepository.GetPlayerByItsId(createBoardDto.FirstPlayerId);
 
             if (playerOne.IsNull())
                 throw new InvalidPlayerNotFoundException();
 
-            var playerTwo = await _ticTacToeRepository.GetPlayerByItsId(firstPlayerId);
+            Player playerTwo;
+            
+            if (createBoardDto.SecondPlayerId.IsNotNull())
+            {
+                playerTwo = await _ticTacToeRepository.GetPlayerByItsId(createBoardDto.SecondPlayerId.Value);
+                if (playerTwo.IsNull())
+                    throw new InvalidPlayerNotFoundException();
+            }
+            else
+            {
+                playerTwo = await _ticTacToeRepository.GetSomeComputerPlayer(); // TODO: Create computer player if needed
+            }
 
-            logMessage = "Board setup and players: {BoardSize} / {PlayerOne} / {PlayerTwo}";
-            _logger.I(logMessage, boardSize, playerOne, playerTwo);
-            var createdBoard = await _boardDealer.CreateNewBoard(boardSize, playerOne, playerTwo);
+            var logMessage = "Board setup and players: {BoardSize} / {PlayerOne} / {PlayerTwo}";
+            _logger.I(logMessage, createBoardDto.BoardSize, playerOne, playerTwo);
+            var createdBoard = await _boardDealer.CreateNewBoard(createBoardDto.BoardSize, playerOne, playerTwo);
 
             return CreatedAtAction("GetSpecificBoard", new {id = createdBoard.Id}, createdBoard);
         }

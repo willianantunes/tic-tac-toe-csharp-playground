@@ -44,10 +44,32 @@ namespace tests.Integration.Repository
             var createdBoard = boards.First();
             using var testScope = _factory.Services.CreateScope();
             var ticTacToeRepository = testScope.ServiceProvider.GetRequiredService<ITicTacToeRepository>();
-            
+
             var foundBoard = await ticTacToeRepository.GetBoardByItsId(createdBoard.Id);
 
             foundBoard.Should().Equals(createdBoard);
+        }
+
+        [Fact]
+        public async Task ShouldReturnSomeComputerUser()
+        {
+            using var testPreparationScope = _factory.Services.CreateScope();
+            var context = testPreparationScope.ServiceProvider.GetRequiredService<CSharpPlaygroundContext>();
+            // CLEAR OLD DATA
+            context.Players.RemoveRange(context.Players);
+            await context.SaveChangesAsync();
+            // SEED DATA
+            context.AddRange(new Player {Name = "Rose", Computer = true}, new Player {Name = "Z", Computer = true});
+            await context.SaveChangesAsync();
+            
+            // THE TEST
+            using var testScope = _factory.Services.CreateScope();
+            var ticTacToeRepository = testScope.ServiceProvider.GetRequiredService<ITicTacToeRepository>();
+
+            var foundBoard = await ticTacToeRepository.GetSomeComputerPlayer();
+
+            foundBoard.Computer.Should().BeTrue();
+            foundBoard.Name.Should().ContainAny(new List<string> {"Rose", "Z"});
         }
     }
 }
