@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
@@ -5,17 +6,18 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
+using src;
 using src.Repository;
 using Xunit;
 
 namespace tests.Integration.Controllers
 {
-    public class TicTacToeControllerTest : IClassFixture<WebApplicationFactory<src.Startup>>
+    public class TicTacToeControllerTest : IClassFixture<WebApplicationFactory<Startup>>
     {
         private HttpClient _httpClient;
-        private WebApplicationFactory<src.Startup> _factory;
+        private WebApplicationFactory<Startup> _factory;
 
-        public TicTacToeControllerTest(WebApplicationFactory<src.Startup> factory)
+        public TicTacToeControllerTest(WebApplicationFactory<Startup> factory)
         {
             _factory = factory;
             _httpClient = factory.CreateClient();
@@ -61,7 +63,7 @@ namespace tests.Integration.Controllers
             var response = await _httpClient.GetAsync($"/tic-tac-toe/players/{somePlayer.Id}");
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var retrievedPlayer = await response.Content.ReadAsAsync<Player>();
-            
+
             retrievedPlayer.Should().BeEquivalentTo(somePlayer);
         }
 
@@ -69,7 +71,7 @@ namespace tests.Integration.Controllers
         public async Task ShouldReturn404GivenNoPlayerIsFound()
         {
             var fakePlayerGuid = "fd445dcb-dc37-4679-b474-f7fb0512f607";
-            
+
             // TODO: Verify if FindAsync is indeed called 
             var response = await _httpClient.GetAsync($"/tic-tac-toe/players/{fakePlayerGuid}");
             response.StatusCode.Should().Be(HttpStatusCode.NotFound);
@@ -86,7 +88,7 @@ namespace tests.Integration.Controllers
             // ADD DATA
             context.Players.AddRange(new Player {Name = "Chumaço"}, new Player {Name = "Salted Man"});
             await context.SaveChangesAsync();
-            
+
             var response = await _httpClient.GetAsync("/tic-tac-toe/players");
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var players = await response.Content.ReadAsAsync<List<Player>>();
@@ -100,6 +102,7 @@ namespace tests.Integration.Controllers
             using var testPreparationScope = _factory.Services.CreateScope();
             var context = testPreparationScope.ServiceProvider.GetRequiredService<CSharpPlaygroundContext>();
             // CLEAR OLD DATA
+            context.Boards.RemoveRange(context.Boards);
             context.Players.RemoveRange(context.Players);
             await context.SaveChangesAsync();
             // ADD DATA
@@ -108,38 +111,41 @@ namespace tests.Integration.Controllers
             context.Players.AddRange(antunes, rose);
             await context.SaveChangesAsync();
 
-            var postData = new 
-            {
-                boardSize= "4x4",
-                firstPlayerId= antunes.Id.ToString(),
-            };
-            
+            var postData = new {boardSize = "4x4", firstPlayerId = antunes.Id.ToString()};
+
             var response = await _httpClient.PostAsJsonAsync("/tic-tac-toe/boards", postData);
-            response.StatusCode.Should().Be(HttpStatusCode.OK); // TODO: UNFINISHED
+            response.StatusCode.Should().Be(HttpStatusCode.Created);
+            var createdBoard = await response.Content.ReadAsAsync<Board>();
+
+            createdBoard.Should().NotBe(null);
+            createdBoard.NumberOfColumn.Should().Be(4);
+            createdBoard.NumberOfRows.Should().Be(4);
+            createdBoard.PlayerBoards.Count.Should().Be(2);
+            createdBoard.Movements.Should().BeNull();
         }
 
         [Fact]
         public async Task ShouldCreateBoardWithStandardSetupGivenTwoPlayersProvided()
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         [Fact]
         public async Task ShouldCreateGameGivenFirstMovementIsBeingExecuted()
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         [Fact]
         public async Task ShouldExecuteTwoMovements()
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         [Fact]
         public async Task ShouldExecuteThreeMovementsAndWinTheGame()
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
     }
 }

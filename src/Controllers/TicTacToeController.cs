@@ -68,7 +68,7 @@ namespace src.Controllers
         }
 
         [HttpGet("boards/{id}")]
-        public async Task<ActionResult<Player>> GetSpecificBoard()
+        public async Task<ActionResult<Board>> GetSpecificBoard(Guid id)
         {
             throw new NotImplementedException();
         }
@@ -77,6 +77,9 @@ namespace src.Controllers
         public async Task<ActionResult<Board>> CreateNewBoard(CreateBoardDto createBoardDto)
         {
             _logger.I("Received board request object: {CreateBoardDto}", createBoardDto);
+
+            // TODO: See a better way to apply default value
+            createBoardDto.BoardSize ??= "3x3";
 
             if (_boardDealer.NotValidOrUnsupportedBoardSize(createBoardDto.BoardSize))
                 throw new InvalidBoardConfigurationException();
@@ -87,7 +90,7 @@ namespace src.Controllers
                 throw new InvalidPlayerNotFoundException();
 
             Player playerTwo;
-            
+
             if (createBoardDto.SecondPlayerId.IsNotNull())
             {
                 playerTwo = await _ticTacToeRepository.GetPlayerByItsId(createBoardDto.SecondPlayerId.Value);
@@ -96,7 +99,8 @@ namespace src.Controllers
             }
             else
             {
-                playerTwo = await _ticTacToeRepository.GetSomeComputerPlayer(); // TODO: Create computer player if needed
+                playerTwo = await _ticTacToeRepository
+                    .GetSomeComputerPlayer(); // TODO: Create computer player if needed
             }
 
             var logMessage = "Board setup and players: {BoardSize} / {PlayerOne} / {PlayerTwo}";

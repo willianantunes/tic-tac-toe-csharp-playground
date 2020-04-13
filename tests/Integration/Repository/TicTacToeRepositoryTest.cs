@@ -71,5 +71,36 @@ namespace tests.Integration.Repository
             foundBoard.Computer.Should().BeTrue();
             foundBoard.Name.Should().ContainAny(new List<string> {"Rose", "Z"});
         }
+
+        [Fact]
+        public async Task ShouldSaveBoardWithItsPlayerBoards()
+        {
+            using var testPreparationScope = _factory.Services.CreateScope();
+            var context = testPreparationScope.ServiceProvider.GetRequiredService<CSharpPlaygroundContext>();
+            // CLEAR OLD DATA
+            context.Boards.RemoveRange(context.Boards);
+            context.Players.RemoveRange(context.Players);
+            await context.SaveChangesAsync();
+            // SEED DATA
+            var jafar = new Player {Name = "Jafar", Computer = false};
+            var rose = new Player {Name = "Rose", Computer = true};
+            context.Players.AddRange(jafar, rose);
+            await context.SaveChangesAsync();
+            
+            // THE TEST
+            using var testScope = _factory.Services.CreateScope();
+            var ticTacToeRepository = testScope.ServiceProvider.GetRequiredService<ITicTacToeRepository>();
+            var boardToBeCreated = new Board{NumberOfColumn = 3, NumberOfRows = 3};
+            var playerBoardOne = new PlayerBoard{Player = jafar, Board = boardToBeCreated };
+            // var playerBoarTwo = new PlayerBoard{Player = rose, Board = boardToBeCreated};
+            boardToBeCreated.PlayerBoards = new List<PlayerBoard>{playerBoardOne};
+            await ticTacToeRepository.SaveBoard(boardToBeCreated);
+
+            // Validation
+            using var testValidationScope = _factory.Services.CreateScope();
+            var contextValidation = testValidationScope.ServiceProvider.GetRequiredService<CSharpPlaygroundContext>();
+            contextValidation.Boards.Count().Should().Be(1);
+            contextValidation.Players.Count().Should().Be(2);
+        }
     }
 }

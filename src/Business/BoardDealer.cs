@@ -10,7 +10,7 @@ namespace src.Business
     public interface IBoardDealer
     {
         bool NotValidOrUnsupportedBoardSize(string? boardSize);
-        Task<Board> CreateNewBoard(string? boardSize, Player playerOne, Player playerTwo = null);
+        Task<Board> CreateNewBoard(string boardSize, Player playerOne, Player playerTwo);
         void InitializeBoardConfiguration(Board board);
         bool PositionIsNotAvailable(Board gameConfiguredBoard, in int movementPosition);
         IList<int> AvailablePositions(Board gameConfiguredBoard);
@@ -23,15 +23,17 @@ namespace src.Business
     public class BoardDealer : IBoardDealer
     {
         private IBoardJudge _boardJudge;
+        private readonly ITicTacToeRepository _ticTacToeRepository;
         private Regex _almostValidBoardSetup = new Regex(@"[3-9]x[3-9]");
 
         public BoardDealer()
         {
         }
-        
-        public BoardDealer(IBoardJudge boardJudge)
+
+        public BoardDealer(IBoardJudge boardJudge, ITicTacToeRepository ticTacToeRepository)
         {
             _boardJudge = boardJudge;
+            _ticTacToeRepository = ticTacToeRepository;
         }
 
         public bool NotValidOrUnsupportedBoardSize(string? boardSize)
@@ -45,9 +47,19 @@ namespace src.Business
             return column != rows;
         }
 
-        public Task<Board> CreateNewBoard(string? boardSize, Player playerOne, Player playerTwo = null)
+        public async Task<Board> CreateNewBoard(string boardSize, Player playerOne, Player playerTwo)
         {
-            throw new System.NotImplementedException();
+            var column = boardSize.Substring(0, 1).ToInt();
+            var rows = boardSize.Substring(2, 1).ToInt();
+
+            var board = new Board {NumberOfColumn = column, NumberOfRows = rows};
+            var playerBoardOne = new PlayerBoard{Player = playerOne, Board = board};
+            var playerBoarTwo = new PlayerBoard{Player = playerTwo, Board = board};
+            board.PlayerBoards = new List<PlayerBoard>{playerBoardOne, playerBoarTwo};
+            
+            await _ticTacToeRepository.SaveBoard(board);
+
+            return board;
         }
 
         public void InitializeBoardConfiguration(Board board)
@@ -107,7 +119,7 @@ namespace src.Business
             bool wonReverseDiagonally = _boardJudge.WonReverseDiagonally(gameConfiguredBoard, lastMovementPosition);
 
             var boardSituation = new BoardSituation();
-            
+
             boardSituation.HasAWinner = wonHorizontally || wonVertically || wonDiagonally || wonReverseDiagonally;
             if (boardSituation.HasAWinner)
                 boardSituation.Winner = new Player();

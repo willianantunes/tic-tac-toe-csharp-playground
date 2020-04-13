@@ -50,7 +50,6 @@ namespace src.Repository
 
     public class PlayerBoard
     {
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid Id { get; set; }
 
         public Guid PlayerId { get; set; }
@@ -69,10 +68,8 @@ namespace src.Repository
         public IList<PlayerBoard> PlayerBoards { get; set; }
         public int NumberOfColumn { get; set; }
         public int NumberOfRows { get; set; }
-        [NotMapped]
-        public IList<IList<Player?>> FieldsConfiguration { get; set; }
-        [NotMapped]
-        public IList<int> FreeFields { get; set; }
+        [NotMapped] public IList<IList<Player?>> FieldsConfiguration { get; set; }
+        [NotMapped] public IList<int> FreeFields { get; set; }
     }
 
     public class Game

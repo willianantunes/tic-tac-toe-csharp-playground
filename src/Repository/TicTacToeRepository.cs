@@ -12,6 +12,7 @@ namespace src.Repository
         Task<Game> GetGameByItsBoard(Board board);
         Task<Game> RefreshGameState(Game game);
         Task<Player> GetSomeComputerPlayer();
+        Task SaveBoard(Board board);
     }
 
     public class TicTacToeRepository : ITicTacToeRepository
@@ -51,6 +52,20 @@ namespace src.Repository
         public async Task<Player> GetSomeComputerPlayer()
         {
             return await _playgroundContext.Players.FirstAsync(p => p.Computer);
+        }
+
+        public async Task SaveBoard(Board board)
+        {
+            foreach (var boardPlayerBoard in board.PlayerBoards)
+            {
+                // TODO: Proposed solution: https://stackoverflow.com/a/39165051/3899136
+                // But I'll study a better way to do it
+                var p = await _playgroundContext.Players.FindAsync(boardPlayerBoard.Player.Id);
+                boardPlayerBoard.Player = p;
+                boardPlayerBoard.Id = Guid.NewGuid();
+            }
+            _playgroundContext.Boards.Add(board);
+            await _playgroundContext.SaveChangesAsync();
         }
     }
 }
