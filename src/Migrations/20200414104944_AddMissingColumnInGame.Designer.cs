@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using src.Repository;
@@ -9,9 +10,10 @@ using src.Repository;
 namespace src.Migrations
 {
     [DbContext(typeof(CSharpPlaygroundContext))]
-    partial class CSharpPlaygroundContextModelSnapshot : ModelSnapshot
+    [Migration("20200414104944_AddMissingColumnInGame")]
+    partial class AddMissingColumnInGame
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
