@@ -69,7 +69,7 @@ namespace tests.Resources
             return this;
         }
 
-        public Board build()
+        public Board Build()
         {
             var board = new Board();
             board.Movements = new List<Movement>();

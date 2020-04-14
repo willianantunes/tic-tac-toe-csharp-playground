@@ -58,7 +58,7 @@ namespace tests.Unit.Business
                 .WithPlayer(iago)
                 .GivenRow(0)
                 .FillAllColumnsUntilColumn(2)
-                .build();
+                .Build();
 
             var wonDiagonally = _boardJudge.WonHorizontally(board, 1);
             
@@ -75,7 +75,7 @@ namespace tests.Unit.Business
                 .WithPlayer(iago)
                 .GivenRow(0)
                 .FillAllColumnsUntilColumn(1)
-                .build();
+                .Build();
 
             var wonDiagonally = _boardJudge.WonHorizontally(board, 1);
             
@@ -92,7 +92,7 @@ namespace tests.Unit.Business
                 .WithPlayer(jasmine)
                 .GivenRow(0)
                 .FillAllColumnsUntilColumn(2)
-                .build();
+                .Build();
 
             var wonDiagonally = _boardJudge.WonHorizontally(board, 3);
 
@@ -109,7 +109,7 @@ namespace tests.Unit.Business
                 .WithPlayer(saltedGuy)
                 .GivenRow(1)
                 .FillAllColumnsUntilColumn(2)
-                .build();
+                .Build();
 
             var wonDiagonally = _boardJudge.WonHorizontally(board, 5);
 
@@ -126,7 +126,7 @@ namespace tests.Unit.Business
                 .WithPlayer(saltedGuy)
                 .GivenRow(1)
                 .FillAllColumnsUntilColumn(1)
-                .build();
+                .Build();
 
             var wonDiagonally = _boardJudge.WonHorizontally(board, 5);
 
@@ -143,7 +143,7 @@ namespace tests.Unit.Business
                 .WithPlayer(salParadise)
                 .GivenRow(2)
                 .FillAllColumnsUntilColumn(2)
-                .build();
+                .Build();
 
             var wonDiagonally = _boardJudge.WonHorizontally(board, 7);
 
@@ -160,7 +160,7 @@ namespace tests.Unit.Business
                 .WithPlayer(gandalf)
                 .GivenRowAndColumn(0, 0)
                 .FillAllRowsUntilRows(2)
-                .build();
+                .Build();
 
             var wonVertically = _boardJudge.WonVertically(board, 1);
 
@@ -177,7 +177,7 @@ namespace tests.Unit.Business
                 .WithPlayer(manwe)
                 .GivenRowAndColumn(0, 0)
                 .FillAllRowsUntilRows(1)
-                .build();
+                .Build();
 
             var wonVertically = _boardJudge.WonVertically(board, 1);
 
@@ -194,7 +194,7 @@ namespace tests.Unit.Business
                 .WithPlayer(gandalf)
                 .GivenRowAndColumn(0, 1)
                 .FillAllRowsUntilRows(2)
-                .build();
+                .Build();
 
             var wonVertically = _boardJudge.WonVertically(board, 2);
 
@@ -211,7 +211,7 @@ namespace tests.Unit.Business
                 .WithPlayer(gandalf)
                 .GivenRowAndColumn(0, 2)
                 .FillAllRowsUntilRows(2)
-                .build();
+                .Build();
 
             var wonVertically = _boardJudge.WonVertically(board, 3);
 
@@ -228,7 +228,7 @@ namespace tests.Unit.Business
                 .WithPlayer(gandalf)
                 .GivenRowAndColumn(0, 1)
                 .FillAllRowsUntilRows(2)
-                .build();
+                .Build();
 
             var wonVertically = _boardJudge.WonVertically(board, 8);
 
@@ -245,7 +245,7 @@ namespace tests.Unit.Business
                 .WithPlayer(faramir)
                 .GivenRowAndColumn(0, 0)
                 .FillDiagonallyUntilRow(2)
-                .build();
+                .Build();
 
             var wonVertically = _boardJudge.WonDiagonally(board, 1);
 
@@ -262,7 +262,7 @@ namespace tests.Unit.Business
                 .WithPlayer(faramir)
                 .GivenRowAndColumn(0, 0)
                 .FillDiagonallyUntilRow(1)
-                .build();
+                .Build();
 
             var wonVertically = _boardJudge.WonDiagonally(board, 1);
 
@@ -279,7 +279,7 @@ namespace tests.Unit.Business
                 .WithPlayer(boromir)
                 .GivenRowAndColumn(0, 2)
                 .FillReverseDiagonallyUntilRow(2)
-                .build();
+                .Build();
 
             var wonReverseVertically = _boardJudge.WonReverseDiagonally(board, 3);
 
@@ -296,7 +296,7 @@ namespace tests.Unit.Business
                 .WithPlayer(boromir)
                 .GivenRowAndColumn(0, 2)
                 .FillReverseDiagonallyUntilRow(1)
-                .build();
+                .Build();
 
             var wonReverseVertically = _boardJudge.WonReverseDiagonally(board, 3);
 
