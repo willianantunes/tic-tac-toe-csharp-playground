@@ -74,9 +74,6 @@ namespace src.Repository
 
         public async Task CreateMovementAndRefreshBoard(Movement movement, Board board)
         {
-            _playgroundContext.Movements.Add(movement);
-            await _playgroundContext.SaveChangesAsync();
-
             if (board.Movements.IsNull())
                 board.Movements = new List<Movement>();
 

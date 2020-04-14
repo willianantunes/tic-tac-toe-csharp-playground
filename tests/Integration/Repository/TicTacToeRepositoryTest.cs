@@ -118,7 +118,7 @@ namespace tests.Integration.Repository
             var ticTacToeRepository = testScope.ServiceProvider.GetRequiredService<ITicTacToeRepository>();
             
             // THE TEST
-            var movement = new Movement {Board = createdBoard, Position = 1, WhoMade = aladdin};
+            var movement = new Movement {Position = 1, WhoMade = aladdin};
             await ticTacToeRepository.CreateMovementAndRefreshBoard(movement, createdBoard);
 
             createdBoard.Movements.Count.Should().Be(1);

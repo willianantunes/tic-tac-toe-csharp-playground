@@ -149,9 +149,10 @@ namespace tests.Resources
                 var context = testPreparationScope.ServiceProvider.GetRequiredService<CSharpPlaygroundContext>();
                 if (clearOldData)
                 {
+                    // context.Games.RemoveRange(context.Games);
+                    context.Movements.RemoveRange(context.Movements);
                     context.Boards.RemoveRange(context.Boards);
                     context.Players.RemoveRange(context.Players);
-                    // context.Games.RemoveRange(context.Games);
                     await context.SaveChangesAsync();
                 }
 
