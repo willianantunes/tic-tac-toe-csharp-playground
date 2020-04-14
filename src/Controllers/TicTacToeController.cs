@@ -122,7 +122,7 @@ namespace src.Controllers
             throw new NotImplementedException();
         }
 
-        [HttpPost("games/{boardId}/{playerId}/{movementPosition}")]
+        [HttpGet("games/{boardId}/{playerId}/{movementPosition}")]
         public async Task<ActionResult<Game>> ApplyMovementToTheGame(Guid boardId, int movementPosition, Guid playerId)
         {
             var firstLogMessage = "Received board, movement and player: {BoardId} / {MovementPosition} / {PlayerId}";

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using src.Business;
-using src.Helper;
 using src.Repository;
 
 namespace tests.Resources
@@ -56,13 +55,13 @@ namespace tests.Resources
             _fillUntilRow = fillUntilRow;
             return this;
         }
-        
+
         public BoardBuilder FillDiagonallyUntilRow(int row)
         {
             _fillDiagonallyUntilRow = row;
             return this;
         }
-        
+
         public BoardBuilder FillReverseDiagonallyUntilRow(int row)
         {
             _fillReverseDiagonallyUntilRow = row;
@@ -83,10 +82,10 @@ namespace tests.Resources
             {
                 for (var row = _startFromRow; row <= _fillReverseDiagonallyUntilRow; row++)
                     fields[row][_defaultColumn--] = _player;
-                
+
                 return board;
             }
-            
+
             if (_fillDiagonallyUntilRow >= 0)
             {
                 for (var row = _startFromRow; row <= _fillDiagonallyUntilRow; row++)
@@ -94,7 +93,7 @@ namespace tests.Resources
 
                 return board;
             }
-            
+
             if (_fillUntilRow >= 0)
             {
                 for (var row = _startFromRow; row <= _fillUntilRow; row++)
@@ -111,7 +110,7 @@ namespace tests.Resources
                 return board;
             }
 
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         public BoardBuilderDatabaseCreator WithCreatedScopeFromServiceProvider(IServiceProvider serviceProvider)
@@ -123,28 +122,56 @@ namespace tests.Resources
         {
             private IServiceProvider _serviceProvider;
             private IList<Board> _boards = new List<Board>();
+            private IList<Player> _players = new List<Player>();
 
             public BoardBuilderDatabaseCreator(IServiceProvider serviceProvider)
             {
                 _serviceProvider = serviceProvider;
             }
 
-            public BoardBuilderDatabaseCreator CreateBoard()
+            public BoardBuilderDatabaseCreator CreateBoard(int numberOfColumn = 3, int numberOfRows = 3)
             {
-                _boards.Add(new Board());
+                _boards.Add(new Board {NumberOfColumn = numberOfColumn, NumberOfRows = numberOfRows});
                 return this;
             }
 
-            public async Task<IList<Board>> Build()
+            public BoardBuilderDatabaseCreator WithPlayers(params Player[] players)
+            {
+                foreach (var player in players)
+                    _players.Add(player);
+
+                return this;
+            }
+
+            public async Task<IList<Board>> Build(bool clearOldData = true)
             {
                 using var testPreparationScope = _serviceProvider.CreateScope();
                 var context = testPreparationScope.ServiceProvider.GetRequiredService<CSharpPlaygroundContext>();
+                if (clearOldData)
+                {
+                    context.Boards.RemoveRange(context.Boards);
+                    context.Players.RemoveRange(context.Players);
+                    // context.Games.RemoveRange(context.Games);
+                    await context.SaveChangesAsync();
+                }
+
                 foreach (var board in _boards)
                 {
+                    board.PlayerBoards = new List<PlayerBoard>();
+                    foreach (var player in _players)
+                    {
+                        context.Players.Add(player);
+                        var playerBoard = new PlayerBoard {Player = player, Board = board};
+                        var p = await context.Players.FindAsync(player.Id);
+                        playerBoard.Player = p;
+                        playerBoard.Id = Guid.NewGuid();
+                        board.PlayerBoards.Add(playerBoard);
+                    }
+
                     context.Boards.Add(board);
                 }
 
-                var entriesSaved = await context.SaveChangesAsync();
+                await context.SaveChangesAsync();
 
                 return _boards;
             }

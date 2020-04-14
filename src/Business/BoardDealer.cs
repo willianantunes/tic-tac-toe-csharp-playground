@@ -14,10 +14,10 @@ namespace src.Business
         void InitializeBoardConfiguration(Board board);
         bool PositionIsNotAvailable(Board gameConfiguredBoard, in int movementPosition);
         IList<int> AvailablePositions(Board gameConfiguredBoard);
-        void ApplyMovement(Board gameConfiguredBoard, in int movementPosition, Player player);
+        Task ApplyMovement(Board board, int movementPosition, Player player);
         BoardSituation EvaluateTheSituation(Board gameConfiguredBoard, in int lastMovementPosition);
         bool HasComputerPlayer(Board gameConfiguredBoard);
-        void ApplyMovementForComputer(Board gameConfiguredBoard, in int somePosition);
+        Task ApplyMovementForComputer(Board board, int movementPosition);
     }
 
     public class BoardDealer : IBoardDealer
@@ -102,13 +102,17 @@ namespace src.Business
             return board.FreeFields;
         }
 
-        public void ApplyMovement(Board gameConfiguredBoard, in int movementPosition, Player player)
+        public async Task ApplyMovement(Board board, int movementPosition, Player player)
         {
-            var (row, col) = _boardJudge.GetRowAndColGivenAPosition(movementPosition, gameConfiguredBoard);
+            var (row, col) = _boardJudge.GetRowAndColGivenAPosition(movementPosition, board);
 
-            gameConfiguredBoard.FieldsConfiguration[row][col] = player;
+            board.FieldsConfiguration[row][col] = player;
             // TODO raise exception if remove action returns false
-            gameConfiguredBoard.FreeFields.Remove(movementPosition);
+            board.FreeFields.Remove(movementPosition);
+
+            var movement = new Movement{Position = movementPosition, WhoMade = player};
+
+            await _ticTacToeRepository.CreateMovementAndRefreshBoard(movement, board);
         }
 
         public BoardSituation EvaluateTheSituation(Board gameConfiguredBoard, in int lastMovementPosition)
@@ -139,13 +143,11 @@ namespace src.Business
             return gameConfiguredBoard.PlayerBoards.Any(pb => !pb.Player.isNotComputer());
         }
 
-        public void ApplyMovementForComputer(Board gameConfiguredBoard, in int somePosition)
+        public async Task ApplyMovementForComputer(Board board, int movementPosition)
         {
-            var (row, col) = _boardJudge.GetRowAndColGivenAPosition(somePosition, gameConfiguredBoard);
-            var pBoard = gameConfiguredBoard.PlayerBoards.First(pb => !pb.Player.isNotComputer());
-            gameConfiguredBoard.FieldsConfiguration[row][col] = pBoard.Player;
-            // TODO raise exception if remove action returns false
-            gameConfiguredBoard.FreeFields.Remove(somePosition);
+            var pBoard = board.PlayerBoards.First(pb => !pb.Player.isNotComputer());
+
+            await ApplyMovement(board, movementPosition, pBoard.Player);
         }
     }
 

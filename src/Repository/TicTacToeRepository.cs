@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using src.Helper;
 
 namespace src.Repository
 {
@@ -13,6 +15,7 @@ namespace src.Repository
         Task<Game> RefreshGameState(Game game);
         Task<Player> GetSomeComputerPlayer();
         Task SaveBoard(Board board);
+        Task CreateMovementAndRefreshBoard(Movement movement, Board board);
     }
 
     public class TicTacToeRepository : ITicTacToeRepository
@@ -64,7 +67,22 @@ namespace src.Repository
                 boardPlayerBoard.Player = p;
                 boardPlayerBoard.Id = Guid.NewGuid();
             }
+
             _playgroundContext.Boards.Add(board);
+            await _playgroundContext.SaveChangesAsync();
+        }
+
+        public async Task CreateMovementAndRefreshBoard(Movement movement, Board board)
+        {
+            _playgroundContext.Movements.Add(movement);
+            await _playgroundContext.SaveChangesAsync();
+
+            if (board.Movements.IsNull())
+                board.Movements = new List<Movement>();
+
+            board.Movements.Add(movement);
+
+            _playgroundContext.Boards.Update(board);
             await _playgroundContext.SaveChangesAsync();
         }
     }

@@ -102,5 +102,26 @@ namespace tests.Integration.Repository
             contextValidation.Boards.Count().Should().Be(1);
             contextValidation.Players.Count().Should().Be(2);
         }
+
+        [Fact]
+        public async Task ShouldCreateMovementAndRefreshBoardState()
+        {
+            var aladdin = new Player{Name = "Aladdin", Computer = false};
+            var createdBoard = (await new BoardBuilder()
+                .WithCreatedScopeFromServiceProvider(_factory.Services)
+                .CreateBoard()
+                .WithPlayers(aladdin)
+                .Build()).First();
+            
+            
+            using var testScope = _factory.Services.CreateScope();
+            var ticTacToeRepository = testScope.ServiceProvider.GetRequiredService<ITicTacToeRepository>();
+            
+            // THE TEST
+            var movement = new Movement {Board = createdBoard, Position = 1, WhoMade = aladdin};
+            await ticTacToeRepository.CreateMovementAndRefreshBoard(movement, createdBoard);
+
+            createdBoard.Movements.Count.Should().Be(1);
+        }
     }
 }

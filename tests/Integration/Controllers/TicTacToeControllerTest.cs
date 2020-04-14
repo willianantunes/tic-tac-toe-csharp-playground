@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -8,6 +9,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using src;
 using src.Repository;
+using tests.Resources;
 using Xunit;
 
 namespace tests.Integration.Controllers
@@ -133,7 +135,23 @@ namespace tests.Integration.Controllers
         [Fact]
         public async Task ShouldCreateGameGivenFirstMovementIsBeingExecuted()
         {
-            throw new NotImplementedException();
+            var aladdin = new Player{Name = "Aladdin", Computer = false};
+            var rose = new Player{Name = "Rose", Computer = true};
+
+            var createdBoard = (await new BoardBuilder()
+                .WithCreatedScopeFromServiceProvider(_factory.Services)
+                .CreateBoard()
+                .WithPlayers(aladdin, rose)
+                .Build()).First();
+
+            var movementPosition = 1;
+            var requestPath = $"games/{createdBoard.Id}/{aladdin.Id}/{movementPosition}";
+            
+            var response = await _httpClient.GetAsync(requestPath);
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            var gameStatus = await response.Content.ReadAsAsync<Game>();
+
+            gameStatus.Should().NotBe(null);
         }
 
         [Fact]
