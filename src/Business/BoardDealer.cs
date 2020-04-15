@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -14,7 +15,7 @@ namespace src.Business
         void InitializeBoardConfiguration(Board board);
         bool PositionIsNotAvailable(Board gameConfiguredBoard, in int movementPosition);
         IList<int> AvailablePositions(Board gameConfiguredBoard);
-        Task ApplyMovement(Board board, int movementPosition, Player player);
+        Task<Board> ApplyMovement(Board board, int movementPosition, Player player);
         BoardSituation EvaluateTheSituation(Board gameConfiguredBoard, in int lastMovementPosition);
         bool HasComputerPlayer(Board gameConfiguredBoard);
         Task ApplyMovementForComputer(Board board, int movementPosition);
@@ -73,7 +74,8 @@ namespace src.Business
                 boardConfiguration.Add(new List<Player?>());
                 for (int indexColumn = 0; indexColumn < board.NumberOfColumn; indexColumn++)
                 {
-                    var movement = board.Movements.FirstOrDefault(m => m.Position == positionCount);
+                    Func<Movement, bool> predicate = m => m.Position == positionCount;
+                    var movement = board.Movements?.FirstOrDefault(predicate);
 
                     if (movement.IsNotNull())
                         boardConfiguration[indexRow].Add(movement.WhoMade);
@@ -94,7 +96,7 @@ namespace src.Business
         public bool PositionIsNotAvailable(Board board, in int movementPosition)
         {
             var copiedMovementPosition = movementPosition;
-            return board.FreeFields.Any(position => position == copiedMovementPosition);
+            return board.FreeFields.None(position => position == copiedMovementPosition);
         }
 
         public IList<int> AvailablePositions(Board board)
@@ -102,7 +104,7 @@ namespace src.Business
             return board.FreeFields;
         }
 
-        public async Task ApplyMovement(Board board, int movementPosition, Player player)
+        public async Task<Board> ApplyMovement(Board board, int movementPosition, Player player)
         {
             var (row, col) = _boardJudge.GetRowAndColGivenAPosition(movementPosition, board);
 
@@ -112,7 +114,7 @@ namespace src.Business
 
             var movement = new Movement{Position = movementPosition, WhoMade = player};
 
-            await _ticTacToeRepository.CreateMovementAndRefreshBoard(movement, board);
+            return await _ticTacToeRepository.CreateMovementAndRefreshBoard(movement, board);
         }
 
         public BoardSituation EvaluateTheSituation(Board gameConfiguredBoard, in int lastMovementPosition)
@@ -138,7 +140,7 @@ namespace src.Business
             return boardSituation;
         }
 
-        public bool HasComputerPlayer(Board gameConfiguredBoard)
+        public bool HasComputerPlayer(Board gameConfiguredBoard) 
         {
             return gameConfiguredBoard.PlayerBoards.Any(pb => !pb.Player.isNotComputer());
         }

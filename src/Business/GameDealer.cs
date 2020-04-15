@@ -37,19 +37,19 @@ namespace src.Business
             return game;
         }
 
-        public Task<Game> ExecuteMovementAndEvaluateResult(Game game, int movementPosition, Player player)
+        public async Task<Game> ExecuteMovementAndEvaluateResult(Game game, int movementPosition, Player player)
         {
             var gameConfiguredBoard = game.ConfiguredBoard;
-            _boardDealer.ApplyMovement(gameConfiguredBoard, movementPosition, player);
+            await _boardDealer.ApplyMovement(gameConfiguredBoard, movementPosition, player);
             BoardSituation boardSituation = _boardDealer.EvaluateTheSituation(gameConfiguredBoard, movementPosition);
 
             if (boardSituation.HasAWinner || boardSituation.SadlyFinishedWithDraw)
             {
                 UpdateGameGivenItsResult(game, boardSituation);
-                return _ticTacToeRepository.RefreshGameState(game);
+                return await _ticTacToeRepository.RefreshGameState(game);
             }
             if (_boardDealer.AvailablePositions(gameConfiguredBoard).Count <= 0)
-                return _ticTacToeRepository.RefreshGameState(game);
+                return await _ticTacToeRepository.RefreshGameState(game);
             
             var executed = ExecuteComputerMovementIfApplicable(player, gameConfiguredBoard);
             if (executed)
@@ -59,7 +59,7 @@ namespace src.Business
             }
             
 
-            return _ticTacToeRepository.RefreshGameState(game);
+            return await _ticTacToeRepository.RefreshGameState(game);
         }
 
         private bool ExecuteComputerMovementIfApplicable(Player player, Board gameConfiguredBoard)

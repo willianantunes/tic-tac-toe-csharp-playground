@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using src.Helper;
@@ -15,7 +16,7 @@ namespace src.Repository
         Task<Game> RefreshGameState(Game game);
         Task<Player> GetSomeComputerPlayer();
         Task SaveBoard(Board board);
-        Task CreateMovementAndRefreshBoard(Movement movement, Board board);
+        Task<Board> CreateMovementAndRefreshBoard(Movement movement, Board board);
     }
 
     public class TicTacToeRepository : ITicTacToeRepository
@@ -32,14 +33,21 @@ namespace src.Repository
             return _playgroundContext.Players.FindAsync(playerId);
         }
 
-        public ValueTask<Board> GetBoardByItsId(Guid boardId)
+        public async ValueTask<Board> GetBoardByItsId(Guid boardId)
         {
-            return _playgroundContext.Boards.FindAsync(boardId);
+            var boards = await _playgroundContext.Boards
+                .Where(b => b.Id == boardId)
+                .Include(b => b.PlayerBoards)
+                .ThenInclude(pb => pb.Player)
+                .ToListAsync();
+
+            return boards.FirstOrDefault();
         }
 
         public Task<Game> GetGameByItsBoard(Board board)
         {
-            return _playgroundContext.Games.SingleAsync(game => game.ConfiguredBoard.Id == board.Id);
+            Expression<Func<Game, bool>> predicate = game => game.ConfiguredBoard.Id == board.Id;
+            return _playgroundContext.Games.SingleOrDefaultAsync(predicate);
         }
 
         public async Task<Game> RefreshGameState(Game game)
@@ -72,15 +80,17 @@ namespace src.Repository
             await _playgroundContext.SaveChangesAsync();
         }
 
-        public async Task CreateMovementAndRefreshBoard(Movement movement, Board board)
+        public async Task<Board> CreateMovementAndRefreshBoard(Movement movement, Board board)
         {
             if (board.Movements.IsNull())
                 board.Movements = new List<Movement>();
 
             board.Movements.Add(movement);
 
-            _playgroundContext.Boards.Update(board);
+            var entityEntryBoard = _playgroundContext.Boards.Update(board);
             await _playgroundContext.SaveChangesAsync();
+            
+            return entityEntryBoard.Entity;
         }
     }
 }

@@ -145,13 +145,28 @@ namespace tests.Integration.Controllers
                 .Build()).First();
 
             var movementPosition = 1;
-            var requestPath = $"games/{createdBoard.Id}/{aladdin.Id}/{movementPosition}";
+            var requestPath = $"/tic-tac-toe/games/{createdBoard.Id}/{aladdin.Id}/{movementPosition}";
             
             var response = await _httpClient.GetAsync(requestPath);
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var gameStatus = await response.Content.ReadAsAsync<Game>();
 
             gameStatus.Should().NotBe(null);
+            gameStatus.Draw.Should().BeFalse();
+            gameStatus.Finished.Should().BeFalse();
+            gameStatus.Winner.Should().BeNull();
+            var boardUsedToPlay = gameStatus.ConfiguredBoard;
+            var boardPositions = boardUsedToPlay.NumberOfRows * boardUsedToPlay.NumberOfColumn;
+            boardUsedToPlay.Movements.Count.Should().Be(2);
+            var expectedFreeFields = boardPositions - boardUsedToPlay.Movements.Count;
+            boardUsedToPlay.FreeFields.Count.Should().Be(expectedFreeFields);
+            // ASSERTING ALL BOARD POSITIONS
+            boardUsedToPlay.FieldsConfiguration[0][0].Name.Should().Be(aladdin.Name);
+            boardUsedToPlay.FieldsConfiguration[0][1].Name.Should().Be(rose.Name);
+            boardUsedToPlay.FieldsConfiguration[0][2].Should().BeNull();
+            for (var position = 1; position < boardUsedToPlay.FieldsConfiguration.Count; position++)
+                foreach (var player in boardUsedToPlay.FieldsConfiguration[position])
+                    player.Should().BeNull();
         }
 
         [Fact]
