@@ -47,7 +47,14 @@ namespace src.Repository
         public async Task<Game> GetGameByItsBoard(Board board)
         {
             Expression<Func<Game, bool>> predicate = game => game.ConfiguredBoard.Id == board.Id;
-            return await _playgroundContext.Games.SingleOrDefaultAsync(predicate);
+
+            var games = await _playgroundContext.Games
+                .Where(game => game.ConfiguredBoard.Id == board.Id)
+                .Include(g => g.ConfiguredBoard)
+                .ThenInclude(b => b.Movements)
+                .ToListAsync();
+
+            return games.FirstOrDefault();
         }
 
         public async Task<Game> RefreshGameState(Game game)

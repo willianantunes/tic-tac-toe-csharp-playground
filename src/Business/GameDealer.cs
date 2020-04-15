@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using src.Repository;
@@ -39,22 +40,24 @@ namespace src.Business
 
         public async Task<Game> ExecuteMovementAndEvaluateResult(Game game, int movementPosition, Player player)
         {
-            var gameConfiguredBoard = game.ConfiguredBoard;
-            await _boardDealer.ApplyMovement(gameConfiguredBoard, movementPosition, player);
-            BoardSituation boardSituation = _boardDealer.EvaluateTheSituation(gameConfiguredBoard, movementPosition);
+            var configuredBoard = game.ConfiguredBoard;
+            await _boardDealer.ApplyMovement(configuredBoard, movementPosition, player);
+            BoardSituation boardSituation = _boardDealer.EvaluateTheSituation(configuredBoard, movementPosition);
 
             if (boardSituation.HasAWinner || boardSituation.SadlyFinishedWithDraw)
             {
+                // TODO: TEMP
+                boardSituation.Winner = player;
                 UpdateGameGivenItsResult(game, boardSituation);
                 return await _ticTacToeRepository.RefreshGameState(game);
             }
-            if (_boardDealer.AvailablePositions(gameConfiguredBoard).Count <= 0)
+            if (_boardDealer.AvailablePositions(configuredBoard).Count <= 0)
                 return await _ticTacToeRepository.RefreshGameState(game);
             
-            var executed = await ExecuteComputerMovementIfApplicable(player, gameConfiguredBoard);
+            var executed = await ExecuteComputerMovementIfApplicable(player, configuredBoard);
             if (executed)
             {
-                boardSituation = _boardDealer.EvaluateTheSituation(gameConfiguredBoard, movementPosition);
+                boardSituation = _boardDealer.EvaluateTheSituation(configuredBoard, movementPosition);
                 UpdateGameGivenItsResult(game, boardSituation);    
             }
             
@@ -64,10 +67,15 @@ namespace src.Business
 
         private async Task<bool> ExecuteComputerMovementIfApplicable(Player player, Board gameConfiguredBoard)
         {
+            // TODO: REFACTORY
             if (player.isNotComputer() && _boardDealer.HasComputerPlayer(gameConfiguredBoard))
             {
                 var somePosition = _boardDealer.AvailablePositions(gameConfiguredBoard).First();
-                await _boardDealer.ApplyMovementForComputer(gameConfiguredBoard, somePosition);
+                // TODO: REFACTORY
+                Func<PlayerBoard, bool> predicate = pb => !pb.Player.isNotComputer();
+                var computerPlayer = gameConfiguredBoard.PlayerBoards.First(predicate);
+                
+                await _boardDealer.ApplyMovement(gameConfiguredBoard, somePosition, computerPlayer.Player);
                 return true;
             }
 

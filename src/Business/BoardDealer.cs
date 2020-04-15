@@ -128,14 +128,12 @@ namespace src.Business
 
             boardSituation.HasAWinner = wonHorizontally || wonVertically || wonDiagonally || wonReverseDiagonally;
             if (boardSituation.HasAWinner)
-                boardSituation.Winner = new Player();
-            else
-            {
-                var fields = gameConfiguredBoard.FieldsConfiguration;
-                bool drawGame = _boardJudge.DrawGame(fields);
-                if (drawGame)
-                    boardSituation.SadlyFinishedWithDraw = true;
-            }
+                return boardSituation;
+            
+            var fields = gameConfiguredBoard.FieldsConfiguration;
+            bool drawGame = _boardJudge.DrawGame(fields);
+            if (drawGame)
+                boardSituation.SadlyFinishedWithDraw = true;
 
             return boardSituation;
         }

@@ -8,6 +8,7 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using src;
+using src.Helper;
 using src.Repository;
 using tests.Resources;
 using Xunit;
@@ -135,8 +136,8 @@ namespace tests.Integration.Controllers
         [Fact]
         public async Task ShouldCreateGameGivenFirstMovementIsBeingExecuted()
         {
-            var aladdin = new Player{Name = "Aladdin", Computer = false};
-            var rose = new Player{Name = "Rose", Computer = true};
+            var aladdin = new Player {Name = "Aladdin", Computer = false};
+            var rose = new Player {Name = "Rose", Computer = true};
 
             var createdBoard = (await new BoardBuilder()
                 .WithCreatedScopeFromServiceProvider(_factory.Services)
@@ -146,7 +147,7 @@ namespace tests.Integration.Controllers
 
             var movementPosition = 1;
             var requestPath = $"/tic-tac-toe/games/{createdBoard.Id}/{aladdin.Id}/{movementPosition}";
-            
+
             var response = await _httpClient.GetAsync(requestPath);
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var gameStatus = await response.Content.ReadAsAsync<Game>();
@@ -178,7 +179,48 @@ namespace tests.Integration.Controllers
         [Fact]
         public async Task ShouldExecuteThreeMovementsAndWinTheGame()
         {
-            throw new NotImplementedException();
+            var aladdin = new Player {Name = "Aladdin", Computer = false};
+            var rose = new Player {Name = "Rose", Computer = true};
+
+            var createdBoard = (await new BoardBuilder()
+                .WithCreatedScopeFromServiceProvider(_factory.Services)
+                .CreateBoard()
+                .WithPlayers(aladdin, rose)
+                .Build()).First();
+
+            var movementsToWin = new List<int> {7, 8, 9};
+            Game lastGameStatus = null;
+            foreach (var movementPosition in movementsToWin)
+            {
+                var requestPath = $"/tic-tac-toe/games/{createdBoard.Id}/{aladdin.Id}/{movementPosition}";
+                var response = await _httpClient.GetAsync(requestPath);
+                response.StatusCode.Should().Be(HttpStatusCode.OK);
+                if (movementPosition == 9)
+                    lastGameStatus = await response.Content.ReadAsAsync<Game>();
+            }
+
+            lastGameStatus.Draw.Should().BeFalse();
+            lastGameStatus.Finished.Should().BeTrue();
+            lastGameStatus.Winner.Name.Should().Be(aladdin.Name);
+            lastGameStatus.Winner.Id.Should().Be(aladdin.Id);
+            var boardUsedToPlay = lastGameStatus.ConfiguredBoard;
+            var boardPositions = boardUsedToPlay.NumberOfRows * boardUsedToPlay.NumberOfColumn;
+            boardUsedToPlay.Movements.Count.Should().Be(5);
+            var expectedFreeFields = boardPositions - boardUsedToPlay.Movements.Count;
+            boardUsedToPlay.FreeFields.Count.Should().Be(expectedFreeFields);
+            // ASSERTING ALL BOARD POSITIONS
+            boardUsedToPlay.FieldsConfiguration[2][0].Name.Should().Be(aladdin.Name);
+            boardUsedToPlay.FieldsConfiguration[2][1].Name.Should().Be(aladdin.Name);
+            boardUsedToPlay.FieldsConfiguration[2][2].Name.Should().Be(aladdin.Name);
+            var availablePositions = 0;
+            for (var position = 0; position < 2; position++)
+                foreach (var player in boardUsedToPlay.FieldsConfiguration[position])
+                {
+                    if (player.IsNull())
+                        availablePositions++;
+                }
+
+            availablePositions.Should().Be(4);
         }
     }
 }
