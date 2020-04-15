@@ -28,9 +28,9 @@ namespace src.Repository
             _playgroundContext = playgroundContext;
         }
 
-        public ValueTask<Player> GetPlayerByItsId(Guid playerId)
+        public async ValueTask<Player> GetPlayerByItsId(Guid playerId)
         {
-            return _playgroundContext.Players.FindAsync(playerId);
+            return await _playgroundContext.Players.FindAsync(playerId);
         }
 
         public async ValueTask<Board> GetBoardByItsId(Guid boardId)
@@ -44,10 +44,10 @@ namespace src.Repository
             return boards.FirstOrDefault();
         }
 
-        public Task<Game> GetGameByItsBoard(Board board)
+        public async Task<Game> GetGameByItsBoard(Board board)
         {
             Expression<Func<Game, bool>> predicate = game => game.ConfiguredBoard.Id == board.Id;
-            return _playgroundContext.Games.SingleOrDefaultAsync(predicate);
+            return await _playgroundContext.Games.SingleOrDefaultAsync(predicate);
         }
 
         public async Task<Game> RefreshGameState(Game game)

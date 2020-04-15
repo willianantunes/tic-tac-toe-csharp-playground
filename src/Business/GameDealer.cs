@@ -51,7 +51,7 @@ namespace src.Business
             if (_boardDealer.AvailablePositions(gameConfiguredBoard).Count <= 0)
                 return await _ticTacToeRepository.RefreshGameState(game);
             
-            var executed = ExecuteComputerMovementIfApplicable(player, gameConfiguredBoard);
+            var executed = await ExecuteComputerMovementIfApplicable(player, gameConfiguredBoard);
             if (executed)
             {
                 boardSituation = _boardDealer.EvaluateTheSituation(gameConfiguredBoard, movementPosition);
@@ -62,12 +62,12 @@ namespace src.Business
             return await _ticTacToeRepository.RefreshGameState(game);
         }
 
-        private bool ExecuteComputerMovementIfApplicable(Player player, Board gameConfiguredBoard)
+        private async Task<bool> ExecuteComputerMovementIfApplicable(Player player, Board gameConfiguredBoard)
         {
             if (player.isNotComputer() && _boardDealer.HasComputerPlayer(gameConfiguredBoard))
             {
                 var somePosition = _boardDealer.AvailablePositions(gameConfiguredBoard).First();
-                _boardDealer.ApplyMovementForComputer(gameConfiguredBoard, somePosition);
+                await _boardDealer.ApplyMovementForComputer(gameConfiguredBoard, somePosition);
                 return true;
             }
 
