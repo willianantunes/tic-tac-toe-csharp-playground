@@ -105,6 +105,8 @@ namespace tests.Integration.Controllers
             using var testPreparationScope = _factory.Services.CreateScope();
             var context = testPreparationScope.ServiceProvider.GetRequiredService<CSharpPlaygroundContext>();
             // CLEAR OLD DATA
+            context.Games.RemoveRange(context.Games);
+            context.Movements.RemoveRange(context.Movements);
             context.Boards.RemoveRange(context.Boards);
             context.Players.RemoveRange(context.Players);
             await context.SaveChangesAsync();
@@ -128,9 +130,50 @@ namespace tests.Integration.Controllers
         }
 
         [Fact]
-        public async Task ShouldCreateBoardWithStandardSetupGivenTwoPlayersProvided()
+        public async Task ShouldCreateDefaultBoardWithStandardSetupGivenTwoPlayersProvided()
         {
-            throw new NotImplementedException();
+            using var testPreparationScope = _factory.Services.CreateScope();
+            var context = testPreparationScope.ServiceProvider.GetRequiredService<CSharpPlaygroundContext>();
+            // CLEAR OLD DATA
+            context.Games.RemoveRange(context.Games);
+            context.Movements.RemoveRange(context.Movements);
+            context.Boards.RemoveRange(context.Boards);
+            context.Players.RemoveRange(context.Players);
+            await context.SaveChangesAsync();
+            // ADD DATA
+            var aladdin = new Player {Name = "Aladdin"};
+            var jasmine = new Player {Name = "Jasmine"};
+            await context.Players.AddRangeAsync(aladdin, jasmine);
+            await context.SaveChangesAsync();
+
+            var postData = new
+            {
+                firstPlayerId = aladdin.Id.ToString(),
+                secondPlayerId = jasmine.Id.ToString()
+            };
+            var response = await _httpClient.PostAsJsonAsync("/tic-tac-toe/boards", postData);
+            response.StatusCode.Should().Be(HttpStatusCode.Created);
+            var createdBoard = await response.Content.ReadAsAsync<Board>();
+
+            createdBoard.Should().NotBe(null);
+            createdBoard.NumberOfColumn.Should().Be(3);
+            createdBoard.NumberOfRows.Should().Be(3);
+            var playerBoards = createdBoard.PlayerBoards;
+            playerBoards.Count.Should().Be(2);
+            playerBoards.FirstOrDefault(pb => pb.Player.Id == aladdin.Id).Should().NotBeNull();
+            playerBoards.FirstOrDefault(pb => pb.Player.Id == jasmine.Id).Should().NotBeNull();
+            createdBoard.Movements.Should().BeNull();
+        }
+
+        [Fact]
+        public async Task ShouldRaise400GivenBoardSetupIsNotValid()
+        {
+            var postData = new {boardSize = "2x2"};
+
+            var response = await _httpClient.PostAsJsonAsync("/tic-tac-toe/boards", postData);
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            var content = await response.Content.ReadAsStringAsync();
+            content.Should().Be("Board configuration not valid");
         }
 
         [Fact]
@@ -171,9 +214,37 @@ namespace tests.Integration.Controllers
         }
 
         [Fact]
-        public async Task ShouldExecuteTwoMovements()
+        public async Task ShouldRaise400GivenBoardIsNotFoundToCreateGame()
         {
-            throw new NotImplementedException();
+            Guid fakeBoardId = new Guid();
+            Guid fakePlayerId = new Guid();
+            var movementPosition = 1;
+
+            var requestPath = $"/tic-tac-toe/games/{fakeBoardId}/{fakePlayerId}/{movementPosition}";
+            var response = await _httpClient.GetAsync(requestPath);
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            var content = await response.Content.ReadAsStringAsync();
+            content.Should().Be("Board not found");
+        }
+
+        [Fact]
+        public async Task ShouldRaise400GivenPlayerIsNotFoundToPlayGame()
+        {
+            var createdBoard = (await new BoardBuilder()
+                .WithCreatedScopeFromServiceProvider(_factory.Services)
+                .CreateBoard()
+                .WithPlayers(new Player {Name = "Aladdin"}, new Player {Name = "Rose"})
+                .Build()).First();
+
+            Guid fakePlayerId = new Guid();
+            var movementPosition = 1;
+
+            var requestPath = $"/tic-tac-toe/games/{createdBoard.Id}/{fakePlayerId}/{movementPosition}";
+
+            var response = await _httpClient.GetAsync(requestPath);
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            var content = await response.Content.ReadAsStringAsync();
+            content.Should().Be("Player not found");
         }
 
         [Fact]
@@ -221,6 +292,35 @@ namespace tests.Integration.Controllers
                 }
 
             availablePositions.Should().Be(4);
+        }
+
+        [Fact]
+        public async Task ShouldRaise400GivenTheGameIsFinished()
+        {
+            var aladdin = new Player {Name = "Aladdin", Computer = false};
+            var rose = new Player {Name = "Rose", Computer = true};
+
+            var createdBoard = (await new BoardBuilder()
+                .WithCreatedScopeFromServiceProvider(_factory.Services)
+                .CreateBoard()
+                .WithPlayers(aladdin, rose)
+                .CreateGame(completed: true)
+                .Build()).First();
+
+            await new GameBuilder()
+                .WithCreatedScopeFromServiceProvider(_factory.Services)
+                .WithBoard(createdBoard)
+                .WithPlayers(aladdin, rose)
+                .PlayerOneWinning()
+                .Build();
+
+            var movementPosition = 1;
+            var requestPath = $"/tic-tac-toe/games/{createdBoard.Id}/{aladdin.Id}/{movementPosition}";
+
+            var response = await _httpClient.GetAsync(requestPath);
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            var content = await response.Content.ReadAsStringAsync();
+            content.Should().Be("Game not available to be played anymore");
         }
     }
 }

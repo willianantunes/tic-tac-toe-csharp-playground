@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using src.Business;
+using src.Configuration;
 using src.Helper;
 using src.Repository;
 
@@ -55,7 +56,7 @@ namespace src.Controllers
             if (player.Name.IsNull())
                 return BadRequest("Name is required to create a player");
 
-            _context.Players.Add(player);
+            await _context.Players.AddAsync(player);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetSpecificPlayer", new {id = player.Id}, player);
@@ -162,20 +163,28 @@ namespace src.Controllers
 
     #region Exceptions
 
-    public class InvalidGameIsNotPlayableAnymoreException : Exception
+    public class InvalidGameIsNotPlayableAnymoreException : HttpException
     {
+        public override int StatusCode { get; set; } = 400;
+        public override string DefaultDetail { get; set; } = "Game not available to be played anymore";
     }
 
-    public class InvalidBoardNotFoundToBePlayedException : Exception
+    public class InvalidBoardNotFoundToBePlayedException : HttpException
     {
+        public override int StatusCode { get; set; } = 400;
+        public override string DefaultDetail { get; set; } = "Board not found";
     }
 
-    public class InvalidPlayerNotFoundException : Exception
+    public class InvalidPlayerNotFoundException : HttpException
     {
+        public override int StatusCode { get; set; } = 400;
+        public override string DefaultDetail { get; set; } = "Player not found";
     }
 
-    public class InvalidBoardConfigurationException : Exception
+    public class InvalidBoardConfigurationException : HttpException
     {
+        public override int StatusCode { get; set; } = 400;
+        public override string DefaultDetail { get; set; } = "Board configuration not valid";
     }
 
     #endregion

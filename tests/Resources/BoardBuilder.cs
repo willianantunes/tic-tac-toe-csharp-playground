@@ -123,6 +123,7 @@ namespace tests.Resources
             private IServiceProvider _serviceProvider;
             private IList<Board> _boards = new List<Board>();
             private IList<Player> _players = new List<Player>();
+            private Game _configuredgame;
 
             public BoardBuilderDatabaseCreator(IServiceProvider serviceProvider)
             {
@@ -140,6 +141,16 @@ namespace tests.Resources
                 foreach (var player in players)
                     _players.Add(player);
 
+                return this;
+            }
+
+            public BoardBuilderDatabaseCreator CreateGame(bool completed = false, bool draw = false)
+            {
+                _configuredgame = new Game()
+                {
+                    Finished = completed,
+                    Draw = draw
+                };
                 return this;
             }
 
