@@ -1,5 +1,15 @@
 version: "2.4"
 services:
+  app:
+    build:
+      context: .
+    environment:
+      - DOTNET_ENVIRONMENT=Development
+      - ConnectionStrings__connectionDetails=Host=db;Port=5432;Database=postgres;Username=postgres;Password=
+    ports:
+      - "8000:80"
+    depends_on:
+      - db
   db:
     image: postgres:10.1-alpine
     ports:

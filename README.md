@@ -1,46 +1,26 @@
-# C# Playground
+# Tic Tac Toe C# Playground
 
-I'm working on it, so this is WIP.
+A full implemented Tic Tac Toe through .NET Core 3.1 Web API.
 
-## What you'll see here
+## How to run the project
 
-There are other endpoints like `TodoItemsController` and the `WeatherForecastController` that I played with, but the most important one is the a Tic Tac Toe game playable through REST endpoints. Some contracts:
+Download it and at the root folder simply execute:
 
-- `GET /players`: return all players configured
-- `POST /players`: create a new player
-- `GET /boards`: return all boards configured.
-- `POST /boards`: create a new board. You should provide your name and a custom board configuration which defaults to 3x3.
-- `GET /games`: return all games configured informing when each one started and finished if applicable.  
-- `GET /games/{boardId}`: return the status of the given board.
-- `POST /games/{boardId}`: If the game hasn't finished, you can apply a position. The response will inform the result given the computer move too.
+    docker-compose up app
 
-Yeah, this may lack some requirements, but it's just an idea to explore C# language. I thank you [IGU](https://github.com/igooorgp) about his idea.
+See the logs:
 
-## How to work with the project
+    docker logs -f csharp-playground_app_1
+    
+## Development environment
 
-First you must do the following:
+I do not use an in-memory database to run integration tests, instead I prefer the real database to avoid surprises in production, then before develop run the following:
 
     docker-compose up -d db
-    
-Then you can execute the project in your IDE.
 
-To create a `TodoItem`:
+## How to play the game
 
-```
-curl --location --request POST 'http://localhost:5000/api/TodoItems' \
---header 'Content-Type: application/json' \
---data-raw '{
-  "name":"walk dog",
-  "isComplete":true
-}'
-```
-
-How to retrieve all `TodoItems`:
-
-```
-curl --location --request GET 'http://localhost:5000/api/TodoItems' \
---header 'Accept: application/json'
-```
+WIP.
 
 ## Useful links
 
@@ -72,6 +52,7 @@ Tutorials about some tools and best practices:
 - [Create web APIs with ASP.NET Core](https://docs.microsoft.com/en-us/aspnet/core/web-api/?view=aspnetcore-3.1)
 - [Configuration in ASP.NET Core](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/?view=aspnetcore-3.1)
 - [Avoiding Startup service injection in ASP.NET Core 3](https://andrewlock.net/avoiding-startup-service-injection-in-asp-net-core-3/)
+- [Configuration in ASP.NET Core](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/?view=aspnetcore-3.1)
 
 Database setup:
 
@@ -106,7 +87,9 @@ About Rider IDE:
 - [Running Entity Framework (Core) commands in Rider](https://blog.jetbrains.com/dotnet/2017/08/09/running-entity-framework-core-commands-rider/)
 
 ## Some lessons
- 
+
+### EF
+
 In order to use Entity Framework commands, I had to install through the following:
  
     dotnet tool install --global dotnet-ef
@@ -115,7 +98,7 @@ Then I could issue the command:
 
     dotnet ef migrations add InitialCreate
     
-To scaffold a controller, first install these guys in `src`:
+To scaffold a controller, first install these guys in `TicTacToeCSharpPlayground`:
 
     dotnet add package Microsoft.VisualStudio.Web.CodeGeneration.Design
     dotnet add package Microsoft.EntityFrameworkCore.SqlServer
@@ -123,5 +106,23 @@ To scaffold a controller, first install these guys in `src`:
 
 The package `Microsoft.EntityFrameworkCore.SqlServer` can be uninstalled afterwards as we're using Postgres. Then you can do:
 
-    dotnet aspnet-codegenerator controller -name TodoItemsController --useAsyncActions --restWithNoViews \
+    dotnet aspnet-codegenerator controller -name TodoItemsController \
+    --useAsyncActions --restWithNoViews \
     --model TodoItem --dataContext CSharpPlaygroundContext -outDir Controllers
+
+### Build
+
+At the root folder of the project, in order to generate a DLL of the project:
+
+    dotnet publish -c Release -o out TicTacToeCSharpPlayground
+
+Then, with the help of Docker, you can run your generated DLL:
+
+    docker run -it --rm --name tic-tac-toe-csharp-playground \
+    -p 8000:80 \
+    -v $(pwd)/out:/app \
+    -w /app \
+    mcr.microsoft.com/dotnet/core/aspnet:3.1 \
+    dotnet TicTacToeCSharpPlayground.dll 
+
+With this project, you'll get an error because it needs a database.
