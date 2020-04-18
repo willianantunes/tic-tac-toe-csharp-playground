@@ -1,8 +1,8 @@
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
-using src.Business;
-using src.Repository;
+using TicTacToeCSharpPlayground.Business;
+using TicTacToeCSharpPlayground.Repository;
 using Xunit;
 
 namespace tests.Unit.Business

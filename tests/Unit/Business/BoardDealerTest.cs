@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using FluentAssertions;
-using src.Business;
-using src.Helper;
-using src.Repository;
+using TicTacToeCSharpPlayground.Business;
+using TicTacToeCSharpPlayground.Helper;
+using TicTacToeCSharpPlayground.Repository;
 using Xunit;
 
 namespace tests.Unit.Business

@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
-using src;
-using src.Helper;
-using src.Repository;
+using TicTacToeCSharpPlayground;
+using TicTacToeCSharpPlayground.Helper;
+using TicTacToeCSharpPlayground.Repository;
 using tests.Resources;
 using Xunit;
 

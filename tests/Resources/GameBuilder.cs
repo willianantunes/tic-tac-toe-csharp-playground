@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using src.Repository;
+using TicTacToeCSharpPlayground.Repository;
 
 namespace tests.Resources
 {

@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using src.Business;
-using src.Repository;
+using TicTacToeCSharpPlayground.Business;
+using TicTacToeCSharpPlayground.Repository;
 
 namespace tests.Resources
 {
