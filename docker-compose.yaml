@@ -14,3 +14,14 @@ services:
     image: postgres:10.1-alpine
     ports:
       - 5432:5432
+  tests:
+    image: mcr.microsoft.com/dotnet/core/sdk:3.1
+    working_dir: /app
+    volumes:
+      - .:/app
+    environment:
+      - ConnectionStrings__connectionDetails=Host=db;Port=5432;Database=postgres;Username=postgres;Password=
+    depends_on:
+      - db
+    command: >
+      sh -c "dotnet test -o out tests"

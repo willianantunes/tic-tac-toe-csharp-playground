@@ -21,4 +21,8 @@
       <ProjectReference Include="..\TicTacToeCSharpPlayground\TicTacToeCSharpPlayground.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Content Include="..\xunit.runner.json" CopyToOutputDirectory="PreserveNewest" />
+    </ItemGroup>
+    
 </Project>
