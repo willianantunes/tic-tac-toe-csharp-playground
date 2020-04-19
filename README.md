@@ -11,16 +11,174 @@ Download it and at the root folder simply execute:
 See the logs:
 
     docker logs -f tic-tac-toe-csharp-playground_app_1
-    
+
+## How to play the game
+
+First create a player and keep its ID:
+
+```shell
+curl --location --request POST 'http://localhost:8000/tic-tac-toe/players' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "name": "Jafar"
+}'
+```
+
+And now a computer to player with you:
+
+```shell
+curl --location --request POST 'http://localhost:8000/tic-tac-toe/players' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "name": "Rose",
+    "computer": true
+}'
+```
+
+Create a new board using the Jafar ID (it'll select the computer player automatically for you) and keep its generated ID with you for the next step:
+
+```shell
+curl --location --request POST 'http://localhost:8000/tic-tac-toe/boards' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "firstPlayerId": "c2fa2dde-2add-4cef-9c53-95738e540144"
+}'
+```
+
+Now you can execute your movement and start a game! The pattern is `/tic-tac-toe/games/{boardId}/{playerId}/{movementPosition}`. You can do it issuing:
+
+```shell
+curl --location --request \
+GET 'http://localhost:8000/tic-tac-toe/games/9f313da6-b920-4826-9bff-ebbfdfe5f3c3/c2fa2dde-2add-4cef-9c53-95738e540144/1'
+```
+
+You'll receive the following response:
+
+```json
+{
+    "id": "37076628-af0b-4fa0-b07d-d1e3a38e3e37",
+    "winner": null,
+    "draw": false,
+    "finished": false,
+    "configuredBoard": {
+        "id": "9f313da6-b920-4826-9bff-ebbfdfe5f3c3",
+        "movements": [
+            {
+                "id": "d8f02b25-3c73-4197-bc72-b5c76b0b4743",
+                "position": 1,
+                "whoMade": {
+                    "id": "c2fa2dde-2add-4cef-9c53-95738e540144",
+                    "playerBoards": [
+                        {
+                            "id": "d7f9e201-b7cf-4440-9edb-40e5320d2e7e",
+                            "playerId": "c2fa2dde-2add-4cef-9c53-95738e540144",
+                            "boardId": "9f313da6-b920-4826-9bff-ebbfdfe5f3c3"
+                        }
+                    ],
+                    "name": "Jafar",
+                    "computer": false
+                }
+            },
+            {
+                "id": "5c80a17f-40c8-45dd-a9ef-82db0bc145ea",
+                "position": 2,
+                "whoMade": {
+                    "id": "fdddb691-9636-49ca-b007-05a40d1b8a04",
+                    "playerBoards": [
+                        {
+                            "id": "baaf4836-22f5-4fef-b4e6-d623b03053a8",
+                            "playerId": "fdddb691-9636-49ca-b007-05a40d1b8a04",
+                            "boardId": "9f313da6-b920-4826-9bff-ebbfdfe5f3c3"
+                        }
+                    ],
+                    "name": "Rose",
+                    "computer": true
+                }
+            }
+        ],
+        "playerBoards": [
+            {
+                "id": "d7f9e201-b7cf-4440-9edb-40e5320d2e7e",
+                "playerId": "c2fa2dde-2add-4cef-9c53-95738e540144",
+                "player": {
+                    "id": "c2fa2dde-2add-4cef-9c53-95738e540144",
+                    "playerBoards": [],
+                    "name": "Jafar",
+                    "computer": false
+                },
+                "boardId": "9f313da6-b920-4826-9bff-ebbfdfe5f3c3"
+            },
+            {
+                "id": "baaf4836-22f5-4fef-b4e6-d623b03053a8",
+                "playerId": "fdddb691-9636-49ca-b007-05a40d1b8a04",
+                "player": {
+                    "id": "fdddb691-9636-49ca-b007-05a40d1b8a04",
+                    "playerBoards": [],
+                    "name": "Rose",
+                    "computer": true
+                },
+                "boardId": "9f313da6-b920-4826-9bff-ebbfdfe5f3c3"
+            }
+        ],
+        "numberOfColumn": 3,
+        "numberOfRows": 3,
+        "fieldsConfiguration": [
+            [
+                {
+                    "id": "c2fa2dde-2add-4cef-9c53-95738e540144",
+                    "playerBoards": [
+                        {
+                            "id": "d7f9e201-b7cf-4440-9edb-40e5320d2e7e",
+                            "playerId": "c2fa2dde-2add-4cef-9c53-95738e540144",
+                            "boardId": "9f313da6-b920-4826-9bff-ebbfdfe5f3c3"
+                        }
+                    ],
+                    "name": "Jafar",
+                    "computer": false
+                },
+                {
+                    "id": "fdddb691-9636-49ca-b007-05a40d1b8a04",
+                    "playerBoards": [
+                        {
+                            "id": "baaf4836-22f5-4fef-b4e6-d623b03053a8",
+                            "playerId": "fdddb691-9636-49ca-b007-05a40d1b8a04",
+                            "boardId": "9f313da6-b920-4826-9bff-ebbfdfe5f3c3"
+                        }
+                    ],
+                    "name": "Rose",
+                    "computer": true
+                },
+                null
+            ],
+            [
+                null,
+                null,
+                null
+            ],
+            [
+                null,
+                null,
+                null
+            ]
+        ],
+        "freeFields": [
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+        ]
+    }
+}
+```
+
 ## Development environment
 
 I do not use an in-memory database to run integration tests, instead I prefer the real database to avoid surprises in production, then before develop run the following:
 
     docker-compose up -d db
-
-## How to play the game
-
-WIP.
 
 ## Running all tests
 

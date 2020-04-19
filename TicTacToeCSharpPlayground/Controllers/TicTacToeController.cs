@@ -65,13 +65,19 @@ namespace TicTacToeCSharpPlayground.Controllers
         [HttpGet("boards")]
         public async Task<ActionResult<IEnumerable<Board>>> GetAllBoards()
         {
-            throw new NotImplementedException();
+            // TODO: Apply pagination
+            return await _context.Boards.ToListAsync();
         }
 
         [HttpGet("boards/{id}")]
         public async Task<ActionResult<Board>> GetSpecificBoard(Guid id)
         {
-            throw new NotImplementedException();
+            var board = await _context.Boards.FindAsync(id);
+
+            if (board.IsNull())
+                return NotFound();
+
+            return board;
         }
 
         [HttpPost("boards")]
@@ -114,13 +120,19 @@ namespace TicTacToeCSharpPlayground.Controllers
         [HttpGet("games")]
         public async Task<ActionResult<IEnumerable<Game>>> GetAllGames()
         {
-            throw new NotImplementedException();
+            // TODO: Apply pagination
+            return await _context.Games.ToListAsync();
         }
 
         [HttpGet("games/{id}")]
-        public async Task<ActionResult<Game>> GetCurrentGameStatus()
+        public async Task<ActionResult<Game>> GetCurrentGameStatus(Guid id)
         {
-            throw new NotImplementedException();
+            var game = await _context.Games.FindAsync(id);
+
+            if (game.IsNull())
+                return NotFound();
+
+            return game;
         }
 
         [HttpGet("games/{boardId}/{playerId}/{movementPosition}")]
