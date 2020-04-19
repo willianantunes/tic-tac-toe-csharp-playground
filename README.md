@@ -10,7 +10,7 @@ Download it and at the root folder simply execute:
 
 See the logs:
 
-    docker logs -f csharp-playground_app_1
+    docker logs -f tic-tac-toe-csharp-playground_app_1
     
 ## Development environment
 
@@ -21,6 +21,21 @@ I do not use an in-memory database to run integration tests, instead I prefer th
 ## How to play the game
 
 WIP.
+
+## Running all tests
+
+Execute the following command:
+
+    docker-compose up tests
+
+And you'll see something like:
+
+```text
+Test Run Successful.
+Total tests: 44
+     Passed: 44
+ Total time: 10.8781 Seconds
+```
 
 ## Useful links
 
