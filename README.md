@@ -208,6 +208,7 @@ Sample template projects:
 - [fkhoda/checkout-shoppinglist-api](https://github.com/fkhoda/checkout-shoppinglist-api)
 - [yanpitangui/netcore-api-boilerplate](https://github.com/yanpitangui/netcore-api-boilerplate)
 - [kolappannathan/dotnet-core-web-api-boilerplate](https://github.com/kolappannathan/dotnet-core-web-api-boilerplate)
+- [EduardoPires/EquinoxProject](https://github.com/EduardoPires/EquinoxProject)
 
 Interesting projects:
 
