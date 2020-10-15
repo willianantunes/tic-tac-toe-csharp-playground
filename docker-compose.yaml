@@ -24,4 +24,4 @@ services:
     depends_on:
       - db
     command: >
-      sh -c "dotnet test -o out tests"
+      sh -c "dotnet test --settings runsetting.xml"
