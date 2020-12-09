@@ -1,5 +1,13 @@
 # Tic Tac Toe C# Playground
 
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=willianantunes_tic-tac-toe-csharp-playground&metric=coverage)](https://sonarcloud.io/dashboard?id=willianantunes_tic-tac-toe-csharp-playground)
+[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=willianantunes_tic-tac-toe-csharp-playground&metric=ncloc)](https://sonarcloud.io/dashboard?id=willianantunes_tic-tac-toe-csharp-playground)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=willianantunes_tic-tac-toe-csharp-playground&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=willianantunes_tic-tac-toe-csharp-playground)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=willianantunes_tic-tac-toe-csharp-playground&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=willianantunes_tic-tac-toe-csharp-playground)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=willianantunes_tic-tac-toe-csharp-playground&metric=security_rating)](https://sonarcloud.io/dashboard?id=willianantunes_tic-tac-toe-csharp-playground)
+[![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=willianantunes_tic-tac-toe-csharp-playground&metric=sqale_index)](https://sonarcloud.io/dashboard?id=willianantunes_tic-tac-toe-csharp-playground)
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=willianantunes_tic-tac-toe-csharp-playground&metric=vulnerabilities)](https://sonarcloud.io/dashboard?id=willianantunes_tic-tac-toe-csharp-playground)
+
 A full implemented Tic Tac Toe through .NET Core 3.1 Web API.
 
 ## How to run the project
