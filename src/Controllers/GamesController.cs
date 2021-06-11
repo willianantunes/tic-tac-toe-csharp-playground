@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Serilog;
 using TicTacToeCSharpPlayground.Business;
 using TicTacToeCSharpPlayground.Helper;
 using TicTacToeCSharpPlayground.Repository;
@@ -14,13 +15,12 @@ namespace TicTacToeCSharpPlayground.Controllers
     [ApiController]
     public class GamesController : ControllerBase
     {
-        private readonly ILogger<GamesController> _logger;
         private readonly ITicTacToeRepository _ticTacToeRepository;
         private readonly IBoardDealer _boardDealer;
         private readonly IGameDealer _gameDealer;
         private readonly CSharpPlaygroundContext _context;
 
-        public GamesController(ILogger<GamesController> logger, ITicTacToeRepository ticTacToeRepository,
+        public GamesController(ITicTacToeRepository ticTacToeRepository,
             IBoardDealer boardDealer,
             IGameDealer gameDealer, CSharpPlaygroundContext context)
         {
@@ -28,13 +28,12 @@ namespace TicTacToeCSharpPlayground.Controllers
             _boardDealer = boardDealer;
             _gameDealer = gameDealer;
             _context = context;
-            _logger = logger;
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Game>>> GetAllGames()
         {
-            _logger.I("Getting all games...");
+            Log.Information("Getting all games...");
             
             // TODO: Apply pagination
             return await _context.Games.ToListAsync();
@@ -43,12 +42,12 @@ namespace TicTacToeCSharpPlayground.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Game>> GetCurrentGameStatus(Guid id)
         {
-            _logger.I("Getting specific game given ID: {Id}", id);
+            Log.Information("Getting specific game given ID: {Id}", id);
             var game = await _context.Games.FindAsync(id);
 
             if (game.IsNull())
             {
-                _logger.I("No game has been found!");
+                Log.Information("No game has been found!");
                 return NotFound();
             }
 
@@ -59,9 +58,9 @@ namespace TicTacToeCSharpPlayground.Controllers
         public async Task<ActionResult<Game>> ApplyMovementToTheGame(Guid boardId, int movementPosition, Guid playerId)
         {
             var firstLogMessage = "Received board, movement and player: {BoardId} / {MovementPosition} / {PlayerId}";
-            _logger.I(firstLogMessage, boardId, movementPosition, playerId);
+            Log.Information(firstLogMessage, boardId, movementPosition, playerId);
 
-            _logger.I("Searching board and player...");
+            Log.Information("Searching board and player...");
             var board = await _ticTacToeRepository.GetBoardByItsId(boardId);
             if (board.IsNull())
                 throw new InvalidBoardNotFoundToBePlayedException();
@@ -70,7 +69,7 @@ namespace TicTacToeCSharpPlayground.Controllers
             if (player.IsNull())
                 throw new InvalidPlayerNotFoundException();
 
-            _logger.I("Searching for a game...");
+            Log.Information("Searching for a game...");
             var game = await _gameDealer.GetGameByBoard(board);
             if (game.IsFinished())
                 throw new InvalidGameIsNotPlayableAnymoreException();
@@ -81,13 +80,13 @@ namespace TicTacToeCSharpPlayground.Controllers
                 return BadRequest($"Available positions: {position}");
             }
 
-            _logger.I("Executing movement and evaluating game...");
+            Log.Information("Executing movement and evaluating game...");
             var evaluatedGame = await _gameDealer.ExecuteMovementAndEvaluateResult(game, movementPosition, player);
 
             if (evaluatedGame.IsFinished())
-                _logger.I("Game conclusion: {EvaluatedGame}", evaluatedGame);
+                Log.Information("Game conclusion: {EvaluatedGame}", evaluatedGame);
             else
-                _logger.I("Game hasn't finished yet!");
+                Log.Information("Game hasn't finished yet!");
 
             return evaluatedGame;
         }

@@ -6,7 +6,6 @@ namespace TicTacToeCSharpPlayground.Repository
     {
         public CSharpPlaygroundContext(DbContextOptions<CSharpPlaygroundContext> options) : base(options)
         {
-            // TODO: Apply logging maybe
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

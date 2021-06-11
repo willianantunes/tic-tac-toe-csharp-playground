@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace TicTacToeCSharpPlayground.Migrations
 {
-    public partial class InitialMigration : Migration
+    public partial class _0 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -11,9 +11,9 @@ namespace TicTacToeCSharpPlayground.Migrations
                 name: "Boards",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false),
-                    NumberOfColumn = table.Column<int>(nullable: false),
-                    NumberOfRows = table.Column<int>(nullable: false)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    NumberOfColumn = table.Column<int>(type: "integer", nullable: false),
+                    NumberOfRows = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -24,8 +24,8 @@ namespace TicTacToeCSharpPlayground.Migrations
                 name: "Groups",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false),
-                    Name = table.Column<string>(nullable: true)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -36,9 +36,9 @@ namespace TicTacToeCSharpPlayground.Migrations
                 name: "Players",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false),
-                    Name = table.Column<string>(nullable: true),
-                    Computer = table.Column<bool>(nullable: false)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Computer = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -49,9 +49,9 @@ namespace TicTacToeCSharpPlayground.Migrations
                 name: "TodoItems",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false),
-                    Name = table.Column<string>(nullable: true),
-                    IsComplete = table.Column<bool>(nullable: false)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    IsComplete = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -62,10 +62,10 @@ namespace TicTacToeCSharpPlayground.Migrations
                 name: "Users",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false),
-                    Name = table.Column<string>(nullable: true),
-                    Email = table.Column<string>(nullable: true),
-                    GroupId = table.Column<Guid>(nullable: false)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Email = table.Column<string>(type: "text", nullable: false),
+                    GroupId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -82,11 +82,11 @@ namespace TicTacToeCSharpPlayground.Migrations
                 name: "Games",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false),
-                    WinnerId = table.Column<Guid>(nullable: true),
-                    Draw = table.Column<bool>(nullable: false),
-                    Finished = table.Column<bool>(nullable: false),
-                    ConfiguredBoardId = table.Column<Guid>(nullable: true)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    WinnerId = table.Column<Guid>(type: "uuid", nullable: true),
+                    Draw = table.Column<bool>(type: "boolean", nullable: false),
+                    Finished = table.Column<bool>(type: "boolean", nullable: false),
+                    ConfiguredBoardId = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -109,10 +109,10 @@ namespace TicTacToeCSharpPlayground.Migrations
                 name: "Movements",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false),
-                    Position = table.Column<int>(nullable: false),
-                    BoardId = table.Column<Guid>(nullable: true),
-                    WhoMadeId = table.Column<Guid>(nullable: true)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Position = table.Column<int>(type: "integer", nullable: false),
+                    BoardId = table.Column<Guid>(type: "uuid", nullable: false),
+                    WhoMadeId = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -122,7 +122,7 @@ namespace TicTacToeCSharpPlayground.Migrations
                         column: x => x.BoardId,
                         principalTable: "Boards",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Movements_Players_WhoMadeId",
                         column: x => x.WhoMadeId,
@@ -135,9 +135,9 @@ namespace TicTacToeCSharpPlayground.Migrations
                 name: "PlayerBoard",
                 columns: table => new
                 {
-                    PlayerId = table.Column<Guid>(nullable: false),
-                    BoardId = table.Column<Guid>(nullable: false),
-                    Id = table.Column<Guid>(nullable: false)
+                    PlayerId = table.Column<Guid>(type: "uuid", nullable: false),
+                    BoardId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {

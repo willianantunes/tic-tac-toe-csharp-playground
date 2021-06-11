@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
+using Serilog;
+using Serilog.Core;
 using TicTacToeCSharpPlayground.Business;
 using TicTacToeCSharpPlayground.Helper;
 using TicTacToeCSharpPlayground.Repository;
@@ -14,25 +15,23 @@ namespace TicTacToeCSharpPlayground.Controllers
     [ApiController]
     public class BoardsController : ControllerBase
     {
-        private readonly ILogger<BoardsController> _logger;
         private readonly ITicTacToeRepository _ticTacToeRepository;
         private readonly IBoardDealer _boardDealer;
         private readonly CSharpPlaygroundContext _context;
 
-        public BoardsController(ILogger<BoardsController> logger, ITicTacToeRepository ticTacToeRepository,
+        public BoardsController(ITicTacToeRepository ticTacToeRepository,
             IBoardDealer boardDealer,
             CSharpPlaygroundContext context)
         {
             _ticTacToeRepository = ticTacToeRepository;
             _boardDealer = boardDealer;
             _context = context;
-            _logger = logger;
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Board>>> GetAllBoards()
         {
-            _logger.I("Getting all boards...");
+            Log.Information("Getting all boards...");
             
             // TODO: Apply pagination
             return await _context.Boards.ToListAsync();
@@ -41,12 +40,12 @@ namespace TicTacToeCSharpPlayground.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Board>> GetSpecificBoard(Guid id)
         {
-            _logger.I("Getting specific board given ID: {Id}", id);
+            Log.Information("Getting specific board given ID: {Id}", id);
             var board = await _context.Boards.FindAsync(id);
 
             if (board.IsNull())
             {
-                _logger.I("No board has been found!");
+                Log.Information("No board has been found!");
                 return NotFound();
             }
 
@@ -56,7 +55,7 @@ namespace TicTacToeCSharpPlayground.Controllers
         [HttpPost]
         public async Task<ActionResult<Board>> CreateNewBoard(CreateBoardDto createBoardDto)
         {
-            _logger.I("Received board request object: {CreateBoardDto}", createBoardDto);
+            Log.Information("Received board request object: {CreateBoardDto}", createBoardDto);
 
             // TODO: See a better way to apply default value
             createBoardDto.BoardSize ??= "3x3";
@@ -84,7 +83,7 @@ namespace TicTacToeCSharpPlayground.Controllers
             }
 
             var logMessage = "Board setup and players: {BoardSize} / {PlayerOne} / {PlayerTwo}";
-            _logger.I(logMessage, createBoardDto.BoardSize, playerOne, playerTwo);
+            Log.Information(logMessage, createBoardDto.BoardSize, playerOne, playerTwo);
             var createdBoard = await _boardDealer.CreateNewBoard(createBoardDto.BoardSize, playerOne, playerTwo);
 
             return CreatedAtAction("GetSpecificBoard", new {id = createdBoard.Id}, createdBoard);

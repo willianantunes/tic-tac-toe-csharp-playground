@@ -8,16 +8,17 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using TicTacToeCSharpPlayground.Repository;
 using tests.Resources;
+using TicTacToeCSharpPlayground.EntryCommands;
 using Xunit;
 
 namespace tests.Integration.Repository
 {
-    public class TicTacToeRepository : IClassFixture<WebApplicationFactory<TicTacToeCSharpPlayground.Startup>>
+    public class TicTacToeRepository : IClassFixture<WebApplicationFactory<ApiCommand.Startup>>
     {
-        private WebApplicationFactory<TicTacToeCSharpPlayground.Startup> _factory;
+        private WebApplicationFactory<ApiCommand.Startup> _factory;
         private HttpClient _httpClient;
 
-        public TicTacToeRepository(WebApplicationFactory<TicTacToeCSharpPlayground.Startup> factory)
+        public TicTacToeRepository(WebApplicationFactory<ApiCommand.Startup> factory)
         {
             _factory = factory;
         }

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Serilog;
 using TicTacToeCSharpPlayground.Helper;
 using TicTacToeCSharpPlayground.Repository;
 
@@ -13,19 +14,17 @@ namespace TicTacToeCSharpPlayground.Controllers
     [ApiController]
     public class PlayersController : ControllerBase
     {
-        private readonly ILogger<PlayersController> _logger;
         private readonly CSharpPlaygroundContext _context;
 
         public PlayersController(CSharpPlaygroundContext context, ILogger<PlayersController> logger)
         {
             _context = context;
-            _logger = logger;
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Player>>> GetAllPlayers()
         {
-            _logger.I("Getting all players...");
+            Log.Information("Getting all players...");
             
             // TODO: Apply pagination
             return await _context.Players.ToListAsync();
@@ -34,12 +33,12 @@ namespace TicTacToeCSharpPlayground.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Player>> GetSpecificPlayer(Guid id)
         {
-            _logger.I("Getting specific player given ID: {Id}", id);
+            Log.Information("Getting specific player given ID: {Id}", id);
             var player = await _context.Players.FindAsync(id);
 
             if (player.IsNull())
             {
-                _logger.I("No player has been found!");
+                Log.Information("No player has been found!");
                 return NotFound();
             }
                 

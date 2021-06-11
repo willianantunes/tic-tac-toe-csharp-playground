@@ -1,22 +1,24 @@
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Json;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using TicTacToeCSharpPlayground;
+using TicTacToeCSharpPlayground.EntryCommands;
 using TicTacToeCSharpPlayground.Repository;
 using Xunit;
 
 namespace tests.Integration.Controllers
 {
-    public class BoardsControllerTest : IClassFixture<WebApplicationFactory<Startup>>
+    public class BoardsControllerTest : IClassFixture<WebApplicationFactory<ApiCommand.Startup>>
     {
         private HttpClient _httpClient;
-        private WebApplicationFactory<Startup> _factory;
+        private WebApplicationFactory<ApiCommand.Startup> _factory;
 
-        public BoardsControllerTest(WebApplicationFactory<Startup> factory)
+        public BoardsControllerTest(WebApplicationFactory<ApiCommand.Startup> factory)
         {
             _factory = factory;
             _httpClient = factory.CreateClient();
@@ -43,7 +45,7 @@ namespace tests.Integration.Controllers
 
             var response = await _httpClient.PostAsJsonAsync("/tic-tac-toe/boards", postData);
             response.StatusCode.Should().Be(HttpStatusCode.Created);
-            var createdBoard = await response.Content.ReadAsAsync<Board>();
+            var createdBoard = await response.Content.ReadFromJsonAsync<Board>();
 
             createdBoard.Should().NotBe(null);
             createdBoard.NumberOfColumn.Should().Be(4);
@@ -76,7 +78,7 @@ namespace tests.Integration.Controllers
             };
             var response = await _httpClient.PostAsJsonAsync("/tic-tac-toe/boards", postData);
             response.StatusCode.Should().Be(HttpStatusCode.Created);
-            var createdBoard = await response.Content.ReadAsAsync<Board>();
+            var createdBoard = await response.Content.ReadFromJsonAsync<Board>();
 
             createdBoard.Should().NotBe(null);
             createdBoard.NumberOfColumn.Should().Be(3);

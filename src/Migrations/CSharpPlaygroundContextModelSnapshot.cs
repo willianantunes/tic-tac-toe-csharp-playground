@@ -15,9 +15,9 @@ namespace TicTacToeCSharpPlayground.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
-                .HasAnnotation("ProductVersion", "3.1.3")
-                .HasAnnotation("Relational:MaxIdentifierLength", 63);
+                .HasAnnotation("Relational:MaxIdentifierLength", 63)
+                .HasAnnotation("ProductVersion", "5.0.6")
+                .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
             modelBuilder.Entity("TicTacToeCSharpPlayground.Repository.Board", b =>
                 {
@@ -70,6 +70,7 @@ namespace TicTacToeCSharpPlayground.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -83,7 +84,7 @@ namespace TicTacToeCSharpPlayground.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("BoardId")
+                    b.Property<Guid>("BoardId")
                         .HasColumnType("uuid");
 
                     b.Property<int>("Position")
@@ -111,6 +112,7 @@ namespace TicTacToeCSharpPlayground.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -146,6 +148,7 @@ namespace TicTacToeCSharpPlayground.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -160,12 +163,14 @@ namespace TicTacToeCSharpPlayground.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("Email")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<Guid>("GroupId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -184,17 +189,27 @@ namespace TicTacToeCSharpPlayground.Migrations
                     b.HasOne("TicTacToeCSharpPlayground.Repository.Player", "Winner")
                         .WithMany()
                         .HasForeignKey("WinnerId");
+
+                    b.Navigation("ConfiguredBoard");
+
+                    b.Navigation("Winner");
                 });
 
             modelBuilder.Entity("TicTacToeCSharpPlayground.Repository.Movement", b =>
                 {
                     b.HasOne("TicTacToeCSharpPlayground.Repository.Board", "Board")
                         .WithMany("Movements")
-                        .HasForeignKey("BoardId");
+                        .HasForeignKey("BoardId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("TicTacToeCSharpPlayground.Repository.Player", "WhoMade")
                         .WithMany()
                         .HasForeignKey("WhoMadeId");
+
+                    b.Navigation("Board");
+
+                    b.Navigation("WhoMade");
                 });
 
             modelBuilder.Entity("TicTacToeCSharpPlayground.Repository.PlayerBoard", b =>
@@ -210,6 +225,10 @@ namespace TicTacToeCSharpPlayground.Migrations
                         .HasForeignKey("PlayerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Board");
+
+                    b.Navigation("Player");
                 });
 
             modelBuilder.Entity("TicTacToeCSharpPlayground.Repository.User", b =>
@@ -219,6 +238,20 @@ namespace TicTacToeCSharpPlayground.Migrations
                         .HasForeignKey("GroupId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Group");
+                });
+
+            modelBuilder.Entity("TicTacToeCSharpPlayground.Repository.Board", b =>
+                {
+                    b.Navigation("Movements");
+
+                    b.Navigation("PlayerBoards");
+                });
+
+            modelBuilder.Entity("TicTacToeCSharpPlayground.Repository.Player", b =>
+                {
+                    b.Navigation("PlayerBoards");
                 });
 #pragma warning restore 612, 618
         }

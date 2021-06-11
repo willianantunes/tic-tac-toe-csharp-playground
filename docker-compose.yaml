@@ -1,27 +1,104 @@
-version: "2.4"
+version: "3.8"
+
+x-build: &dockerfile-dev-build
+  context: .
+  dockerfile: Dockerfile.dev
+
 services:
-  app:
-    build:
-      context: .
-    environment:
-      - DOTNET_ENVIRONMENT=Development
-      - ConnectionStrings__connectionDetails=Host=db;Port=5432;Database=postgres;Username=postgres;Password=
-    ports:
-      - "8000:80"
-    depends_on:
-      - db
   db:
-    image: postgres:10.1-alpine
+    image: postgres:13.2-alpine
+    user: postgres
+    environment:
+      POSTGRES_USER: boss_role
+      POSTGRES_PASSWORD: boss_password
     ports:
-      - 5432:5432
-  tests:
-    image: mcr.microsoft.com/dotnet/core/sdk:3.1
-    working_dir: /app
+      - "5432:5432"
+  app-development:
+    build: *dockerfile-dev-build
     volumes:
       - .:/app
-    environment:
-      - ConnectionStrings__connectionDetails=Host=db;Port=5432;Database=postgres;Username=postgres;Password=
+    env_file:
+      - .env.development
+    ports:
+      - "8000:8000"
     depends_on:
       - db
-    command: >
-      sh -c "dotnet test --settings runsetting.xml"
+    command:
+      [
+          "./scripts/wait-for-it.sh",
+          "db:5432",
+          "-t",
+          "120",
+          "--",
+          "./scripts/start-web-development.sh",
+      ]
+  tests:
+    build: *dockerfile-dev-build
+    volumes:
+      - .:/app
+    env_file:
+      - .env.development
+    depends_on:
+      - db
+    command:
+      [
+          "./scripts/wait-for-it.sh",
+          "db:5432",
+          "-t",
+          "120",
+          "--",        
+          "./scripts/start-tests.sh",
+      ]
+  lint:
+    build: *dockerfile-dev-build
+    volumes:
+      - .:/app
+    command:
+      [
+          "./scripts/start-lint.sh",
+      ]
+  formatter:
+    build: *dockerfile-dev-build
+    volumes:
+      - .:/app
+    command:
+      [
+          "./scripts/start-formatter.sh",
+      ]
+  generate-migrations:
+    build: *dockerfile-dev-build
+    volumes:
+      - .:/app
+    env_file:
+      - .env.development
+    command:
+      [
+          "./scripts/generate-migrations.sh",
+      ]
+  apply-migrations:
+    build: *dockerfile-dev-build
+    volumes:
+      - .:/app
+    env_file:
+      - .env.development
+    depends_on:
+      - db
+    command:
+      [
+          "./scripts/wait-for-it.sh",
+          "db:5432",
+          "-t",
+          "120",
+          "--",
+          "./scripts/apply-migrations.sh",
+      ]
+  sonarcloud:
+    build: *dockerfile-dev-build
+    volumes:
+      - .:/app
+    command:
+      [
+          "./scripts/start-sonarcloud.sh",
+          "YOUR-SONAR-CLOUD-TOKEN",
+          "YOUR-PROJECT-VERSION",
+      ]

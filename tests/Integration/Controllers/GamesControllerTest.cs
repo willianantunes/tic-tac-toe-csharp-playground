@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Json;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -11,16 +12,17 @@ using TicTacToeCSharpPlayground;
 using TicTacToeCSharpPlayground.Helper;
 using TicTacToeCSharpPlayground.Repository;
 using tests.Resources;
+using TicTacToeCSharpPlayground.EntryCommands;
 using Xunit;
 
 namespace tests.Integration.Controllers
 {
-    public class GamesControllerTest : IClassFixture<WebApplicationFactory<Startup>>
+    public class GamesControllerTest : IClassFixture<WebApplicationFactory<ApiCommand.Startup>>
     {
         private HttpClient _httpClient;
-        private WebApplicationFactory<Startup> _factory;
+        private WebApplicationFactory<ApiCommand.Startup> _factory;
 
-        public GamesControllerTest(WebApplicationFactory<Startup> factory)
+        public GamesControllerTest(WebApplicationFactory<ApiCommand.Startup> factory)
         {
             _factory = factory;
             _httpClient = factory.CreateClient();
@@ -43,7 +45,7 @@ namespace tests.Integration.Controllers
 
             var response = await _httpClient.GetAsync(requestPath);
             response.StatusCode.Should().Be(HttpStatusCode.OK);
-            var gameStatus = await response.Content.ReadAsAsync<Game>();
+            var gameStatus = await response.Content.ReadFromJsonAsync<Game>();
 
             gameStatus.Should().NotBe(null);
             gameStatus.Draw.Should().BeFalse();
@@ -117,7 +119,7 @@ namespace tests.Integration.Controllers
                 var response = await _httpClient.GetAsync(requestPath);
                 response.StatusCode.Should().Be(HttpStatusCode.OK);
                 if (movementPosition == 9)
-                    lastGameStatus = await response.Content.ReadAsAsync<Game>();
+                    lastGameStatus = await response.Content.ReadFromJsonAsync<Game>();
             }
 
             lastGameStatus.Draw.Should().BeFalse();

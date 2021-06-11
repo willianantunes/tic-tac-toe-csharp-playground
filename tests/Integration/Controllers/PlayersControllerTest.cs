@@ -1,22 +1,24 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Json;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using TicTacToeCSharpPlayground;
+using TicTacToeCSharpPlayground.EntryCommands;
 using TicTacToeCSharpPlayground.Repository;
 using Xunit;
 
 namespace tests.Integration.Controllers
 {
-    public class PlayersControllerTest : IClassFixture<WebApplicationFactory<Startup>>
+    public class PlayersControllerTest : IClassFixture<WebApplicationFactory<ApiCommand.Startup>>
     {
         private HttpClient _httpClient;
-        private WebApplicationFactory<Startup> _factory;
+        private WebApplicationFactory<ApiCommand.Startup> _factory;
 
-        public PlayersControllerTest(WebApplicationFactory<Startup> factory)
+        public PlayersControllerTest(WebApplicationFactory<ApiCommand.Startup> factory)
         {
             _factory = factory;
             _httpClient = factory.CreateClient();
@@ -29,7 +31,7 @@ namespace tests.Integration.Controllers
 
             var response = await _httpClient.PostAsJsonAsync("/tic-tac-toe/players", playerToBeCreated);
             response.StatusCode.Should().Be(HttpStatusCode.Created);
-            var createdPlayer = await response.Content.ReadAsAsync<Player>();
+            var createdPlayer = await response.Content.ReadFromJsonAsync<Player>();
             response.Headers.Location.ToString().Should()
                 .Be($"http://localhost/tic-tac-toe/players/{createdPlayer.Id}");
 
@@ -61,7 +63,7 @@ namespace tests.Integration.Controllers
 
             var response = await _httpClient.GetAsync($"/tic-tac-toe/players/{somePlayer.Id}");
             response.StatusCode.Should().Be(HttpStatusCode.OK);
-            var retrievedPlayer = await response.Content.ReadAsAsync<Player>();
+            var retrievedPlayer = await response.Content.ReadFromJsonAsync<Player>();
 
             retrievedPlayer.Should().BeEquivalentTo(somePlayer);
         }
@@ -90,7 +92,7 @@ namespace tests.Integration.Controllers
 
             var response = await _httpClient.GetAsync("/tic-tac-toe/players");
             response.StatusCode.Should().Be(HttpStatusCode.OK);
-            var players = await response.Content.ReadAsAsync<List<Player>>();
+            var players = await response.Content.ReadFromJsonAsync<List<Player>>();
 
             players.Count.Should().Be(2);
         }
