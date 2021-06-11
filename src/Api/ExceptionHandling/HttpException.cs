@@ -1,6 +1,6 @@
 using System;
 
-namespace TicTacToeCSharpPlayground.Configuration
+namespace TicTacToeCSharpPlayground.Api.ExceptionHandling
 {
     public abstract class HttpException : Exception
     {    

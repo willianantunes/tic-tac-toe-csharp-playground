@@ -4,12 +4,12 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
-using Serilog.Core;
-using TicTacToeCSharpPlayground.Business;
-using TicTacToeCSharpPlayground.Helper;
-using TicTacToeCSharpPlayground.Repository;
+using TicTacToeCSharpPlayground.Core.Business;
+using TicTacToeCSharpPlayground.Core.Models;
+using TicTacToeCSharpPlayground.Infrastructure.Database;
+using TicTacToeCSharpPlayground.Infrastructure.Database.Repositories;
 
-namespace TicTacToeCSharpPlayground.Controllers
+namespace TicTacToeCSharpPlayground.Api.Controllers.V1
 {
     [Route("tic-tac-toe/[controller]")]
     [ApiController]
@@ -17,11 +17,11 @@ namespace TicTacToeCSharpPlayground.Controllers
     {
         private readonly ITicTacToeRepository _ticTacToeRepository;
         private readonly IBoardDealer _boardDealer;
-        private readonly CSharpPlaygroundContext _context;
+        private readonly AppDbContext _context;
 
         public BoardsController(ITicTacToeRepository ticTacToeRepository,
             IBoardDealer boardDealer,
-            CSharpPlaygroundContext context)
+            AppDbContext context)
         {
             _ticTacToeRepository = ticTacToeRepository;
             _boardDealer = boardDealer;
@@ -43,7 +43,7 @@ namespace TicTacToeCSharpPlayground.Controllers
             Log.Information("Getting specific board given ID: {Id}", id);
             var board = await _context.Boards.FindAsync(id);
 
-            if (board.IsNull())
+            if (board is null)
             {
                 Log.Information("No board has been found!");
                 return NotFound();
@@ -65,15 +65,15 @@ namespace TicTacToeCSharpPlayground.Controllers
 
             var playerOne = await _ticTacToeRepository.GetPlayerByItsId(createBoardDto.FirstPlayerId);
 
-            if (playerOne.IsNull())
+            if (playerOne is null)
                 throw new InvalidPlayerNotFoundException();
 
             Player playerTwo;
 
-            if (createBoardDto.SecondPlayerId.IsNotNull())
+            if (createBoardDto.SecondPlayerId is not null)
             {
                 playerTwo = await _ticTacToeRepository.GetPlayerByItsId(createBoardDto.SecondPlayerId.Value);
-                if (playerTwo.IsNull())
+                if (playerTwo is null)
                     throw new InvalidPlayerNotFoundException();
             }
             else

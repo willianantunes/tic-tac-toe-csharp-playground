@@ -1,9 +1,10 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using TicTacToeCSharpPlayground.Repository;
+using TicTacToeCSharpPlayground.Core.Models;
+using TicTacToeCSharpPlayground.Infrastructure.Database.Repositories;
 
-namespace TicTacToeCSharpPlayground.Business
+namespace TicTacToeCSharpPlayground.Core.Business
 {
     public interface IGameDealer
     {
@@ -19,7 +20,7 @@ namespace TicTacToeCSharpPlayground.Business
         public GameDealer()
         {
         }
-        
+
         public GameDealer(ITicTacToeRepository ticTacToeRepository, IBoardDealer boardDealer)
         {
             _ticTacToeRepository = ticTacToeRepository;
@@ -51,16 +52,17 @@ namespace TicTacToeCSharpPlayground.Business
                 UpdateGameGivenItsResult(game, boardSituation);
                 return await _ticTacToeRepository.RefreshGameState(game);
             }
+
             if (_boardDealer.AvailablePositions(configuredBoard).Count <= 0)
                 return await _ticTacToeRepository.RefreshGameState(game);
-            
+
             var executed = await ExecuteComputerMovementIfApplicable(player, configuredBoard);
             if (executed)
             {
                 boardSituation = _boardDealer.EvaluateTheSituation(configuredBoard, movementPosition);
-                UpdateGameGivenItsResult(game, boardSituation);    
+                UpdateGameGivenItsResult(game, boardSituation);
             }
-            
+
 
             return await _ticTacToeRepository.RefreshGameState(game);
         }
@@ -74,7 +76,7 @@ namespace TicTacToeCSharpPlayground.Business
                 // TODO: REFACTORY
                 Func<PlayerBoard, bool> predicate = pb => !pb.Player.isNotComputer();
                 var computerPlayer = gameConfiguredBoard.PlayerBoards.First(predicate);
-                
+
                 await _boardDealer.ApplyMovement(gameConfiguredBoard, somePosition, computerPlayer.Player);
                 return true;
             }

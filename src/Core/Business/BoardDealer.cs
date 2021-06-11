@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using TicTacToeCSharpPlayground.Helper;
-using TicTacToeCSharpPlayground.Repository;
+using TicTacToeCSharpPlayground.Core.Models;
+using TicTacToeCSharpPlayground.Infrastructure.Database.Repositories;
 
-namespace TicTacToeCSharpPlayground.Business
+namespace TicTacToeCSharpPlayground.Core.Business
 {
     public interface IBoardDealer
     {
@@ -39,7 +39,7 @@ namespace TicTacToeCSharpPlayground.Business
 
         public bool NotValidOrUnsupportedBoardSize(string? boardSize)
         {
-            if (boardSize.IsNull() || _almostValidBoardSetup.Match(boardSize).NotSuccess())
+            if (boardSize is null || _almostValidBoardSetup.Match(boardSize).Success is false)
                 return true;
 
             var column = boardSize.Substring(0, 1);
@@ -50,14 +50,14 @@ namespace TicTacToeCSharpPlayground.Business
 
         public async Task<Board> CreateNewBoard(string boardSize, Player playerOne, Player playerTwo)
         {
-            var column = boardSize.Substring(0, 1).ToInt();
-            var rows = boardSize.Substring(2, 1).ToInt();
+            var column = int.Parse(boardSize.Substring(0, 1));
+            var rows = int.Parse(boardSize.Substring(2, 1));
 
             var board = new Board {NumberOfColumn = column, NumberOfRows = rows};
-            var playerBoardOne = new PlayerBoard{Player = playerOne, Board = board};
-            var playerBoarTwo = new PlayerBoard{Player = playerTwo, Board = board};
-            board.PlayerBoards = new List<PlayerBoard>{playerBoardOne, playerBoarTwo};
-            
+            var playerBoardOne = new PlayerBoard {Player = playerOne, Board = board};
+            var playerBoarTwo = new PlayerBoard {Player = playerTwo, Board = board};
+            board.PlayerBoards = new List<PlayerBoard> {playerBoardOne, playerBoarTwo};
+
             await _ticTacToeRepository.SaveBoard(board);
 
             return board;
@@ -77,7 +77,7 @@ namespace TicTacToeCSharpPlayground.Business
                     Func<Movement, bool> predicate = m => m.Position == positionCount;
                     var movement = board.Movements?.FirstOrDefault(predicate);
 
-                    if (movement.IsNotNull())
+                    if (movement is not null)
                         boardConfiguration[indexRow].Add(movement.WhoMade);
                     else
                     {
@@ -96,7 +96,7 @@ namespace TicTacToeCSharpPlayground.Business
         public bool PositionIsNotAvailable(Board board, in int movementPosition)
         {
             var copiedMovementPosition = movementPosition;
-            return board.FreeFields.None(position => position == copiedMovementPosition);
+            return board.FreeFields.Any(position => position == copiedMovementPosition) is false;
         }
 
         public IList<int> AvailablePositions(Board board)
@@ -112,7 +112,7 @@ namespace TicTacToeCSharpPlayground.Business
             // TODO raise exception if remove action returns false
             board.FreeFields.Remove(movementPosition);
 
-            var movement = new Movement{Position = movementPosition, WhoMade = player};
+            var movement = new Movement {Position = movementPosition, WhoMade = player};
 
             return await _ticTacToeRepository.CreateMovementAndRefreshBoard(movement, board);
         }
@@ -129,7 +129,7 @@ namespace TicTacToeCSharpPlayground.Business
             boardSituation.HasAWinner = wonHorizontally || wonVertically || wonDiagonally || wonReverseDiagonally;
             if (boardSituation.HasAWinner)
                 return boardSituation;
-            
+
             var fields = gameConfiguredBoard.FieldsConfiguration;
             bool drawGame = _boardJudge.DrawGame(fields);
             if (drawGame)
@@ -138,7 +138,7 @@ namespace TicTacToeCSharpPlayground.Business
             return boardSituation;
         }
 
-        public bool HasComputerPlayer(Board gameConfiguredBoard) 
+        public bool HasComputerPlayer(Board gameConfiguredBoard)
         {
             return gameConfiguredBoard.PlayerBoards.Any(pb => !pb.Player.isNotComputer());
         }

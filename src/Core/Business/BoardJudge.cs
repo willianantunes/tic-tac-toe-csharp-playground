@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using TicTacToeCSharpPlayground.Helper;
-using TicTacToeCSharpPlayground.Repository;
+using TicTacToeCSharpPlayground.Core.Models;
 
-namespace TicTacToeCSharpPlayground.Business
+namespace TicTacToeCSharpPlayground.Core.Business
 {
     public interface IBoardJudge
     {
@@ -34,7 +33,7 @@ namespace TicTacToeCSharpPlayground.Business
 
             var fields = gameConfiguredBoard.FieldsConfiguration;
             var playerUsedToEvaluate = fields[row].First();
-            Func<Player?, bool> predicate = p => p.IsNotNull() && p.Equals(playerUsedToEvaluate);
+            Func<Player?, bool> predicate = p => p is not null && p.Equals(playerUsedToEvaluate);
             var isPlayerPresentInAllHorizontalFields = fields[row].All(predicate);
 
             return isPlayerPresentInAllHorizontalFields;
@@ -46,7 +45,7 @@ namespace TicTacToeCSharpPlayground.Business
 
             var fields = gameConfiguredBoard.FieldsConfiguration;
             var playerUsedToEvaluate = fields[row][col];
-            Func<IList<Player?>, bool> predicate = row => row[col].IsNotNull() && row[col].Equals(playerUsedToEvaluate);
+            Func<IList<Player?>, bool> predicate = row => row[col] is not null && row[col].Equals(playerUsedToEvaluate);
             var isPlayerPresentInAllVerticalFields = fields.All(predicate);
 
             return isPlayerPresentInAllVerticalFields;
@@ -65,7 +64,7 @@ namespace TicTacToeCSharpPlayground.Business
             Func<IList<Player?>, bool> predicate = row =>
             {
                 var maybeAPlayerHere = row[columnCounter++];
-                return maybeAPlayerHere.IsNotNull() && maybeAPlayerHere.Equals(foundPlayer);
+                return maybeAPlayerHere is not null && maybeAPlayerHere.Equals(foundPlayer);
             };
 
             return fields.All(predicate);
@@ -86,7 +85,7 @@ namespace TicTacToeCSharpPlayground.Business
             Func<IList<Player?>, bool> predicate = row =>
             {
                 var maybeAPlayerHere = row[columnCounter--];
-                return maybeAPlayerHere.IsNotNull() && maybeAPlayerHere.Equals(foundPlayer);
+                return maybeAPlayerHere is not null && maybeAPlayerHere.Equals(foundPlayer);
             };
 
             return fields.All(predicate);
@@ -94,7 +93,7 @@ namespace TicTacToeCSharpPlayground.Business
 
         public bool DrawGame(IList<IList<Player?>> fields)
         {
-            return fields.All(row => row.All(col => col.IsNotNull()));
+            return fields.All(row => row.All(col => col is not null));
         }
     }
 }

@@ -11,9 +11,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using TicTacToeCSharpPlayground.Business;
-using TicTacToeCSharpPlayground.Configuration;
-using TicTacToeCSharpPlayground.Repository;
+using TicTacToeCSharpPlayground.Api.Configs;
+using TicTacToeCSharpPlayground.Core.Business;
+using TicTacToeCSharpPlayground.Infrastructure.Database;
+using TicTacToeCSharpPlayground.Infrastructure.Database.Repositories;
 
 namespace TicTacToeCSharpPlayground.EntryCommands
 {
@@ -29,11 +30,11 @@ namespace TicTacToeCSharpPlayground.EntryCommands
         public class Startup
         {
             public IConfiguration Configuration { get; }
-            
+
             public Startup(IConfiguration configuration)
             {
                 Configuration = configuration;
-            }            
+            }
 
             public void ConfigureServices(IServiceCollection services)
             {
@@ -46,7 +47,7 @@ namespace TicTacToeCSharpPlayground.EntryCommands
                 {
                     c.SwaggerDoc("v1", new OpenApiInfo {Title = "TicTacToeCSharpPlayground", Version = "v1"});
                 });
-                services.AddEntityFrameworkNpgsql().AddDbContext<CSharpPlaygroundContext>(optionsBuilder =>
+                services.AddEntityFrameworkNpgsql().AddDbContext<AppDbContext>(optionsBuilder =>
                 {
                     var connectionString = Configuration.GetConnectionString("CSharpPlaygroundContext");
                     optionsBuilder.UseNpgsql(connectionString);
@@ -60,8 +61,7 @@ namespace TicTacToeCSharpPlayground.EntryCommands
                 services.AddScoped<IGameDealer, GameDealer>();
             }
 
-            // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-            public void Configure(IApplicationBuilder app, IWebHostEnvironment env, CSharpPlaygroundContext dataContext)
+            public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
             {
                 if (env.IsDevelopment())
                 {
@@ -76,8 +76,6 @@ namespace TicTacToeCSharpPlayground.EntryCommands
                 app.UseAuthorization();
 
                 app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
-
-                dataContext.Database.Migrate();
             }
         }
     }

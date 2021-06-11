@@ -1,11 +1,18 @@
 using Microsoft.EntityFrameworkCore;
+using TicTacToeCSharpPlayground.Core.Models;
 
-namespace TicTacToeCSharpPlayground.Repository
+namespace TicTacToeCSharpPlayground.Infrastructure.Database
 {
-    public class CSharpPlaygroundContext : DbContext
+    public class AppDbContext : DbContext
     {
-        public CSharpPlaygroundContext(DbContextOptions<CSharpPlaygroundContext> options) : base(options)
+        public DbSet<Player> Players { get; set; }
+        public DbSet<Board> Boards { get; set; }
+        public DbSet<Game> Games { get; set; }
+        public DbSet<Movement> Movements { get; set; }
+
+        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
+            // Bodyless constructor
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -28,13 +35,5 @@ namespace TicTacToeCSharpPlayground.Repository
 
             CreateManyToManyBetweenPlayerAndBoard();
         }
-
-        public DbSet<User> Users { get; set; }
-        public DbSet<Group> Groups { get; set; }
-        public DbSet<TodoItem> TodoItems { get; set; }
-        public DbSet<Player> Players { get; set; }
-        public DbSet<Board> Boards { get; set; }
-        public DbSet<Game> Games { get; set; }
-        public DbSet<Movement> Movements { get; set; }
     }
 }

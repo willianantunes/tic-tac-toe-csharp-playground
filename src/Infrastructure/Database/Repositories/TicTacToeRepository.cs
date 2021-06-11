@@ -4,14 +4,14 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using TicTacToeCSharpPlayground.Helper;
+using TicTacToeCSharpPlayground.Core.Models;
 
-namespace TicTacToeCSharpPlayground.Repository
+namespace TicTacToeCSharpPlayground.Infrastructure.Database.Repositories
 {
     public interface ITicTacToeRepository
     {
-        ValueTask<Player> GetPlayerByItsId(Guid playerId);
-        ValueTask<Board> GetBoardByItsId(Guid boardId);
+        ValueTask<Player> GetPlayerByItsId(long playerId);
+        ValueTask<Board> GetBoardByItsId(long boardId);
         Task<Game> GetGameByItsBoard(Board board);
         Task<Game> RefreshGameState(Game game);
         Task<Player> GetSomeComputerPlayer();
@@ -21,19 +21,19 @@ namespace TicTacToeCSharpPlayground.Repository
 
     public class TicTacToeRepository : ITicTacToeRepository
     {
-        private CSharpPlaygroundContext _playgroundContext;
+        private AppDbContext _playgroundContext;
 
-        public TicTacToeRepository(CSharpPlaygroundContext playgroundContext)
+        public TicTacToeRepository(AppDbContext playgroundContext)
         {
             _playgroundContext = playgroundContext;
         }
 
-        public async ValueTask<Player> GetPlayerByItsId(Guid playerId)
+        public async ValueTask<Player> GetPlayerByItsId(long playerId)
         {
             return await _playgroundContext.Players.FindAsync(playerId);
         }
 
-        public async ValueTask<Board> GetBoardByItsId(Guid boardId)
+        public async ValueTask<Board> GetBoardByItsId(long boardId)
         {
             var boards = await _playgroundContext.Boards
                 .Where(b => b.Id == boardId)
@@ -80,7 +80,6 @@ namespace TicTacToeCSharpPlayground.Repository
                 // But I'll study a better way to do it
                 var p = await _playgroundContext.Players.FindAsync(boardPlayerBoard.Player.Id);
                 boardPlayerBoard.Player = p;
-                boardPlayerBoard.Id = Guid.NewGuid();
             }
 
             _playgroundContext.Boards.Add(board);
@@ -89,14 +88,14 @@ namespace TicTacToeCSharpPlayground.Repository
 
         public async Task<Board> CreateMovementAndRefreshBoard(Movement movement, Board board)
         {
-            if (board.Movements.IsNull())
+            if (board.Movements is null)
                 board.Movements = new List<Movement>();
 
             board.Movements.Add(movement);
 
             var entityEntryBoard = _playgroundContext.Boards.Update(board);
             await _playgroundContext.SaveChangesAsync();
-            
+
             return entityEntryBoard.Entity;
         }
     }

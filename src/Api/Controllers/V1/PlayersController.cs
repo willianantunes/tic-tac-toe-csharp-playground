@@ -5,18 +5,18 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Serilog;
-using TicTacToeCSharpPlayground.Helper;
-using TicTacToeCSharpPlayground.Repository;
+using TicTacToeCSharpPlayground.Core.Models;
+using TicTacToeCSharpPlayground.Infrastructure.Database;
 
-namespace TicTacToeCSharpPlayground.Controllers
+namespace TicTacToeCSharpPlayground.Api.Controllers.V1
 {
-    [Route("tic-tac-toe/[controller]")]
+    [Route("api/v1/[controller]")]
     [ApiController]
     public class PlayersController : ControllerBase
     {
-        private readonly CSharpPlaygroundContext _context;
+        private readonly AppDbContext _context;
 
-        public PlayersController(CSharpPlaygroundContext context, ILogger<PlayersController> logger)
+        public PlayersController(AppDbContext context, ILogger<PlayersController> logger)
         {
             _context = context;
         }
@@ -25,7 +25,7 @@ namespace TicTacToeCSharpPlayground.Controllers
         public async Task<ActionResult<IEnumerable<Player>>> GetAllPlayers()
         {
             Log.Information("Getting all players...");
-            
+
             // TODO: Apply pagination
             return await _context.Players.ToListAsync();
         }
@@ -36,19 +36,19 @@ namespace TicTacToeCSharpPlayground.Controllers
             Log.Information("Getting specific player given ID: {Id}", id);
             var player = await _context.Players.FindAsync(id);
 
-            if (player.IsNull())
+            if (player is null)
             {
                 Log.Information("No player has been found!");
                 return NotFound();
             }
-                
+
             return player;
         }
 
         [HttpPost]
-        public async Task<ActionResult<Player>> CreateNewPlayer(Player player)
+        public async Task<ActionResult<Player>> CreateNewPlayer(Player? player)
         {
-            if (player.Name.IsNull())
+            if (player?.Name is null)
                 return BadRequest("Name is required to create a player");
 
             await _context.Players.AddAsync(player);

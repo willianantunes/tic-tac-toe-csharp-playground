@@ -1,6 +1,6 @@
-using TicTacToeCSharpPlayground.Configuration;
+using TicTacToeCSharpPlayground.Api.ExceptionHandling;
 
-namespace TicTacToeCSharpPlayground.Controllers
+namespace TicTacToeCSharpPlayground.Api.Controllers.V1
 {
     public class InvalidGameIsNotPlayableAnymoreException : HttpException
     {

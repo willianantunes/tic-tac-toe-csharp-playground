@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using Serilog;
-using TicTacToeCSharpPlayground.Business;
-using TicTacToeCSharpPlayground.Helper;
-using TicTacToeCSharpPlayground.Repository;
+using TicTacToeCSharpPlayground.Core.Business;
+using TicTacToeCSharpPlayground.Core.Models;
+using TicTacToeCSharpPlayground.Infrastructure.Database;
+using TicTacToeCSharpPlayground.Infrastructure.Database.Repositories;
 
-namespace TicTacToeCSharpPlayground.Controllers
+namespace TicTacToeCSharpPlayground.Api.Controllers.V1
 {
     [Route("tic-tac-toe/[controller]")]
     [ApiController]
@@ -18,11 +18,11 @@ namespace TicTacToeCSharpPlayground.Controllers
         private readonly ITicTacToeRepository _ticTacToeRepository;
         private readonly IBoardDealer _boardDealer;
         private readonly IGameDealer _gameDealer;
-        private readonly CSharpPlaygroundContext _context;
+        private readonly AppDbContext _context;
 
         public GamesController(ITicTacToeRepository ticTacToeRepository,
             IBoardDealer boardDealer,
-            IGameDealer gameDealer, CSharpPlaygroundContext context)
+            IGameDealer gameDealer, AppDbContext context)
         {
             _ticTacToeRepository = ticTacToeRepository;
             _boardDealer = boardDealer;
@@ -45,7 +45,7 @@ namespace TicTacToeCSharpPlayground.Controllers
             Log.Information("Getting specific game given ID: {Id}", id);
             var game = await _context.Games.FindAsync(id);
 
-            if (game.IsNull())
+            if (game is null)
             {
                 Log.Information("No game has been found!");
                 return NotFound();
@@ -55,18 +55,18 @@ namespace TicTacToeCSharpPlayground.Controllers
         }
 
         [HttpGet("{boardId}/{playerId}/{movementPosition}")]
-        public async Task<ActionResult<Game>> ApplyMovementToTheGame(Guid boardId, int movementPosition, Guid playerId)
+        public async Task<ActionResult<Game>> ApplyMovementToTheGame(long boardId, int movementPosition, long playerId)
         {
             var firstLogMessage = "Received board, movement and player: {BoardId} / {MovementPosition} / {PlayerId}";
             Log.Information(firstLogMessage, boardId, movementPosition, playerId);
 
             Log.Information("Searching board and player...");
             var board = await _ticTacToeRepository.GetBoardByItsId(boardId);
-            if (board.IsNull())
+            if (board is null)
                 throw new InvalidBoardNotFoundToBePlayedException();
             // TODO player must not be a computer
             var player = await _ticTacToeRepository.GetPlayerByItsId(playerId);
-            if (player.IsNull())
+            if (player is null)
                 throw new InvalidPlayerNotFoundException();
 
             Log.Information("Searching for a game...");
