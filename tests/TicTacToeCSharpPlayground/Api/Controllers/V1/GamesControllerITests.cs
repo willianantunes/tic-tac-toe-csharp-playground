@@ -1,52 +1,42 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.Extensions.DependencyInjection;
-using TicTacToeCSharpPlayground;
-using TicTacToeCSharpPlayground.Helper;
-using TicTacToeCSharpPlayground.Repository;
-using tests.Resources;
-using TicTacToeCSharpPlayground.EntryCommands;
+using Tests.Support;
+using TicTacToeCSharpPlayground.Core.Models;
 using Xunit;
 
-namespace tests.Integration.Controllers
+namespace Tests.TicTacToeCSharpPlayground.Api.Controllers.V1
 {
-    public class GamesControllerTest : IClassFixture<WebApplicationFactory<ApiCommand.Startup>>
+    public class GamesControllerITests : ApiIntegrationTests
     {
-        private HttpClient _httpClient;
-        private WebApplicationFactory<ApiCommand.Startup> _factory;
+        private readonly string _requestUri;
 
-        public GamesControllerTest(WebApplicationFactory<ApiCommand.Startup> factory)
+        public GamesControllerITests()
         {
-            _factory = factory;
-            _httpClient = factory.CreateClient();
+            _requestUri = "api/v1/games";
         }
 
         [Fact]
         public async Task ShouldCreateGameGivenFirstMovementIsBeingExecuted()
         {
+            // Arrange
             var aladdin = new Player {Name = "Aladdin", Computer = false};
             var rose = new Player {Name = "Rose", Computer = true};
-
             var createdBoard = (await new BoardBuilder()
-                .WithCreatedScopeFromServiceProvider(_factory.Services)
+                .WithDbContext(AppDbContext)
                 .CreateBoard()
                 .WithPlayers(aladdin, rose)
                 .Build()).First();
-
             var movementPosition = 1;
-            var requestPath = $"/tic-tac-toe/games/{createdBoard.Id}/{aladdin.Id}/{movementPosition}";
-
-            var response = await _httpClient.GetAsync(requestPath);
+            var requestPath = $"{_requestUri}/{createdBoard.Id}/{aladdin.Id}/{movementPosition}";
+            // Act
+            var response = await Client.GetAsync(_requestUri);
+            // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var gameStatus = await response.Content.ReadFromJsonAsync<Game>();
-
             gameStatus.Should().NotBe(null);
             gameStatus.Draw.Should().BeFalse();
             gameStatus.Finished.Should().BeFalse();
@@ -56,7 +46,7 @@ namespace tests.Integration.Controllers
             boardUsedToPlay.Movements.Count.Should().Be(2);
             var expectedFreeFields = boardPositions - boardUsedToPlay.Movements.Count;
             boardUsedToPlay.FreeFields.Count.Should().Be(expectedFreeFields);
-            // ASSERTING ALL BOARD POSITIONS
+            // All board positions
             boardUsedToPlay.FieldsConfiguration[0][0].Name.Should().Be(aladdin.Name);
             boardUsedToPlay.FieldsConfiguration[0][1].Name.Should().Be(rose.Name);
             boardUsedToPlay.FieldsConfiguration[0][2].Should().BeNull();
@@ -68,12 +58,14 @@ namespace tests.Integration.Controllers
         [Fact]
         public async Task ShouldRaise400GivenBoardIsNotFoundToCreateGame()
         {
-            Guid fakeBoardId = new Guid();
-            Guid fakePlayerId = new Guid();
+            // Arrange
+            var fakeBoardId = 42L;
+            var fakePlayerId = 84L;
             var movementPosition = 1;
-
-            var requestPath = $"/tic-tac-toe/games/{fakeBoardId}/{fakePlayerId}/{movementPosition}";
-            var response = await _httpClient.GetAsync(requestPath);
+            var requestPath = $"{_requestUri}/{fakeBoardId}/{fakePlayerId}/{movementPosition}";
+            // Act
+            var response = await Client.GetAsync(requestPath);
+            // Assert
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
             var content = await response.Content.ReadAsStringAsync();
             content.Should().Be("Board not found");
@@ -82,18 +74,18 @@ namespace tests.Integration.Controllers
         [Fact]
         public async Task ShouldRaise400GivenPlayerIsNotFoundToPlayGame()
         {
+            // Arrange
             var createdBoard = (await new BoardBuilder()
-                .WithCreatedScopeFromServiceProvider(_factory.Services)
+                .WithDbContext(AppDbContext)
                 .CreateBoard()
                 .WithPlayers(new Player {Name = "Aladdin"}, new Player {Name = "Rose"})
                 .Build()).First();
-
-            Guid fakePlayerId = new Guid();
+            var fakePlayerId = 42L;
             var movementPosition = 1;
-
-            var requestPath = $"/tic-tac-toe/games/{createdBoard.Id}/{fakePlayerId}/{movementPosition}";
-
-            var response = await _httpClient.GetAsync(requestPath);
+            var requestPath = $"{_requestUri}/{createdBoard.Id}/{fakePlayerId}/{movementPosition}";
+            // Act
+            var response = await Client.GetAsync(requestPath);
+            // Assert
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
             var content = await response.Content.ReadAsStringAsync();
             content.Should().Be("Player not found");
@@ -102,21 +94,21 @@ namespace tests.Integration.Controllers
         [Fact]
         public async Task ShouldExecuteThreeMovementsAndWinTheGame()
         {
+            // Arrange
             var aladdin = new Player {Name = "Aladdin", Computer = false};
             var rose = new Player {Name = "Rose", Computer = true};
-
             var createdBoard = (await new BoardBuilder()
-                .WithCreatedScopeFromServiceProvider(_factory.Services)
+                .WithDbContext(AppDbContext)
                 .CreateBoard()
                 .WithPlayers(aladdin, rose)
                 .Build()).First();
-
             var movementsToWin = new List<int> {7, 8, 9};
             Game lastGameStatus = null;
+            // Act and assert
             foreach (var movementPosition in movementsToWin)
             {
-                var requestPath = $"/tic-tac-toe/games/{createdBoard.Id}/{aladdin.Id}/{movementPosition}";
-                var response = await _httpClient.GetAsync(requestPath);
+                var requestPath = $"{_requestUri}/{createdBoard.Id}/{aladdin.Id}/{movementPosition}";
+                var response = await Client.GetAsync(requestPath);
                 response.StatusCode.Should().Be(HttpStatusCode.OK);
                 if (movementPosition == 9)
                     lastGameStatus = await response.Content.ReadFromJsonAsync<Game>();
@@ -131,7 +123,7 @@ namespace tests.Integration.Controllers
             boardUsedToPlay.Movements.Count.Should().Be(5);
             var expectedFreeFields = boardPositions - boardUsedToPlay.Movements.Count;
             boardUsedToPlay.FreeFields.Count.Should().Be(expectedFreeFields);
-            // ASSERTING ALL BOARD POSITIONS
+            // All board positions
             boardUsedToPlay.FieldsConfiguration[2][0].Name.Should().Be(aladdin.Name);
             boardUsedToPlay.FieldsConfiguration[2][1].Name.Should().Be(aladdin.Name);
             boardUsedToPlay.FieldsConfiguration[2][2].Name.Should().Be(aladdin.Name);
@@ -139,7 +131,7 @@ namespace tests.Integration.Controllers
             for (var position = 0; position < 2; position++)
                 foreach (var player in boardUsedToPlay.FieldsConfiguration[position])
                 {
-                    if (player.IsNull())
+                    if (player is null)
                         availablePositions++;
                 }
 
@@ -149,27 +141,26 @@ namespace tests.Integration.Controllers
         [Fact]
         public async Task ShouldRaise400GivenTheGameIsFinished()
         {
+            // Arrange
             var aladdin = new Player {Name = "Aladdin", Computer = false};
             var rose = new Player {Name = "Rose", Computer = true};
-
             var createdBoard = (await new BoardBuilder()
-                .WithCreatedScopeFromServiceProvider(_factory.Services)
+                .WithDbContext(AppDbContext)
                 .CreateBoard()
                 .WithPlayers(aladdin, rose)
                 .CreateGame(completed: true)
                 .Build()).First();
-
             await new GameBuilder()
-                .WithCreatedScopeFromServiceProvider(_factory.Services)
+                .WithDbContext(AppDbContext)
                 .WithBoard(createdBoard)
                 .WithPlayers(aladdin, rose)
                 .PlayerOneWinning()
                 .Build();
-
             var movementPosition = 1;
-            var requestPath = $"/tic-tac-toe/games/{createdBoard.Id}/{aladdin.Id}/{movementPosition}";
-
-            var response = await _httpClient.GetAsync(requestPath);
+            var requestPath = $"{_requestUri}/{createdBoard.Id}/{aladdin.Id}/{movementPosition}";
+            // Act
+            var response = await Client.GetAsync(requestPath);
+            // Assert
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
             var content = await response.Content.ReadAsStringAsync();
             content.Should().Be("Game not available to be played anymore");

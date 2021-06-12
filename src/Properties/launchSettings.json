@@ -5,7 +5,7 @@
       "commandName": "Project",
       "commandLineArgs": "api",
       "launchBrowser": true,
-      "launchUrl": "tic-tac-toe/players",
+      "launchUrl": "api/v1/players",
       "applicationUrl": "http://0.0.0.0:8000",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"

@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
-using TicTacToeCSharpPlayground.Business;
-using TicTacToeCSharpPlayground.Repository;
+using TicTacToeCSharpPlayground.Core.Business;
+using TicTacToeCSharpPlayground.Core.Models;
+using TicTacToeCSharpPlayground.Infrastructure.Database;
 
-namespace tests.Resources
+namespace Tests.Support
 {
     public class BoardBuilder
     {
@@ -113,21 +113,21 @@ namespace tests.Resources
             throw new NotImplementedException();
         }
 
-        public BoardBuilderDatabaseCreator WithCreatedScopeFromServiceProvider(IServiceProvider serviceProvider)
+        public BoardBuilderDatabaseCreator WithDbContext(AppDbContext dbContext)
         {
-            return new BoardBuilderDatabaseCreator(serviceProvider);
+            return new BoardBuilderDatabaseCreator(dbContext);
         }
 
         public class BoardBuilderDatabaseCreator
         {
-            private IServiceProvider _serviceProvider;
             private IList<Board> _boards = new List<Board>();
             private IList<Player> _players = new List<Player>();
             private Game _configuredgame;
+            private readonly AppDbContext _dbContext;
 
-            public BoardBuilderDatabaseCreator(IServiceProvider serviceProvider)
+            public BoardBuilderDatabaseCreator(AppDbContext dbContext)
             {
-                _serviceProvider = serviceProvider;
+                _dbContext = dbContext;
             }
 
             public BoardBuilderDatabaseCreator CreateBoard(int numberOfColumn = 3, int numberOfRows = 3)
@@ -156,34 +156,22 @@ namespace tests.Resources
 
             public async Task<IList<Board>> Build(bool clearOldData = true)
             {
-                using var testPreparationScope = _serviceProvider.CreateScope();
-                var context = testPreparationScope.ServiceProvider.GetRequiredService<CSharpPlaygroundContext>();
-                if (clearOldData)
-                {
-                    context.Games.RemoveRange(context.Games);
-                    context.Movements.RemoveRange(context.Movements);
-                    context.Boards.RemoveRange(context.Boards);
-                    context.Players.RemoveRange(context.Players);
-                    await context.SaveChangesAsync();
-                }
-
                 foreach (var board in _boards)
                 {
                     board.PlayerBoards = new List<PlayerBoard>();
                     foreach (var player in _players)
                     {
-                        context.Players.Add(player);
+                        _dbContext.Players.Add(player);
                         var playerBoard = new PlayerBoard {Player = player, Board = board};
-                        var p = await context.Players.FindAsync(player.Id);
+                        var p = await _dbContext.Players.FindAsync(player.Id);
                         playerBoard.Player = p;
-                        playerBoard.Id = Guid.NewGuid();
                         board.PlayerBoards.Add(playerBoard);
                     }
 
-                    context.Boards.Add(board);
+                    _dbContext.Boards.Add(board);
                 }
 
-                await context.SaveChangesAsync();
+                await _dbContext.SaveChangesAsync();
 
                 return _boards;
             }

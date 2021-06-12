@@ -11,7 +11,7 @@ using TicTacToeCSharpPlayground.Infrastructure.Database.Repositories;
 
 namespace TicTacToeCSharpPlayground.Api.Controllers.V1
 {
-    [Route("tic-tac-toe/[controller]")]
+    [Route("api/v1/[controller]")]
     [ApiController]
     public class GamesController : ControllerBase
     {
@@ -35,7 +35,6 @@ namespace TicTacToeCSharpPlayground.Api.Controllers.V1
         {
             Log.Information("Getting all games...");
             
-            // TODO: Apply pagination
             return await _context.Games.ToListAsync();
         }
 

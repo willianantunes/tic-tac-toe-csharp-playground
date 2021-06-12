@@ -1,52 +1,37 @@
 using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.Extensions.DependencyInjection;
-using TicTacToeCSharpPlayground;
-using TicTacToeCSharpPlayground.EntryCommands;
-using TicTacToeCSharpPlayground.Repository;
+using Tests.Support;
+using TicTacToeCSharpPlayground.Core.Models;
 using Xunit;
 
-namespace tests.Integration.Controllers
+namespace Tests.TicTacToeCSharpPlayground.Api.Controllers.V1
 {
-    public class BoardsControllerTest : IClassFixture<WebApplicationFactory<ApiCommand.Startup>>
+    public class BoardsControllerITests : ApiIntegrationTests
     {
-        private HttpClient _httpClient;
-        private WebApplicationFactory<ApiCommand.Startup> _factory;
+        private readonly string _requestUri;
 
-        public BoardsControllerTest(WebApplicationFactory<ApiCommand.Startup> factory)
+        public BoardsControllerITests()
         {
-            _factory = factory;
-            _httpClient = factory.CreateClient();
+            _requestUri = "api/v1/boards";
         }
 
         [Fact]
         public async Task ShouldCreateBoardGivenAtLeastOnePlayerWasProvidedAndWithProvidedBoardSetup()
         {
-            using var testPreparationScope = _factory.Services.CreateScope();
-            var context = testPreparationScope.ServiceProvider.GetRequiredService<CSharpPlaygroundContext>();
-            // CLEAR OLD DATA
-            context.Games.RemoveRange(context.Games);
-            context.Movements.RemoveRange(context.Movements);
-            context.Boards.RemoveRange(context.Boards);
-            context.Players.RemoveRange(context.Players);
-            await context.SaveChangesAsync();
-            // ADD DATA
+            // Arrange
             var antunes = new Player {Name = "Antunes"};
             var rose = new Player {Name = "Rose", Computer = true};
-            context.Players.AddRange(antunes, rose);
-            await context.SaveChangesAsync();
-
+            AppDbContext.Players.AddRange(antunes, rose);
+            await AppDbContext.SaveChangesAsync();
             var postData = new {boardSize = "4x4", firstPlayerId = antunes.Id.ToString()};
-
-            var response = await _httpClient.PostAsJsonAsync("/tic-tac-toe/boards", postData);
+            // Act
+            var response = await Client.PostAsJsonAsync(_requestUri, postData);
+            // Assert
             response.StatusCode.Should().Be(HttpStatusCode.Created);
             var createdBoard = await response.Content.ReadFromJsonAsync<Board>();
-
             createdBoard.Should().NotBe(null);
             createdBoard.NumberOfColumn.Should().Be(4);
             createdBoard.NumberOfRows.Should().Be(4);
@@ -57,29 +42,21 @@ namespace tests.Integration.Controllers
         [Fact]
         public async Task ShouldCreateDefaultBoardWithStandardSetupGivenTwoPlayersProvided()
         {
-            using var testPreparationScope = _factory.Services.CreateScope();
-            var context = testPreparationScope.ServiceProvider.GetRequiredService<CSharpPlaygroundContext>();
-            // CLEAR OLD DATA
-            context.Games.RemoveRange(context.Games);
-            context.Movements.RemoveRange(context.Movements);
-            context.Boards.RemoveRange(context.Boards);
-            context.Players.RemoveRange(context.Players);
-            await context.SaveChangesAsync();
-            // ADD DATA
+            // Arrange
             var aladdin = new Player {Name = "Aladdin"};
             var jasmine = new Player {Name = "Jasmine"};
-            await context.Players.AddRangeAsync(aladdin, jasmine);
-            await context.SaveChangesAsync();
-
+            await AppDbContext.Players.AddRangeAsync(aladdin, jasmine);
+            await AppDbContext.SaveChangesAsync();
             var postData = new
             {
                 firstPlayerId = aladdin.Id.ToString(),
                 secondPlayerId = jasmine.Id.ToString()
             };
-            var response = await _httpClient.PostAsJsonAsync("/tic-tac-toe/boards", postData);
+            // Act
+            var response = await Client.PostAsJsonAsync(_requestUri, postData);
+            // Assert
             response.StatusCode.Should().Be(HttpStatusCode.Created);
             var createdBoard = await response.Content.ReadFromJsonAsync<Board>();
-
             createdBoard.Should().NotBe(null);
             createdBoard.NumberOfColumn.Should().Be(3);
             createdBoard.NumberOfRows.Should().Be(3);
@@ -93,9 +70,11 @@ namespace tests.Integration.Controllers
         [Fact]
         public async Task ShouldRaise400GivenBoardSetupIsNotValid()
         {
+            // Arrange
             var postData = new {boardSize = "2x2"};
-
-            var response = await _httpClient.PostAsJsonAsync("/tic-tac-toe/boards", postData);
+            // Act
+            var response = await Client.PostAsJsonAsync(_requestUri, postData);
+            // Assert
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
             var content = await response.Content.ReadAsStringAsync();
             content.Should().Be("Board configuration not valid");

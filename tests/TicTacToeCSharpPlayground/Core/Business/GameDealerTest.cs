@@ -1,11 +1,12 @@
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
-using TicTacToeCSharpPlayground.Business;
-using TicTacToeCSharpPlayground.Repository;
+using TicTacToeCSharpPlayground.Core.Business;
+using TicTacToeCSharpPlayground.Core.Models;
+using TicTacToeCSharpPlayground.Infrastructure.Database.Repositories;
 using Xunit;
 
-namespace tests.Unit.Business
+namespace Tests.TicTacToeCSharpPlayground.Core.Business
 {
     public class GameDealerTest
     {

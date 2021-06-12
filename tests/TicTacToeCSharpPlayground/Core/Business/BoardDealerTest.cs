@@ -1,11 +1,10 @@
 using System.Collections.Generic;
 using FluentAssertions;
-using TicTacToeCSharpPlayground.Business;
-using TicTacToeCSharpPlayground.Helper;
-using TicTacToeCSharpPlayground.Repository;
+using TicTacToeCSharpPlayground.Core.Business;
+using TicTacToeCSharpPlayground.Core.Models;
 using Xunit;
 
-namespace tests.Unit.Business
+namespace Tests.TicTacToeCSharpPlayground.Core.Business
 {
     public class BoardDealerTest
     {
@@ -55,13 +54,13 @@ namespace tests.Unit.Business
             board.FieldsConfiguration.Should().HaveCount(3);
             board.FieldsConfiguration[0].Should().HaveCount(3);
             foreach (var somePlayer in board.FieldsConfiguration[0])
-                somePlayer.IsNull().Should().BeTrue();
+                somePlayer.Should().BeNull();
             board.FieldsConfiguration[1].Should().HaveCount(3);
             foreach (var somePlayer in board.FieldsConfiguration[1])
-                somePlayer.IsNull().Should().BeTrue();
+                somePlayer.Should().BeNull();
             board.FieldsConfiguration[2].Should().HaveCount(3);
             foreach (var somePlayer in board.FieldsConfiguration[2])
-                somePlayer.IsNull().Should().BeTrue();
+                somePlayer.Should().BeNull();
             board.FreeFields.Count.Should().Be(9);
             for (int position = 1; position <= board.FreeFields.Count; position++)
                 board.FreeFields[position - 1].Should().Be(position);
@@ -93,15 +92,15 @@ namespace tests.Unit.Business
 
             board.FieldsConfiguration.Should().HaveCount(3);
             board.FieldsConfiguration[0].Should().HaveCount(3);
-            board.FieldsConfiguration[0][0].IsNull().Should().BeTrue();
+            board.FieldsConfiguration[0][0].Should().BeNull();
             board.FieldsConfiguration[0][1].Should().Be(jafar);
-            board.FieldsConfiguration[0][2].IsNull().Should().BeTrue();
+            board.FieldsConfiguration[0][2].Should().BeNull();
             board.FieldsConfiguration[1].Should().HaveCount(3);
             foreach (var somePlayer in board.FieldsConfiguration[1])
-                somePlayer.IsNull().Should().BeTrue();
+                somePlayer.Should().BeNull();
             board.FieldsConfiguration[2].Should().HaveCount(3);
             foreach (var somePlayer in board.FieldsConfiguration[2])
-                somePlayer.IsNull().Should().BeTrue();
+                somePlayer.Should().BeNull();
         }
 
         /**
@@ -142,17 +141,17 @@ namespace tests.Unit.Business
 
             board.FieldsConfiguration.Should().HaveCount(3);
             board.FieldsConfiguration[0].Should().HaveCount(3);
-            board.FieldsConfiguration[0][0].IsNull().Should().BeTrue();
+            board.FieldsConfiguration[0][0].Should().BeNull();
             board.FieldsConfiguration[0][1].Should().Be(jafar);
             board.FieldsConfiguration[0][2].Should().Be(jafar);
             board.FieldsConfiguration[1].Should().HaveCount(3);
-            board.FieldsConfiguration[1][0].IsNull().Should().BeTrue();
-            board.FieldsConfiguration[1][1].IsNull().Should().BeTrue();
+            board.FieldsConfiguration[1][0].Should().BeNull();
+            board.FieldsConfiguration[1][1].Should().BeNull();
             board.FieldsConfiguration[1][2].Should().Be(jafar);
             board.FieldsConfiguration[2].Should().HaveCount(3);
             board.FieldsConfiguration[2][0].Should().Be(jafar);
-            board.FieldsConfiguration[2][1].IsNull().Should().BeTrue();
-            board.FieldsConfiguration[2][2].IsNull().Should().BeTrue();
+            board.FieldsConfiguration[2][1].Should().BeNull();
+            board.FieldsConfiguration[2][2].Should().BeNull();
         }
     }
 }

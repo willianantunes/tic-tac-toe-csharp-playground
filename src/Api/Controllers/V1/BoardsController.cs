@@ -11,7 +11,7 @@ using TicTacToeCSharpPlayground.Infrastructure.Database.Repositories;
 
 namespace TicTacToeCSharpPlayground.Api.Controllers.V1
 {
-    [Route("tic-tac-toe/[controller]")]
+    [Route("api/v1/[controller]")]
     [ApiController]
     public class BoardsController : ControllerBase
     {
@@ -33,12 +33,11 @@ namespace TicTacToeCSharpPlayground.Api.Controllers.V1
         {
             Log.Information("Getting all boards...");
             
-            // TODO: Apply pagination
             return await _context.Boards.ToListAsync();
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Board>> GetSpecificBoard(Guid id)
+        public async Task<ActionResult<Board>> GetSpecificBoard(long id)
         {
             Log.Information("Getting specific board given ID: {Id}", id);
             var board = await _context.Boards.FindAsync(id);

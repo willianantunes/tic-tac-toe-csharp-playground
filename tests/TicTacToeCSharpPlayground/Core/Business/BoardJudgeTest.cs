@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using FluentAssertions;
-using TicTacToeCSharpPlayground.Business;
-using TicTacToeCSharpPlayground.Repository;
-using tests.Resources;
+using Tests.Support;
+using TicTacToeCSharpPlayground.Core.Business;
+using TicTacToeCSharpPlayground.Core.Models;
 using Xunit;
 
-namespace tests.Unit.Business
+namespace Tests.TicTacToeCSharpPlayground.Core.Business
 {
     public class BoardJudgeTest
     {

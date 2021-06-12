@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using CliFx;
 using CliFx.Attributes;
@@ -11,6 +12,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using Serilog;
 using TicTacToeCSharpPlayground.Api.Configs;
 using TicTacToeCSharpPlayground.Core.Business;
 using TicTacToeCSharpPlayground.Infrastructure.Database;
@@ -38,21 +40,22 @@ namespace TicTacToeCSharpPlayground.EntryCommands
 
             public void ConfigureServices(IServiceCollection services)
             {
+                // APIs
+                services.AddControllers(options => { options.Filters.Add(new HttpExceptionFilter()); });
                 services.AddControllers(options =>
                 {
                     options.Conventions.Add(new RouteTokenTransformerConvention(new SlugifyParameterTransformer()));
                 });
-                services.AddControllers(options => { options.Filters.Add(new HttpExceptionFilter()); });
-                services.AddSwaggerGen(c =>
+                services.AddSwaggerGen(swaggerGenOptions =>
                 {
-                    c.SwaggerDoc("v1", new OpenApiInfo {Title = "TicTacToeCSharpPlayground", Version = "v1"});
+                    swaggerGenOptions.SwaggerDoc("v1", new OpenApiInfo {Title = "TicTacToeCSharpPlayground", Version = "v1"});
                 });
-                services.AddEntityFrameworkNpgsql().AddDbContext<AppDbContext>(optionsBuilder =>
+                // Database
+                services.AddHttpContextAccessor().AddDbContext<AppDbContext>(optionsBuilder =>
                 {
-                    var connectionString = Configuration.GetConnectionString("CSharpPlaygroundContext");
+                    var connectionString = Configuration.GetConnectionString("AppDbContext");
                     optionsBuilder.UseNpgsql(connectionString);
                 });
-
                 // Repositories
                 services.AddScoped<ITicTacToeRepository, TicTacToeRepository>();
                 // Businesses
@@ -70,11 +73,10 @@ namespace TicTacToeCSharpPlayground.EntryCommands
                     app.UseSwaggerUI(c =>
                         c.SwaggerEndpoint("/swagger/v1/swagger.json", "TicTacToeCSharpPlayground v1"));
                 }
-
+                
+                app.UseSerilogRequestLogging();
                 app.UseRouting();
-
                 app.UseAuthorization();
-
                 app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
             }
         }

@@ -6,7 +6,7 @@ x-build: &dockerfile-dev-build
 
 services:
   db:
-    image: postgres:13.2-alpine
+    image: postgres:13.3-alpine
     user: postgres
     environment:
       POSTGRES_USER: boss_role
