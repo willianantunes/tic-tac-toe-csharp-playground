@@ -6,3 +6,10 @@
 This project is a full implementation of the Tic Tac Toe game but playable through a REST API. All the game data is saved in the database to make this challenge more fun. Run it now and play an honest game 🎮!
 
 It's written in C# and uses ASP.NET Web API.
+
+## Playing with the project
+
+```
+http POST :8000/api/v1/players name=Jafar
+http GET :8000/api/v1/players
+```
