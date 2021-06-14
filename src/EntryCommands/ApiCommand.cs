@@ -56,6 +56,8 @@ namespace TicTacToeCSharpPlayground.EntryCommands
                     var connectionString = Configuration.GetConnectionString("AppDbContext");
                     optionsBuilder.UseNpgsql(connectionString);
                 });
+                // Helpers
+                services.AddAutoMapper(typeof(Startup));
                 // Repositories
                 services.AddScoped<ITicTacToeRepository, TicTacToeRepository>();
                 // Businesses
