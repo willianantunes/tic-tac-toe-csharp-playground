@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using TicTacToeCSharpPlayground.Api.ExceptionHandling;
+using TicTacToeCSharpPlayground.Api.Controllers;
 
 namespace TicTacToeCSharpPlayground.Api.Configs
 {
@@ -17,7 +17,7 @@ namespace TicTacToeCSharpPlayground.Api.Configs
         {
             if (context.Exception is HttpException exception)
             {
-                context.Result = new ObjectResult(exception.DefaultDetail)
+                context.Result = new ObjectResult(exception.Details)
                 {
                     StatusCode = exception.StatusCode,
                 };

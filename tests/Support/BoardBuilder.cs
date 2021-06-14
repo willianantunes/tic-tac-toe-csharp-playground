@@ -1,9 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Moq;
 using TicTacToeCSharpPlayground.Core.Business;
 using TicTacToeCSharpPlayground.Core.Models;
+using TicTacToeCSharpPlayground.Core.Repository;
 using TicTacToeCSharpPlayground.Infrastructure.Database;
+using TicTacToeCSharpPlayground.Infrastructure.Database.Repositories;
 
 namespace Tests.Support
 {
@@ -11,6 +15,7 @@ namespace Tests.Support
     {
         private int _boardSize;
         private Player _player;
+        private List<Player> _players = new List<Player>();
         private int _rowToStartFilling = -1;
         private int _fillUntilColumn = -1;
         private int _startFromRow = -1;
@@ -28,6 +33,12 @@ namespace Tests.Support
         public BoardBuilder WithPlayer(Player player)
         {
             _player = player;
+            return this;
+        }
+        
+        public BoardBuilder AddPlayers(params Player[] players)
+        {
+            _players.AddRange(players);
             return this;
         }
 
@@ -70,13 +81,22 @@ namespace Tests.Support
 
         public Board Build()
         {
-            var board = new Board();
-            board.Movements = new List<Movement>();
-            board.NumberOfRows = _boardSize;
-            board.NumberOfColumn = _boardSize;
-            var boardDealer = new BoardDealer();
-            boardDealer.InitializeBoardConfiguration(board);
+            var board = new Board
+            {
+                Movements = new List<Movement>(), 
+                NumberOfRows = _boardSize, 
+                NumberOfColumn = _boardSize,
+                PlayerBoards = new List<PlayerBoard>()
+            };
+            board.InitializeBoardConfiguration();
             var fields = board.FieldsConfiguration;
+            if (_players.Any())
+            {
+                foreach (var player in _players)
+                {
+                    board.PlayerBoards.Add(new PlayerBoard {Player = player});
+                }
+            }
 
             if (_fillReverseDiagonallyUntilRow >= 0)
             {
@@ -110,7 +130,7 @@ namespace Tests.Support
                 return board;
             }
 
-            throw new NotImplementedException();
+            return board;
         }
 
         public BoardBuilderDatabaseCreator WithDbContext(AppDbContext dbContext)
@@ -144,17 +164,7 @@ namespace Tests.Support
                 return this;
             }
 
-            public BoardBuilderDatabaseCreator CreateGame(bool completed = false, bool draw = false)
-            {
-                _configuredgame = new Game()
-                {
-                    Finished = completed,
-                    Draw = draw
-                };
-                return this;
-            }
-
-            public async Task<IList<Board>> Build(bool clearOldData = true)
+            public async Task<IList<Board>> Build()
             {
                 foreach (var board in _boards)
                 {
@@ -162,6 +172,7 @@ namespace Tests.Support
                     foreach (var player in _players)
                     {
                         _dbContext.Players.Add(player);
+                        await _dbContext.SaveChangesAsync();
                         var playerBoard = new PlayerBoard {Player = player, Board = board};
                         var p = await _dbContext.Players.FindAsync(player.Id);
                         playerBoard.Player = p;
@@ -169,12 +180,21 @@ namespace Tests.Support
                     }
 
                     _dbContext.Boards.Add(board);
+                    board.InitializeBoardConfiguration();
                 }
 
                 await _dbContext.SaveChangesAsync();
 
                 return _boards;
             }
+            
+            public async Task<Board> BuildAndGetFirstBoard()
+            {
+                var boards = await Build();
+                return boards.First();
+            }
         }
+
+
     }
 }

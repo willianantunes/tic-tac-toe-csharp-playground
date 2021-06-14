@@ -13,6 +13,7 @@ namespace TicTacToeCSharpPlayground.Infrastructure.Database
         public DbSet<Board> Boards { get; set; }
         public DbSet<Game> Games { get; set; }
         public DbSet<Movement> Movements { get; set; }
+        public DbSet<PlayerBoard> PlayerBoards { get; set; }
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {

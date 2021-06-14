@@ -1,5 +1,4 @@
 using System;
-using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using CliFx;
 using CliFx.Attributes;
@@ -15,6 +14,8 @@ using Microsoft.OpenApi.Models;
 using Serilog;
 using TicTacToeCSharpPlayground.Api.Configs;
 using TicTacToeCSharpPlayground.Core.Business;
+using TicTacToeCSharpPlayground.Core.Repository;
+using TicTacToeCSharpPlayground.Core.Services;
 using TicTacToeCSharpPlayground.Infrastructure.Database;
 using TicTacToeCSharpPlayground.Infrastructure.Database.Repositories;
 
@@ -57,13 +58,16 @@ namespace TicTacToeCSharpPlayground.EntryCommands
                     optionsBuilder.UseNpgsql(connectionString);
                 });
                 // Helpers
+                // https://docs.automapper.org/en/latest/Dependency-injection.html#asp-net-core
                 services.AddAutoMapper(typeof(Startup));
                 // Repositories
                 services.AddScoped<ITicTacToeRepository, TicTacToeRepository>();
+                // Services
+                services.AddScoped<IGameService, GameService>();
                 // Businesses
                 services.AddSingleton<IBoardJudge, BoardJudge>();
+                services.AddSingleton<IPositionDecider, PositionDecider>();
                 services.AddScoped<IBoardDealer, BoardDealer>();
-                services.AddScoped<IGameDealer, GameDealer>();
             }
 
             public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

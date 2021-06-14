@@ -5,12 +5,12 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Tests.Support;
 using TicTacToeCSharpPlayground.Core.Models;
-using TicTacToeCSharpPlayground.Infrastructure.Database.Repositories;
+using TicTacToeCSharpPlayground.Core.Repository;
 using Xunit;
 
 namespace Tests.TicTacToeCSharpPlayground.Infrastructure.Database.Repositories
 {
-    public class TicTacToeRepositoryITests : ApiIntegrationTests
+    public class TicTacToeRepositoryITests : IntegrationTestsWithDependencyInjection
     {
         private readonly ITicTacToeRepository _ticTacToeRepository;
 
@@ -23,7 +23,7 @@ namespace Tests.TicTacToeCSharpPlayground.Infrastructure.Database.Repositories
         public async Task ShouldReturnNullGivenNoBoardWasFound()
         {
             // Arrange
-            var fakeId = 42L;
+            var fakeId = 42;
             // Act
             var board = await _ticTacToeRepository.GetBoardByItsId(fakeId);
             // Arrange

@@ -1,13 +1,14 @@
-using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
-using TicTacToeCSharpPlayground.Core.Business;
+using TicTacToeCSharpPlayground.Core.DTOSetup;
+using TicTacToeCSharpPlayground.Core.Exceptions;
 using TicTacToeCSharpPlayground.Core.Models;
+using TicTacToeCSharpPlayground.Core.Services;
 using TicTacToeCSharpPlayground.Infrastructure.Database;
-using TicTacToeCSharpPlayground.Infrastructure.Database.Repositories;
 
 namespace TicTacToeCSharpPlayground.Api.Controllers.V1
 {
@@ -15,32 +16,30 @@ namespace TicTacToeCSharpPlayground.Api.Controllers.V1
     [ApiController]
     public class BoardsController : ControllerBase
     {
-        private readonly ITicTacToeRepository _ticTacToeRepository;
-        private readonly IBoardDealer _boardDealer;
         private readonly AppDbContext _context;
+        private readonly DbSet<Board> _databaseSet;
+        private readonly IGameService _gameService;
 
-        public BoardsController(ITicTacToeRepository ticTacToeRepository,
-            IBoardDealer boardDealer,
-            AppDbContext context)
+        public BoardsController(AppDbContext context, IGameService gameService)
         {
-            _ticTacToeRepository = ticTacToeRepository;
-            _boardDealer = boardDealer;
             _context = context;
+            _databaseSet = context.Boards;
+            _gameService = gameService;
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Board>>> GetAllBoards()
         {
             Log.Information("Getting all boards...");
-            
-            return await _context.Boards.ToListAsync();
+
+            return await _databaseSet.ToListAsync();
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Board>> GetSpecificBoard(long id)
+        public async Task<ActionResult<Board>> GetSpecificBoard(int id)
         {
             Log.Information("Getting specific board given ID: {Id}", id);
-            var board = await _context.Boards.FindAsync(id);
+            var board = await _databaseSet.FindAsync(id);
 
             if (board is null)
             {
@@ -52,40 +51,29 @@ namespace TicTacToeCSharpPlayground.Api.Controllers.V1
         }
 
         [HttpPost]
-        public async Task<ActionResult<Board>> CreateNewBoard(CreateBoardDto createBoardDto)
+        public async Task<ActionResult<BoardDTO>> CreateNewBoard([FromBody] CreateBoardDto createBoardDto)
         {
-            Log.Information("Received board request object: {CreateBoardDto}", createBoardDto);
+            Log.Information("Board to be created: {CreateBoardDto}", createBoardDto);
 
-            // TODO: See a better way to apply default value
-            createBoardDto.BoardSize ??= "3x3";
-
-            if (_boardDealer.NotValidOrUnsupportedBoardSize(createBoardDto.BoardSize))
-                throw new InvalidBoardConfigurationException();
-
-            var playerOne = await _ticTacToeRepository.GetPlayerByItsId(createBoardDto.FirstPlayerId);
-
-            if (playerOne is null)
-                throw new InvalidPlayerNotFoundException();
-
-            Player playerTwo;
-
-            if (createBoardDto.SecondPlayerId is not null)
+            var boardSize = createBoardDto.BoardSize;
+            var firstPlayerId = createBoardDto.FirstPlayerId;
+            var secondPlayerId = createBoardDto.SecondPlayerId;
+            
+            try
             {
-                playerTwo = await _ticTacToeRepository.GetPlayerByItsId(createBoardDto.SecondPlayerId.Value);
-                if (playerTwo is null)
-                    throw new InvalidPlayerNotFoundException();
+                var board = await _gameService.CreateNewBoard(boardSize, firstPlayerId, secondPlayerId);
+                return CreatedAtAction("GetSpecificBoard", new {id = board.Id}, board);
             }
-            else
+            catch (TicTacToeRequiredDataExceptions requiredDataExcep)
             {
-                playerTwo = await _ticTacToeRepository
-                    .GetSomeComputerPlayer(); // TODO: Create computer player if needed
+                var message = requiredDataExcep.Message;
+                throw new HttpException {StatusCode = (int) HttpStatusCode.NotFound, Details = message};
             }
-
-            var logMessage = "Board setup and players: {BoardSize} / {PlayerOne} / {PlayerTwo}";
-            Log.Information(logMessage, createBoardDto.BoardSize, playerOne, playerTwo);
-            var createdBoard = await _boardDealer.CreateNewBoard(createBoardDto.BoardSize, playerOne, playerTwo);
-
-            return CreatedAtAction("GetSpecificBoard", new {id = createdBoard.Id}, createdBoard);
+            catch (TicTacToeContractExceptions contractExcep)
+            {
+                var message = contractExcep.Message;
+                throw new HttpException {StatusCode = (int) HttpStatusCode.BadRequest, Details = message};
+            }
         }
     }
 }

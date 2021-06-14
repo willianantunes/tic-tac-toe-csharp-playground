@@ -5,20 +5,10 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using TicTacToeCSharpPlayground.Core.Models;
+using TicTacToeCSharpPlayground.Core.Repository;
 
 namespace TicTacToeCSharpPlayground.Infrastructure.Database.Repositories
 {
-    public interface ITicTacToeRepository
-    {
-        ValueTask<Player> GetPlayerByItsId(long playerId);
-        ValueTask<Board> GetBoardByItsId(long boardId);
-        Task<Game> GetGameByItsBoard(Board board);
-        Task<Game> RefreshGameState(Game game);
-        Task<Player> GetSomeComputerPlayer();
-        Task SaveBoard(Board board);
-        Task<Board> CreateMovementAndRefreshBoard(Movement movement, Board board);
-    }
-
     public class TicTacToeRepository : ITicTacToeRepository
     {
         private AppDbContext _playgroundContext;
@@ -28,12 +18,12 @@ namespace TicTacToeCSharpPlayground.Infrastructure.Database.Repositories
             _playgroundContext = playgroundContext;
         }
 
-        public async ValueTask<Player> GetPlayerByItsId(long playerId)
+        public async Task<Player?> GetPlayerByItsId(int playerId)
         {
             return await _playgroundContext.Players.FindAsync(playerId);
         }
 
-        public async ValueTask<Board> GetBoardByItsId(long boardId)
+        public async Task<Board?> GetBoardByItsId(int boardId)
         {
             var boards = await _playgroundContext.Boards
                 .Where(b => b.Id == boardId)
@@ -44,10 +34,8 @@ namespace TicTacToeCSharpPlayground.Infrastructure.Database.Repositories
             return boards.FirstOrDefault();
         }
 
-        public async Task<Game> GetGameByItsBoard(Board board)
+        public async Task<Game?> GetGameByItsBoard(Board board)
         {
-            Expression<Func<Game, bool>> predicate = game => game.ConfiguredBoard.Id == board.Id;
-
             var games = await _playgroundContext.Games
                 .Where(game => game.ConfiguredBoard.Id == board.Id)
                 .Include(g => g.ConfiguredBoard)
@@ -81,7 +69,6 @@ namespace TicTacToeCSharpPlayground.Infrastructure.Database.Repositories
                 var p = await _playgroundContext.Players.FindAsync(boardPlayerBoard.Player.Id);
                 boardPlayerBoard.Player = p;
             }
-
             _playgroundContext.Boards.Add(board);
             await _playgroundContext.SaveChangesAsync();
         }

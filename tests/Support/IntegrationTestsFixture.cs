@@ -23,7 +23,7 @@ namespace Tests.Support
         protected readonly IServiceProvider Services;
         private readonly IDbContextTransaction _transaction;
 
-        protected IntegrationTestsFixture()
+        protected IntegrationTestsFixture(Action<IServiceCollection> customSetup = null)
         {
             // Basic setup
             var configuration = Program.BuildConfiguration();
@@ -32,7 +32,11 @@ namespace Tests.Support
                 .UseSerilog();
             // You can create new clients with mocked services if required (see ConfigureTestServices)
             var dbName = $"test_{Guid.NewGuid()}";
+            // https://github.com/dotnet/aspnetcore/issues/12079
+            builder.UseEnvironment("Production");
             builder.ConfigureTestServices(ConfigureDatabaseAsSingleton(configuration, dbName));
+            if (customSetup is not null)
+                builder.ConfigureTestServices(customSetup);
             var server = new TestServer(builder);
             Services = server.Host.Services;
             // It allows you to call API endpoints
@@ -47,8 +51,7 @@ namespace Tests.Support
 
         private void ExecuteMissingMigrations()
         {
-            if (AppDbContext.Database.GetPendingMigrations().ToList().Any() is true)
-                AppDbContext.Database.Migrate();
+            AppDbContext.Database.EnsureCreated();
         }
 
         private Action<IServiceCollection> ConfigureDatabaseAsSingleton(IConfiguration configuration, string dbName)
@@ -76,7 +79,6 @@ namespace Tests.Support
                 _transaction.Rollback();
                 _transaction.Dispose();
             }
-
             AppDbContext.Database.EnsureDeleted();
         }
     }

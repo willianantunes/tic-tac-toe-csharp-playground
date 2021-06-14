@@ -1,45 +1,32 @@
-using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using TicTacToeCSharpPlayground.Core.Models;
-using TicTacToeCSharpPlayground.Infrastructure.Database.Repositories;
 
 namespace TicTacToeCSharpPlayground.Core.Business
 {
     public interface IBoardDealer
     {
-        bool NotValidOrUnsupportedBoardSize(string? boardSize);
-        Task<Board> CreateNewBoard(string boardSize, Player playerOne, Player playerTwo);
-        void InitializeBoardConfiguration(Board board);
-        bool PositionIsNotAvailable(Board gameConfiguredBoard, in int movementPosition);
-        IList<int> AvailablePositions(Board gameConfiguredBoard);
-        Task<Board> ApplyMovement(Board board, int movementPosition, Player player);
-        BoardSituation EvaluateTheSituation(Board gameConfiguredBoard, in int lastMovementPosition);
-        bool HasComputerPlayer(Board gameConfiguredBoard);
-        Task ApplyMovementForComputer(Board board, int movementPosition);
+        bool NotValidOrUnsupportedBoardSize(string boardSize);
+        Board PrepareBoardWithRequestSetup(string boardSize, Player playerOne, Player playerTwo);
+        Movement CreateMovementForCustomPlayerOrComputer(Board board, int position, Player? player = null);
+        BoardState EvaluateTheSituation(Board board, in int lastMovementPosition);
     }
 
     public class BoardDealer : IBoardDealer
     {
         private IBoardJudge _boardJudge;
-        private readonly ITicTacToeRepository _ticTacToeRepository;
-        private Regex _almostValidBoardSetup = new Regex(@"[3-9]x[3-9]");
+        private Regex _almostValidBoardSetup = new(@"[3-9]x[3-9]");
 
-        public BoardDealer()
-        {
-        }
-
-        public BoardDealer(IBoardJudge boardJudge, ITicTacToeRepository ticTacToeRepository)
+        public BoardDealer(IBoardJudge boardJudge)
         {
             _boardJudge = boardJudge;
-            _ticTacToeRepository = ticTacToeRepository;
         }
 
-        public bool NotValidOrUnsupportedBoardSize(string? boardSize)
+        public bool NotValidOrUnsupportedBoardSize(string boardSize)
         {
-            if (boardSize is null || _almostValidBoardSetup.Match(boardSize).Success is false)
+            if (_almostValidBoardSetup.Match(boardSize).Success is false)
                 return true;
 
             var column = boardSize.Substring(0, 1);
@@ -48,7 +35,7 @@ namespace TicTacToeCSharpPlayground.Core.Business
             return column != rows;
         }
 
-        public async Task<Board> CreateNewBoard(string boardSize, Player playerOne, Player playerTwo)
+        public Board PrepareBoardWithRequestSetup(string boardSize, Player playerOne, Player playerTwo)
         {
             var column = int.Parse(boardSize.Substring(0, 1));
             var rows = int.Parse(boardSize.Substring(2, 1));
@@ -58,104 +45,39 @@ namespace TicTacToeCSharpPlayground.Core.Business
             var playerBoarTwo = new PlayerBoard {Player = playerTwo, Board = board};
             board.PlayerBoards = new List<PlayerBoard> {playerBoardOne, playerBoarTwo};
 
-            await _ticTacToeRepository.SaveBoard(board);
-
             return board;
         }
 
-        public void InitializeBoardConfiguration(Board board)
+        public Movement CreateMovementForCustomPlayerOrComputer(Board board, int position, Player? player = null)
         {
-            var freeFields = new List<int>();
-            var boardConfiguration = new List<IList<Player?>>();
-            var positionCount = 1;
+            player ??= board.PlayerBoards.First(pb => !pb.Player.isNotComputer()).Player;
 
-            for (int indexRow = 0; indexRow < board.NumberOfRows; indexRow++)
-            {
-                boardConfiguration.Add(new List<Player?>());
-                for (int indexColumn = 0; indexColumn < board.NumberOfColumn; indexColumn++)
-                {
-                    Func<Movement, bool> predicate = m => m.Position == positionCount;
-                    var movement = board.Movements?.FirstOrDefault(predicate);
-
-                    if (movement is not null)
-                        boardConfiguration[indexRow].Add(movement.WhoMade);
-                    else
-                    {
-                        boardConfiguration[indexRow].Add(null);
-                        freeFields.Add(positionCount);
-                    }
-
-                    positionCount++;
-                }
-            }
-
-            board.FieldsConfiguration = boardConfiguration;
-            board.FreeFields = freeFields;
-        }
-
-        public bool PositionIsNotAvailable(Board board, in int movementPosition)
-        {
-            var copiedMovementPosition = movementPosition;
-            return board.FreeFields.Any(position => position == copiedMovementPosition) is false;
-        }
-
-        public IList<int> AvailablePositions(Board board)
-        {
-            return board.FreeFields;
-        }
-
-        public async Task<Board> ApplyMovement(Board board, int movementPosition, Player player)
-        {
-            var (row, col) = _boardJudge.GetRowAndColGivenAPosition(movementPosition, board);
+            var (row, col) = _boardJudge.GetRowAndColGivenAPosition(position, board);
 
             board.FieldsConfiguration[row][col] = player;
-            // TODO raise exception if remove action returns false
-            board.FreeFields.Remove(movementPosition);
+            var movementWasRemoved = board.FreeFields.Remove(position);
+            Trace.Assert(movementWasRemoved is true);
 
-            var movement = new Movement {Position = movementPosition, WhoMade = player};
-
-            return await _ticTacToeRepository.CreateMovementAndRefreshBoard(movement, board);
+            return new Movement {Position = position, WhoMade = player};
         }
 
-        public BoardSituation EvaluateTheSituation(Board gameConfiguredBoard, in int lastMovementPosition)
+        public BoardState EvaluateTheSituation(Board board, in int lastMovementPosition)
         {
-            bool wonHorizontally = _boardJudge.WonHorizontally(gameConfiguredBoard, lastMovementPosition);
-            bool wonVertically = _boardJudge.WonVertically(gameConfiguredBoard, lastMovementPosition);
-            bool wonDiagonally = _boardJudge.WonDiagonally(gameConfiguredBoard, lastMovementPosition);
-            bool wonReverseDiagonally = _boardJudge.WonReverseDiagonally(gameConfiguredBoard, lastMovementPosition);
+            bool wonHorizontally = _boardJudge.WonHorizontally(board, lastMovementPosition);
+            bool wonVertically = _boardJudge.WonVertically(board, lastMovementPosition);
+            bool wonDiagonally = _boardJudge.WonDiagonally(board, lastMovementPosition);
+            bool wonReverseDiagonally = _boardJudge.WonReverseDiagonally(board, lastMovementPosition);
 
-            var boardSituation = new BoardSituation();
-
-            boardSituation.HasAWinner = wonHorizontally || wonVertically || wonDiagonally || wonReverseDiagonally;
-            if (boardSituation.HasAWinner)
-                return boardSituation;
-
-            var fields = gameConfiguredBoard.FieldsConfiguration;
+            bool hasAWinner = wonHorizontally || wonVertically || wonDiagonally || wonReverseDiagonally;
+            var fields = board.FieldsConfiguration;
             bool drawGame = _boardJudge.DrawGame(fields);
-            if (drawGame)
-                boardSituation.SadlyFinishedWithDraw = true;
 
-            return boardSituation;
+            var possibleConditionOne = hasAWinner is true && drawGame is false;
+            var possibleConditionTwo = hasAWinner is false && drawGame is true;
+            var possibleConditionThree = hasAWinner is false && drawGame is false;
+            Trace.Assert(possibleConditionOne || possibleConditionTwo || possibleConditionThree);
+
+            return new BoardState(hasAWinner, drawGame);
         }
-
-        public bool HasComputerPlayer(Board gameConfiguredBoard)
-        {
-            return gameConfiguredBoard.PlayerBoards.Any(pb => !pb.Player.isNotComputer());
-        }
-
-        public async Task ApplyMovementForComputer(Board board, int movementPosition)
-        {
-            var pBoard = board.PlayerBoards.First(pb => !pb.Player.isNotComputer());
-
-            await ApplyMovement(board, movementPosition, pBoard.Player);
-        }
-    }
-
-    public class BoardSituation
-    {
-        public bool SadlyFinishedWithDraw { get; set; }
-        public bool HasAWinner { get; set; }
-        public Player Winner { get; set; }
-        public bool Concluded { get; set; }
     }
 }

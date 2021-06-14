@@ -7,7 +7,7 @@ namespace TicTacToeCSharpPlayground.Core.Business
 {
     public interface IBoardJudge
     {
-        public (int, int) GetRowAndColGivenAPosition(in int position, Board gameConfiguredBoard);
+        (int, int) GetRowAndColGivenAPosition(in int position, Board gameConfiguredBoard);
         bool WonHorizontally(Board gameConfiguredBoard, in int lastMovementPosition);
         bool WonVertically(Board gameConfiguredBoard, in int lastMovementPosition);
         bool WonDiagonally(Board gameConfiguredBoard, in int lastMovementPosition);
@@ -17,12 +17,12 @@ namespace TicTacToeCSharpPlayground.Core.Business
 
     public class BoardJudge : IBoardJudge
     {
-        public (int, int) GetRowAndColGivenAPosition(in int position, Board gameConfiguredBoard)
+        public (int, int) GetRowAndColGivenAPosition(in int position, Board board)
         {
             var refreshedMovementPosition = position - 1;
 
-            var row = refreshedMovementPosition / gameConfiguredBoard.NumberOfRows;
-            var col = refreshedMovementPosition % gameConfiguredBoard.NumberOfColumn;
+            var row = refreshedMovementPosition / board.NumberOfRows;
+            var col = refreshedMovementPosition % board.NumberOfColumn;
 
             return (row, col);
         }
@@ -82,13 +82,14 @@ namespace TicTacToeCSharpPlayground.Core.Business
             var fields = gameConfiguredBoard.FieldsConfiguration;
             var foundPlayer = fields[row][col];
             var columnCounter = fields[row].Count - 1;
-            Func<IList<Player?>, bool> predicate = row =>
+            
+            bool Predicate(IList<Player?> row)
             {
                 var maybeAPlayerHere = row[columnCounter--];
                 return maybeAPlayerHere is not null && maybeAPlayerHere.Equals(foundPlayer);
-            };
+            }
 
-            return fields.All(predicate);
+            return fields.All(Predicate);
         }
 
         public bool DrawGame(IList<IList<Player?>> fields)

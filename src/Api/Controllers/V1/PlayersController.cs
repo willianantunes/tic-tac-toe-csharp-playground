@@ -25,19 +25,18 @@ namespace TicTacToeCSharpPlayground.Api.Controllers.V1
         public async Task<ActionResult<IEnumerable<Player>>> GetAllPlayers()
         {
             Log.Information("Getting all players...");
-
             return await _databaseSet.ToListAsync();
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Player>> GetSpecificPlayer(long id)
+        public async Task<ActionResult<Player>> GetSpecificPlayer(int id)
         {
             Log.Information("Getting specific player given ID: {Id}", id);
             var player = await _databaseSet.FindAsync(id);
-
+            
             if (player is null)
             {
-                Log.Information("No player has been found!");
+                Log.Information("No player has been found");
                 return NotFound();
             }
 

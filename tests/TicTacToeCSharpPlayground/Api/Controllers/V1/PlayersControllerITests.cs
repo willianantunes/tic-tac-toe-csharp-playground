@@ -11,15 +11,15 @@ using Xunit;
 
 namespace Tests.TicTacToeCSharpPlayground.Api.Controllers.V1
 {
-    public class PlayersControllerITests : ApiIntegrationTests
+    public class PlayersControllerITests : IntegrationTestsWithDependencyInjection
     {
         private readonly string _requestUri;
 
-        public PlayersControllerITests() : base()
+        public PlayersControllerITests()
         {
             _requestUri = "api/v1/players";
         }
-        
+
         [Fact]
         public async Task ShouldReturn400GivenPlayerIsInvalid()
         {
@@ -38,7 +38,7 @@ namespace Tests.TicTacToeCSharpPlayground.Api.Controllers.V1
             errorsRelatedToName.Should().HaveCount(1);
             var motive = errorsRelatedToName.First();
             motive.Should().Be("The Name field is required.");
-        }        
+        }
 
         [Fact]
         public async Task ShouldCreatePlayerGivenValidRequest()
@@ -56,7 +56,7 @@ namespace Tests.TicTacToeCSharpPlayground.Api.Controllers.V1
             createdPlayer.Computer.Should().BeFalse();
             createdPlayer.Id.Should().BePositive();
         }
-        
+
         [Fact]
         public async Task ShouldReturnPlayerCreatedPreviously()
         {
@@ -69,8 +69,8 @@ namespace Tests.TicTacToeCSharpPlayground.Api.Controllers.V1
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var retrievedPlayer = await response.Content.ReadFromJsonAsync<Player>();
             retrievedPlayer.Should().BeEquivalentTo(somePlayer);
-        }    
-        
+        }
+
         [Fact]
         public async Task ShouldReturn404GivenNoPlayerIsFound()
         {
@@ -79,8 +79,8 @@ namespace Tests.TicTacToeCSharpPlayground.Api.Controllers.V1
             // Act
             var response = await Client.GetAsync($"{_requestUri}/{fakePlayerId}");
             response.StatusCode.Should().Be(HttpStatusCode.NotFound);
-        }        
-        
+        }
+
         [Fact]
         public async Task ShouldReturnAllPlayers()
         {
@@ -93,6 +93,6 @@ namespace Tests.TicTacToeCSharpPlayground.Api.Controllers.V1
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var players = await response.Content.ReadFromJsonAsync<List<Player>>();
             players.Count.Should().Be(2);
-        }        
+        }
     }
 }

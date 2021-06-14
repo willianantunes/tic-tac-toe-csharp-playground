@@ -4,12 +4,13 @@ using System.Net.Http.Json;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Tests.Support;
+using TicTacToeCSharpPlayground.Core.DTOSetup;
 using TicTacToeCSharpPlayground.Core.Models;
 using Xunit;
 
 namespace Tests.TicTacToeCSharpPlayground.Api.Controllers.V1
 {
-    public class BoardsControllerITests : ApiIntegrationTests
+    public class BoardsControllerITests : IntegrationTestsWithDependencyInjection
     {
         private readonly string _requestUri;
 
@@ -19,24 +20,29 @@ namespace Tests.TicTacToeCSharpPlayground.Api.Controllers.V1
         }
 
         [Fact]
-        public async Task ShouldCreateBoardGivenAtLeastOnePlayerWasProvidedAndWithProvidedBoardSetup()
+        public async Task ShouldCreateBoardGivenProvidedBoardSetup()
         {
             // Arrange
             var antunes = new Player {Name = "Antunes"};
             var rose = new Player {Name = "Rose", Computer = true};
             AppDbContext.Players.AddRange(antunes, rose);
             await AppDbContext.SaveChangesAsync();
-            var postData = new {boardSize = "4x4", firstPlayerId = antunes.Id.ToString()};
+            var postData = new
+            {
+                boardSize = "4x4",
+                firstPlayerId = antunes.Id,
+                SecondPlayerId = rose.Id
+            };
             // Act
             var response = await Client.PostAsJsonAsync(_requestUri, postData);
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.Created);
-            var createdBoard = await response.Content.ReadFromJsonAsync<Board>();
+            var createdBoard = await response.Content.ReadFromJsonAsync<BoardDTO>();
             createdBoard.Should().NotBe(null);
             createdBoard.NumberOfColumn.Should().Be(4);
             createdBoard.NumberOfRows.Should().Be(4);
-            createdBoard.PlayerBoards.Count.Should().Be(2);
-            createdBoard.Movements.Should().BeNull();
+            createdBoard.Players.Count.Should().Be(2);
+            createdBoard.Movements.Should().BeEmpty();
         }
 
         [Fact]
@@ -56,15 +62,15 @@ namespace Tests.TicTacToeCSharpPlayground.Api.Controllers.V1
             var response = await Client.PostAsJsonAsync(_requestUri, postData);
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.Created);
-            var createdBoard = await response.Content.ReadFromJsonAsync<Board>();
+            var createdBoard = await response.Content.ReadFromJsonAsync<BoardDTO>();
             createdBoard.Should().NotBe(null);
             createdBoard.NumberOfColumn.Should().Be(3);
             createdBoard.NumberOfRows.Should().Be(3);
-            var playerBoards = createdBoard.PlayerBoards;
+            var playerBoards = createdBoard.Players;
             playerBoards.Count.Should().Be(2);
-            playerBoards.FirstOrDefault(pb => pb.Player.Id == aladdin.Id).Should().NotBeNull();
-            playerBoards.FirstOrDefault(pb => pb.Player.Id == jasmine.Id).Should().NotBeNull();
-            createdBoard.Movements.Should().BeNull();
+            playerBoards.FirstOrDefault(p => p.Id == aladdin.Id).Should().NotBeNull();
+            playerBoards.FirstOrDefault(p => p.Id == jasmine.Id).Should().NotBeNull();
+            createdBoard.Movements.Should().BeEmpty();
         }
 
         [Fact]
@@ -77,7 +83,8 @@ namespace Tests.TicTacToeCSharpPlayground.Api.Controllers.V1
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
             var content = await response.Content.ReadAsStringAsync();
-            content.Should().Be("Board configuration not valid");
+            var expectedMessage = $"Board {postData.boardSize} is not supported. You can try 3x3 👍";
+            content.Should().Be(expectedMessage);
         }
     }
 }

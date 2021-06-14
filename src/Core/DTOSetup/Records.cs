@@ -8,6 +8,8 @@ namespace TicTacToeCSharpPlayground.Core.DTOSetup
 
     public record MovementDTO(int Position, PlayerDTO WhoMade);
 
+    public record GameDTO(PlayerDTO Winner, bool Draw, bool Finished, BoardDTO ConfiguredBoard);
+
     public class BoardDTO
     {
         public long Id { get; set; }
