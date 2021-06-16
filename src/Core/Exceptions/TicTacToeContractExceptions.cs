@@ -14,7 +14,7 @@ namespace TicTacToeCSharpPlayground.Core.Exceptions
     {
         public InvalidBoardConfigurationException(string message) : base(message) { }
     }
-    
+
     public class YouAreNotAllowedToPlayWithARobotException : TicTacToeContractExceptions
     {
         public YouAreNotAllowedToPlayWithARobotException(string message) : base(message) { }
@@ -23,7 +23,7 @@ namespace TicTacToeCSharpPlayground.Core.Exceptions
     {
         public GameIsNotPlayableException(string message) : base(message) { }
     }
-    
+
     public class PositionNotAvailableException : TicTacToeContractExceptions
     {
         public PositionNotAvailableException(string message) : base(message) { }

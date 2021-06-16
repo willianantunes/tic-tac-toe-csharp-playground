@@ -4,7 +4,7 @@ using TicTacToeCSharpPlayground.Core.Business;
 
 namespace Tests.Support
 {
-    public class CustomPositionDecider: IPositionDecider
+    public class CustomPositionDecider : IPositionDecider
     {
         public int ChooseTheBestAvailablePositionFor(IEnumerable<int> positions)
         {

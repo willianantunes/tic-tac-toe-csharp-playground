@@ -25,7 +25,7 @@ namespace TicTacToeCSharpPlayground.Infrastructure.Database
             void CreateManyToManyBetweenPlayerAndBoard()
             {
                 modelBuilder.Entity<PlayerBoard>()
-                    .HasKey(t => new {t.PlayerId, t.BoardId});
+                    .HasKey(t => new { t.PlayerId, t.BoardId });
 
                 modelBuilder.Entity<PlayerBoard>()
                     .HasOne(pt => pt.Player)

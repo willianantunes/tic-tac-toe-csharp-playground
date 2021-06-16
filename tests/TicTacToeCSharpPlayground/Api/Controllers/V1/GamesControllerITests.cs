@@ -18,7 +18,7 @@ namespace Tests.TicTacToeCSharpPlayground.Api.Controllers.V1
     public class GamesControllerITests : IntegrationTestsWithDependencyInjection
     {
         private readonly string _requestUri;
-        
+
         // In order to add the dummy decider
         private static Action<IServiceCollection> ProvideCustomSetup()
         {
@@ -38,8 +38,8 @@ namespace Tests.TicTacToeCSharpPlayground.Api.Controllers.V1
         public async Task ShouldCreateGameGivenFirstMovementIsBeingExecuted()
         {
             // Arrange
-            var aladdin = new Player {Name = "Aladdin", Computer = false};
-            var rose = new Player {Name = "Rose", Computer = true};
+            var aladdin = new Player { Name = "Aladdin", Computer = false };
+            var rose = new Player { Name = "Rose", Computer = true };
             var createdBoard = (await new BoardBuilder()
                 .WithDbContext(AppDbContext)
                 .CreateBoard()
@@ -94,7 +94,7 @@ namespace Tests.TicTacToeCSharpPlayground.Api.Controllers.V1
             var createdBoard = (await new BoardBuilder()
                 .WithDbContext(AppDbContext)
                 .CreateBoard()
-                .WithPlayers(new Player {Name = "Aladdin"}, new Player {Name = "Rose"})
+                .WithPlayers(new Player { Name = "Aladdin" }, new Player { Name = "Rose" })
                 .Build()).First();
             var fakePlayerId = 42L;
             var movementPosition = 1;
@@ -111,8 +111,8 @@ namespace Tests.TicTacToeCSharpPlayground.Api.Controllers.V1
         public async Task ShouldRaise400GivenTheGameIsFinished()
         {
             // Arrange
-            var aladdin = new Player {Name = "Aladdin", Computer = false};
-            var rose = new Player {Name = "Rose", Computer = true};
+            var aladdin = new Player { Name = "Aladdin", Computer = false };
+            var rose = new Player { Name = "Rose", Computer = true };
             var board = await new BoardBuilder()
                 .WithDbContext(AppDbContext)
                 .CreateBoard()

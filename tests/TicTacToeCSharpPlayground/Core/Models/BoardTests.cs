@@ -11,7 +11,7 @@ namespace Tests.TicTacToeCSharpPlayground.Core.Models
         public void ShouldInitializeScenarioOne()
         {
             // Arrange
-            var board = new Board {Movements = new List<Movement>(), NumberOfRows = 3, NumberOfColumn = 3};
+            var board = new Board { Movements = new List<Movement>(), NumberOfRows = 3, NumberOfColumn = 3 };
             // Act
             board.InitializeBoardConfiguration();
             // Assert
@@ -43,9 +43,9 @@ namespace Tests.TicTacToeCSharpPlayground.Core.Models
         public void ShouldInitializeScenarioTwo()
         {
             // Arrange
-            var player = new Player {Name = "Jafar"};
-            var movement = new Movement {Position = 2, WhoMade = player};
-            var board = new Board {Movements = new List<Movement> {movement}, NumberOfRows = 3, NumberOfColumn = 3};
+            var player = new Player { Name = "Jafar" };
+            var movement = new Movement { Position = 2, WhoMade = player };
+            var board = new Board { Movements = new List<Movement> { movement }, NumberOfRows = 3, NumberOfColumn = 3 };
             // Act
             board.InitializeBoardConfiguration();
             // Assert
@@ -75,14 +75,14 @@ namespace Tests.TicTacToeCSharpPlayground.Core.Models
         public void ShouldInitializeScenarioThree()
         {
             // Arrange
-            var player = new Player {Name = "Iago"};
-            var movement2 = new Movement {Position = 2, WhoMade = player};
-            var movement3 = new Movement {Position = 3, WhoMade = player};
-            var movement6 = new Movement {Position = 6, WhoMade = player};
-            var movement7 = new Movement {Position = 7, WhoMade = player};
+            var player = new Player { Name = "Iago" };
+            var movement2 = new Movement { Position = 2, WhoMade = player };
+            var movement3 = new Movement { Position = 3, WhoMade = player };
+            var movement6 = new Movement { Position = 6, WhoMade = player };
+            var movement7 = new Movement { Position = 7, WhoMade = player };
             var board = new Board
             {
-                Movements = new List<Movement> {movement2, movement3, movement6, movement7},
+                Movements = new List<Movement> { movement2, movement3, movement6, movement7 },
                 NumberOfRows = 3,
                 NumberOfColumn = 3
             };

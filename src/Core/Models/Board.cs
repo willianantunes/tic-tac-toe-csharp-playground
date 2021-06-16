@@ -17,13 +17,13 @@ namespace TicTacToeCSharpPlayground.Core.Models
         {
             return PlayerBoards.FirstOrDefault(pb => !pb.Player.isNotComputer())?.Player;
         }
-        
+
         public bool PositionIsNotAvailable(int movementPosition)
         {
             var copiedMovementPosition = movementPosition;
             return FreeFields.Any(position => position == copiedMovementPosition) is false;
-        }        
-        
+        }
+
         public void InitializeBoardConfiguration()
         {
             var freeFields = new List<int>();

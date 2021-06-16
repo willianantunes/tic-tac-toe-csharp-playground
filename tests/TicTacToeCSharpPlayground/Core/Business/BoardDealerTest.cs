@@ -42,10 +42,10 @@ namespace Tests.TicTacToeCSharpPlayground.Core.Business
         public void ShouldCreateRequestedBoard()
         {
             // Arrange
-            var boardSetup = new {columnSize=4, rowSize=3};
+            var boardSetup = new { columnSize = 4, rowSize = 3 };
             var boardSize = $"{boardSetup.columnSize}x{boardSetup.rowSize}";
-            var playerOne = new Player {Name = "Bear"};
-            var playerTwo = new Player {Name = "Salted Man"};
+            var playerOne = new Player { Name = "Bear" };
+            var playerTwo = new Player { Name = "Salted Man" };
             // Act
             var board = _boardDealer.PrepareBoardWithRequestSetup(boardSize, playerOne, playerTwo);
             // Assert
@@ -64,7 +64,7 @@ namespace Tests.TicTacToeCSharpPlayground.Core.Business
             // Arrange
             var board = new BoardBuilder()
                 .BoardSize(3)
-                .WithPlayer(new Player {Name = "Iago"})
+                .WithPlayer(new Player { Name = "Iago" })
                 .GivenRow(0)
                 .FillAllColumnsUntilColumn(2)
                 .Build();
@@ -79,7 +79,7 @@ namespace Tests.TicTacToeCSharpPlayground.Core.Business
         public void ShouldCreateMovementForPlayer()
         {
             // Arrange
-            var player = new Player {Name = "Iago"};
+            var player = new Player { Name = "Iago" };
             var board = new BoardBuilder().BoardSize(3).Build();
             var freeFieldsCountDuringArrange = board.FreeFields.Count;
             var position = 1;
@@ -91,13 +91,13 @@ namespace Tests.TicTacToeCSharpPlayground.Core.Business
             movement.Position.Should().Be(position);
             movement.WhoMade.Should().Be(player);
         }
-        
+
         [Fact]
         public void ShouldCreateMovementForRobotPlayer()
         {
             // Arrange
-            var playerIago = new Player {Name = "Iago", Computer = false};
-            var playerRose = new Player {Name = "Rose", Computer = true};
+            var playerIago = new Player { Name = "Iago", Computer = false };
+            var playerRose = new Player { Name = "Rose", Computer = true };
             var board = new BoardBuilder().BoardSize(3).AddPlayers(playerIago, playerRose).Build();
             var freeFieldsCountDuringArrange = board.FreeFields.Count;
             var position = 1;

@@ -33,7 +33,7 @@ namespace TicTacToeCSharpPlayground.Api.Controllers.V1
         {
             Log.Information("Getting specific player given ID: {Id}", id);
             var player = await _databaseSet.FindAsync(id);
-            
+
             if (player is null)
             {
                 Log.Information("No player has been found");
@@ -49,7 +49,7 @@ namespace TicTacToeCSharpPlayground.Api.Controllers.V1
             await _databaseSet.AddAsync(player);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetSpecificPlayer", new {id = player.Id}, player);
+            return CreatedAtAction("GetSpecificPlayer", new { id = player.Id }, player);
         }
     }
 }

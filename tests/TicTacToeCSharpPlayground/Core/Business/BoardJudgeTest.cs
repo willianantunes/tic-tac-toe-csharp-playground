@@ -15,7 +15,7 @@ namespace Tests.TicTacToeCSharpPlayground.Core.Business
         public void ShouldReturnRowAndColumnGivenSpecificPositionForBoard3X3()
         {
             // Arrange
-            var board = new Board {NumberOfColumn = 3, NumberOfRows = 3};
+            var board = new Board { NumberOfColumn = 3, NumberOfRows = 3 };
             // Act
             var (row, col) = _boardJudge.GetRowAndColGivenAPosition(1, board);
             // Assert
@@ -65,7 +65,7 @@ namespace Tests.TicTacToeCSharpPlayground.Core.Business
         public void ShouldReturnTrueGivenThePlayerIsPresentInAllHorizontalFieldsScenarioBoard3X3Row0Column0()
         {
             // Arrange
-            var iago = new Player {Name = "Iago"};
+            var iago = new Player { Name = "Iago" };
             var board = new BoardBuilder()
                 .BoardSize(3)
                 .WithPlayer(iago)
@@ -82,7 +82,7 @@ namespace Tests.TicTacToeCSharpPlayground.Core.Business
         public void ShouldReturnFalseGivenThePlayerIsNotPresentInAllHorizontalFieldsScenarioBoard3X3Row0Column0()
         {
             // Arrange
-            var iago = new Player {Name = "Iago"};
+            var iago = new Player { Name = "Iago" };
             var board = new BoardBuilder()
                 .BoardSize(3)
                 .WithPlayer(iago)
@@ -99,7 +99,7 @@ namespace Tests.TicTacToeCSharpPlayground.Core.Business
         public void ShouldReturnTrueGivenThePlayerIsPresentInAllHorizontalFieldsScenarioBoard3X3Row0Column2()
         {
             // Arrange
-            var jasmine = new Player {Name = "Jasmine"};
+            var jasmine = new Player { Name = "Jasmine" };
             var board = new BoardBuilder()
                 .BoardSize(3)
                 .WithPlayer(jasmine)
@@ -116,7 +116,7 @@ namespace Tests.TicTacToeCSharpPlayground.Core.Business
         public void ShouldReturnTrueGivenThePlayerIsPresentInAllHorizontalFieldsScenarioBoard3X3Row1Column1()
         {
             // Arrange
-            var saltedGuy = new Player {Name = "Salted Guy"};
+            var saltedGuy = new Player { Name = "Salted Guy" };
             var board = new BoardBuilder()
                 .BoardSize(3)
                 .WithPlayer(saltedGuy)
@@ -133,7 +133,7 @@ namespace Tests.TicTacToeCSharpPlayground.Core.Business
         public void ShouldReturnFalseGivenThePlayerIsNotPresentInAllHorizontalFieldsScenarioBoard3X3Row1Column1()
         {
             // Arrange
-            var saltedGuy = new Player {Name = "Salted Guy"};
+            var saltedGuy = new Player { Name = "Salted Guy" };
             var board = new BoardBuilder()
                 .BoardSize(3)
                 .WithPlayer(saltedGuy)
@@ -320,20 +320,20 @@ namespace Tests.TicTacToeCSharpPlayground.Core.Business
         public void ShouldReturnFalseGivenNotAllFieldsAreFilled()
         {
             // 1: Arrange
-            var columnsRowOne = new List<Player> {null, null, null};
-            var columnsRowTwo = new List<Player> {null, null, null};
-            var columnsRowThree = new List<Player> {null, null, null};
-            var rows = new List<IList<Player>> {columnsRowOne, columnsRowTwo, columnsRowThree};
+            var columnsRowOne = new List<Player> { null, null, null };
+            var columnsRowTwo = new List<Player> { null, null, null };
+            var columnsRowThree = new List<Player> { null, null, null };
+            var rows = new List<IList<Player>> { columnsRowOne, columnsRowTwo, columnsRowThree };
             // 1: Act        
             var drawGameOne = _boardJudge.DrawGame(rows);
             // 1: Assert
             drawGameOne.Should().BeFalse();
             // 2: Arrange
             var jafar = new Player();
-            columnsRowOne = new List<Player> {jafar, jafar, jafar};
-            columnsRowTwo = new List<Player> {jafar, jafar, jafar};
-            columnsRowThree = new List<Player> {jafar, jafar, null};
-            rows = new List<IList<Player>> {columnsRowOne, columnsRowTwo, columnsRowThree};
+            columnsRowOne = new List<Player> { jafar, jafar, jafar };
+            columnsRowTwo = new List<Player> { jafar, jafar, jafar };
+            columnsRowThree = new List<Player> { jafar, jafar, null };
+            rows = new List<IList<Player>> { columnsRowOne, columnsRowTwo, columnsRowThree };
             // 2: Assert
             var drawGameTwo = _boardJudge.DrawGame(rows);
             drawGameTwo.Should().BeFalse();
@@ -344,10 +344,10 @@ namespace Tests.TicTacToeCSharpPlayground.Core.Business
         {
             // Arrange
             var aladdin = new Player();
-            var columnsRowOne = new List<Player> {aladdin, aladdin, aladdin};
-            var columnsRowTwo = new List<Player> {aladdin, aladdin, aladdin};
-            var columnsRowThree = new List<Player> {aladdin, aladdin, aladdin};
-            var rows = new List<IList<Player>> {columnsRowOne, columnsRowTwo, columnsRowThree};
+            var columnsRowOne = new List<Player> { aladdin, aladdin, aladdin };
+            var columnsRowTwo = new List<Player> { aladdin, aladdin, aladdin };
+            var columnsRowThree = new List<Player> { aladdin, aladdin, aladdin };
+            var rows = new List<IList<Player>> { columnsRowOne, columnsRowTwo, columnsRowThree };
             // Act
             var drawGame = _boardJudge.DrawGame(rows);
             // Assert

@@ -82,7 +82,7 @@ namespace TicTacToeCSharpPlayground.Core.Business
             var fields = gameConfiguredBoard.FieldsConfiguration;
             var foundPlayer = fields[row][col];
             var columnCounter = fields[row].Count - 1;
-            
+
             bool Predicate(IList<Player?> row)
             {
                 var maybeAPlayerHere = row[columnCounter--];

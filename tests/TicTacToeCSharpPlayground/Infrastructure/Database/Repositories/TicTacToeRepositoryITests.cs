@@ -49,27 +49,27 @@ namespace Tests.TicTacToeCSharpPlayground.Infrastructure.Database.Repositories
         public async Task ShouldReturnSomeComputerUser()
         {
             // Arrange
-            AppDbContext.AddRange(new Player {Name = "Rose", Computer = true},
-                new Player {Name = "Z", Computer = true});
+            AppDbContext.AddRange(new Player { Name = "Rose", Computer = true },
+                new Player { Name = "Z", Computer = true });
             await AppDbContext.SaveChangesAsync();
             // Act
             var foundBoard = await _ticTacToeRepository.GetSomeComputerPlayer();
             // Assert
             foundBoard.Computer.Should().BeTrue();
-            foundBoard.Name.Should().ContainAny(new List<string> {"Rose", "Z"});
+            foundBoard.Name.Should().ContainAny(new List<string> { "Rose", "Z" });
         }
 
         [Fact]
         public async Task ShouldSaveBoardWithItsPlayerBoards()
         {
             // Arrange
-            var jafar = new Player {Name = "Jafar", Computer = false};
-            var rose = new Player {Name = "Rose", Computer = true};
+            var jafar = new Player { Name = "Jafar", Computer = false };
+            var rose = new Player { Name = "Rose", Computer = true };
             AppDbContext.Players.AddRange(jafar, rose);
             await AppDbContext.SaveChangesAsync();
-            var boardToBeCreated = new Board {NumberOfColumn = 3, NumberOfRows = 3};
-            var playerBoardOne = new PlayerBoard {Player = jafar, Board = boardToBeCreated};
-            boardToBeCreated.PlayerBoards = new List<PlayerBoard> {playerBoardOne};
+            var boardToBeCreated = new Board { NumberOfColumn = 3, NumberOfRows = 3 };
+            var playerBoardOne = new PlayerBoard { Player = jafar, Board = boardToBeCreated };
+            boardToBeCreated.PlayerBoards = new List<PlayerBoard> { playerBoardOne };
             // Act
             await _ticTacToeRepository.SaveBoard(boardToBeCreated);
             // Assert
@@ -81,13 +81,13 @@ namespace Tests.TicTacToeCSharpPlayground.Infrastructure.Database.Repositories
         public async Task ShouldCreateMovementAndRefreshBoardState()
         {
             // Arrange
-            var aladdin = new Player {Name = "Aladdin", Computer = false};
+            var aladdin = new Player { Name = "Aladdin", Computer = false };
             var createdBoard = (await new BoardBuilder()
                 .WithDbContext(AppDbContext)
                 .CreateBoard()
                 .WithPlayers(aladdin)
                 .Build()).First();
-            var movement = new Movement {Position = 1, WhoMade = aladdin};
+            var movement = new Movement { Position = 1, WhoMade = aladdin };
             // Act
             await _ticTacToeRepository.CreateMovementAndRefreshBoard(movement, createdBoard);
             // Assert

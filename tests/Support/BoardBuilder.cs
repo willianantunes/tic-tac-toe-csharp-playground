@@ -35,7 +35,7 @@ namespace Tests.Support
             _player = player;
             return this;
         }
-        
+
         public BoardBuilder AddPlayers(params Player[] players)
         {
             _players.AddRange(players);
@@ -83,8 +83,8 @@ namespace Tests.Support
         {
             var board = new Board
             {
-                Movements = new List<Movement>(), 
-                NumberOfRows = _boardSize, 
+                Movements = new List<Movement>(),
+                NumberOfRows = _boardSize,
                 NumberOfColumn = _boardSize,
                 PlayerBoards = new List<PlayerBoard>()
             };
@@ -94,7 +94,7 @@ namespace Tests.Support
             {
                 foreach (var player in _players)
                 {
-                    board.PlayerBoards.Add(new PlayerBoard {Player = player});
+                    board.PlayerBoards.Add(new PlayerBoard { Player = player });
                 }
             }
 
@@ -152,7 +152,7 @@ namespace Tests.Support
 
             public BoardBuilderDatabaseCreator CreateBoard(int numberOfColumn = 3, int numberOfRows = 3)
             {
-                _boards.Add(new Board {NumberOfColumn = numberOfColumn, NumberOfRows = numberOfRows});
+                _boards.Add(new Board { NumberOfColumn = numberOfColumn, NumberOfRows = numberOfRows });
                 return this;
             }
 
@@ -173,7 +173,7 @@ namespace Tests.Support
                     {
                         _dbContext.Players.Add(player);
                         await _dbContext.SaveChangesAsync();
-                        var playerBoard = new PlayerBoard {Player = player, Board = board};
+                        var playerBoard = new PlayerBoard { Player = player, Board = board };
                         var p = await _dbContext.Players.FindAsync(player.Id);
                         playerBoard.Player = p;
                         board.PlayerBoards.Add(playerBoard);
@@ -187,7 +187,7 @@ namespace Tests.Support
 
                 return _boards;
             }
-            
+
             public async Task<Board> BuildAndGetFirstBoard()
             {
                 var boards = await Build();

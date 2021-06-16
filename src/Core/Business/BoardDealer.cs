@@ -40,10 +40,10 @@ namespace TicTacToeCSharpPlayground.Core.Business
             var column = int.Parse(boardSize.Substring(0, 1));
             var rows = int.Parse(boardSize.Substring(2, 1));
 
-            var board = new Board {NumberOfColumn = column, NumberOfRows = rows};
-            var playerBoardOne = new PlayerBoard {Player = playerOne, Board = board};
-            var playerBoarTwo = new PlayerBoard {Player = playerTwo, Board = board};
-            board.PlayerBoards = new List<PlayerBoard> {playerBoardOne, playerBoarTwo};
+            var board = new Board { NumberOfColumn = column, NumberOfRows = rows };
+            var playerBoardOne = new PlayerBoard { Player = playerOne, Board = board };
+            var playerBoarTwo = new PlayerBoard { Player = playerTwo, Board = board };
+            board.PlayerBoards = new List<PlayerBoard> { playerBoardOne, playerBoarTwo };
 
             return board;
         }
@@ -58,7 +58,7 @@ namespace TicTacToeCSharpPlayground.Core.Business
             var movementWasRemoved = board.FreeFields.Remove(position);
             Trace.Assert(movementWasRemoved is true);
 
-            return new Movement {Position = position, WhoMade = player};
+            return new Movement { Position = position, WhoMade = player };
         }
 
         public BoardState EvaluateTheSituation(Board board, in int lastMovementPosition)

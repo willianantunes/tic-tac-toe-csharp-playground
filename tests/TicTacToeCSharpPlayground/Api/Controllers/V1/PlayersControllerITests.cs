@@ -44,7 +44,7 @@ namespace Tests.TicTacToeCSharpPlayground.Api.Controllers.V1
         public async Task ShouldCreatePlayerGivenValidRequest()
         {
             // Arrange
-            var playerToBeCreated = new Player {Name = "Jafar"};
+            var playerToBeCreated = new Player { Name = "Jafar" };
             // Act
             var response = await Client.PostAsJsonAsync(_requestUri, playerToBeCreated);
             // Assert
@@ -61,7 +61,7 @@ namespace Tests.TicTacToeCSharpPlayground.Api.Controllers.V1
         public async Task ShouldReturnPlayerCreatedPreviously()
         {
             // Arrange
-            var somePlayer = new Player {Name = "Salted Guy"};
+            var somePlayer = new Player { Name = "Salted Guy" };
             AppDbContext.Players.Add(somePlayer);
             await AppDbContext.SaveChangesAsync();
             // Act
@@ -85,7 +85,7 @@ namespace Tests.TicTacToeCSharpPlayground.Api.Controllers.V1
         public async Task ShouldReturnAllPlayers()
         {
             // Arrange
-            AppDbContext.Players.AddRange(new Player {Name = "Bear"}, new Player {Name = "Salted Man"});
+            AppDbContext.Players.AddRange(new Player { Name = "Bear" }, new Player { Name = "Salted Man" });
             await AppDbContext.SaveChangesAsync();
             // Act
             var response = await Client.GetAsync(_requestUri);

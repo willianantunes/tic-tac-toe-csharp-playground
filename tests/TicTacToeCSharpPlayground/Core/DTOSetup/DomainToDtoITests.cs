@@ -23,16 +23,16 @@ namespace Tests.TicTacToeCSharpPlayground.Core.DTOSetup
         public void ShouldMapBoardToItsDto()
         {
             // Arrange
-            var playerOne = new Player {Id = 1, Name = "Jafar", Computer = false};
-            var playerTwo = new Player {Id = 2, Name = "Rose", Computer = true};
-            var playerBoardOne = new PlayerBoard {Player = playerOne};
-            var playerBoardTwo = new PlayerBoard {Player = playerTwo};
-            var movement = new Movement {Position = 1, WhoMade = playerTwo};
+            var playerOne = new Player { Id = 1, Name = "Jafar", Computer = false };
+            var playerTwo = new Player { Id = 2, Name = "Rose", Computer = true };
+            var playerBoardOne = new PlayerBoard { Player = playerOne };
+            var playerBoardTwo = new PlayerBoard { Player = playerTwo };
+            var movement = new Movement { Position = 1, WhoMade = playerTwo };
             var board = new Board
             {
                 Id = 1,
-                Movements = new List<Movement> {movement},
-                PlayerBoards = new List<PlayerBoard> {playerBoardOne, playerBoardTwo},
+                Movements = new List<Movement> { movement },
+                PlayerBoards = new List<PlayerBoard> { playerBoardOne, playerBoardTwo },
                 NumberOfColumn = 3,
                 NumberOfRows = 3
             };
@@ -45,7 +45,7 @@ namespace Tests.TicTacToeCSharpPlayground.Core.DTOSetup
             boardDto.NumberOfRows.Should().Be(board.NumberOfRows);
             boardDto.Movements.Should().HaveCount(1);
             boardDto.FieldsConfiguration.Should().HaveCount(board.NumberOfRows);
-            foreach(var columns in boardDto.FieldsConfiguration)
+            foreach (var columns in boardDto.FieldsConfiguration)
                 columns.Should().HaveCount(board.NumberOfColumn);
             boardDto.FreeFields.Should().Equal(board.FreeFields);
             var movementDto = boardDto.Movements.First();

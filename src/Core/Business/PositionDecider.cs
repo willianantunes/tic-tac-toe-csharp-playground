@@ -15,7 +15,7 @@ namespace TicTacToeCSharpPlayground.Core.Business
         public int ChooseTheBestAvailablePositionFor(IEnumerable<int> positions)
         {
             Random random = new();
-            
+
             var positionThatIWillSuggest = random.Next(1, positions.Count() + 1);
             Log.Information("Will suggest the position {P}!", positionThatIWillSuggest);
 

@@ -13,8 +13,8 @@ namespace TicTacToeCSharpPlayground.Core.Exceptions
     public class PlayerNotFoundException : TicTacToeRequiredDataExceptions
     {
         public PlayerNotFoundException(string message) : base(message) { }
-    }    
-    
+    }
+
     public class BoardNotFoundToBePlayedException : TicTacToeRequiredDataExceptions
     {
         public BoardNotFoundToBePlayedException(string message) : base(message) { }

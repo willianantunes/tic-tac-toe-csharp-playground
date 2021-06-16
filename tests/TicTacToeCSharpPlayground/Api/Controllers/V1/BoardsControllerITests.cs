@@ -23,8 +23,8 @@ namespace Tests.TicTacToeCSharpPlayground.Api.Controllers.V1
         public async Task ShouldCreateBoardGivenProvidedBoardSetup()
         {
             // Arrange
-            var antunes = new Player {Name = "Antunes"};
-            var rose = new Player {Name = "Rose", Computer = true};
+            var antunes = new Player { Name = "Antunes" };
+            var rose = new Player { Name = "Rose", Computer = true };
             AppDbContext.Players.AddRange(antunes, rose);
             await AppDbContext.SaveChangesAsync();
             var postData = new
@@ -49,8 +49,8 @@ namespace Tests.TicTacToeCSharpPlayground.Api.Controllers.V1
         public async Task ShouldCreateDefaultBoardWithStandardSetupGivenTwoPlayersProvided()
         {
             // Arrange
-            var aladdin = new Player {Name = "Aladdin"};
-            var jasmine = new Player {Name = "Jasmine"};
+            var aladdin = new Player { Name = "Aladdin" };
+            var jasmine = new Player { Name = "Jasmine" };
             await AppDbContext.Players.AddRangeAsync(aladdin, jasmine);
             await AppDbContext.SaveChangesAsync();
             var postData = new
@@ -77,7 +77,7 @@ namespace Tests.TicTacToeCSharpPlayground.Api.Controllers.V1
         public async Task ShouldRaise400GivenBoardSetupIsNotValid()
         {
             // Arrange
-            var postData = new {boardSize = "2x2"};
+            var postData = new { boardSize = "2x2" };
             // Act
             var response = await Client.PostAsJsonAsync(_requestUri, postData);
             // Assert

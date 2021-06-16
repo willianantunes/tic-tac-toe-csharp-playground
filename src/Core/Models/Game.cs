@@ -11,7 +11,7 @@ namespace TicTacToeCSharpPlayground.Core.Models
         {
             // Bodyless constructor. Needed by EF!
         }
-        
+
         public Game(Board board)
         {
             Finished = false;

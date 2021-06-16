@@ -49,7 +49,7 @@ namespace TicTacToeCSharpPlayground.EntryCommands
                 });
                 services.AddSwaggerGen(swaggerGenOptions =>
                 {
-                    swaggerGenOptions.SwaggerDoc("v1", new OpenApiInfo {Title = "TicTacToeCSharpPlayground", Version = "v1"});
+                    swaggerGenOptions.SwaggerDoc("v1", new OpenApiInfo { Title = "TicTacToeCSharpPlayground", Version = "v1" });
                 });
                 // Database
                 services.AddHttpContextAccessor().AddDbContext<AppDbContext>(optionsBuilder =>
@@ -79,7 +79,7 @@ namespace TicTacToeCSharpPlayground.EntryCommands
                     app.UseSwaggerUI(c =>
                         c.SwaggerEndpoint("/swagger/v1/swagger.json", "TicTacToeCSharpPlayground v1"));
                 }
-                
+
                 app.UseSerilogRequestLogging();
                 app.UseRouting();
                 app.UseAuthorization();

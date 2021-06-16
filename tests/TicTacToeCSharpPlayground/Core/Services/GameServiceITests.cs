@@ -58,8 +58,8 @@ namespace Tests.TicTacToeCSharpPlayground.Core.Services
             public async Task ShouldCreateBoard()
             {
                 // Arrange
-                var playerOne = new Player {Name = "Bear"};
-                var playerTwo = new Player {Name = "Salted Man"};
+                var playerOne = new Player { Name = "Bear" };
+                var playerTwo = new Player { Name = "Salted Man" };
                 AppDbContext.Players.AddRange(playerOne, playerTwo);
                 await AppDbContext.SaveChangesAsync();
                 var wrongBoardSize = "3x3";
@@ -114,7 +114,7 @@ namespace Tests.TicTacToeCSharpPlayground.Core.Services
                 var createdBoard = await new BoardBuilder()
                     .WithDbContext(AppDbContext)
                     .CreateBoard()
-                    .WithPlayers(new Player {Name = "Aladdin"}, new Player {Name = "Rose"})
+                    .WithPlayers(new Player { Name = "Aladdin" }, new Player { Name = "Rose" })
                     .BuildAndGetFirstBoard();
                 var playerId = 42;
                 var position = 1;
@@ -131,11 +131,11 @@ namespace Tests.TicTacToeCSharpPlayground.Core.Services
             public async Task ShouldThrowExceptionScenarioThree()
             {
                 // Arrange
-                var robot = new Player {Name = "Rose", Computer = true};
+                var robot = new Player { Name = "Rose", Computer = true };
                 var createdBoard = await new BoardBuilder()
                     .WithDbContext(AppDbContext)
                     .CreateBoard()
-                    .WithPlayers(new Player {Name = "Aladdin"}, robot)
+                    .WithPlayers(new Player { Name = "Aladdin" }, robot)
                     .BuildAndGetFirstBoard();
                 var position = 1;
                 // Act
@@ -151,8 +151,8 @@ namespace Tests.TicTacToeCSharpPlayground.Core.Services
             public async Task ShouldThrowExceptionScenarioFour()
             {
                 // Arrange
-                var aladdin = new Player {Name = "Aladdin", Computer = false};
-                var rose = new Player {Name = "Rose", Computer = true};
+                var aladdin = new Player { Name = "Aladdin", Computer = false };
+                var rose = new Player { Name = "Rose", Computer = true };
                 var createdBoard = await new BoardBuilder()
                     .WithDbContext(AppDbContext)
                     .CreateBoard()
@@ -181,8 +181,8 @@ namespace Tests.TicTacToeCSharpPlayground.Core.Services
             public async Task ShouldThrowExceptionScenarioFive()
             {
                 // Arrange
-                var aladdin = new Player {Name = "Aladdin", Computer = false};
-                var rose = new Player {Name = "Rose", Computer = true};
+                var aladdin = new Player { Name = "Aladdin", Computer = false };
+                var rose = new Player { Name = "Rose", Computer = true };
                 var board = await new BoardBuilder()
                     .WithDbContext(AppDbContext)
                     .CreateBoard()
@@ -203,14 +203,14 @@ namespace Tests.TicTacToeCSharpPlayground.Core.Services
             public async Task ShouldExecuteMovementScenarioOne()
             {
                 // Arrange
-                var aladdin = new Player {Name = "Aladdin", Computer = false};
-                var rose = new Player {Name = "Rose", Computer = true};
+                var aladdin = new Player { Name = "Aladdin", Computer = false };
+                var rose = new Player { Name = "Rose", Computer = true };
                 var board = await new BoardBuilder()
                     .WithDbContext(AppDbContext)
                     .CreateBoard()
                     .WithPlayers(aladdin, rose)
                     .BuildAndGetFirstBoard();
-                var movementsToWin = new[] {7, 8, 9};
+                var movementsToWin = new[] { 7, 8, 9 };
                 // Act
                 GameDTO lastGameStatus = null;
                 foreach (var movementPosition in movementsToWin)
