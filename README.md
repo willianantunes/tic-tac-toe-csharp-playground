@@ -14,7 +14,22 @@ It's written in C# and uses ASP.NET Web API. Some more details:
 
 ## Playing with the project
 
-```
+First run the project through the command:
+
+    docker-compose up app-development
+
+Then you can create players, a board and play a game! Below you can check some commands to play with the API.
+
+```shell
+# First create a player for you
 http POST :8000/api/v1/players name=Jafar
+# Then to someone who can play with you, like a computer
+http POST :8000/api/v1/players name=Rose computer:=true
+# You can list them
 http GET :8000/api/v1/players
+# Create your board
+http POST :8000/api/v1/boards firstPlayerId=1 secondPlayerId=2
+# Then you are good to go with a game!
+# The URL has the following schema: /api/v1/games/{boardId}/{playerId}/{movementPosition}
+http GET :8000/api/v1/games/1/1/1
 ```
