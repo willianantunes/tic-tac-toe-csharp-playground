@@ -31,18 +31,21 @@ jobs:
       - name: Check if the project is well formatted
         run: |
           ./scripts/start-lint.sh
-      - name: Build the project, run all tests and publish to SonarCloud
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}        
-        run: |
-          ./scripts/start-sonarcloud.sh ${{ secrets.SONAR_TOKEN }} ${{ github.sha }}
       - name: Import environment variables from a file
         shell: bash
         run: |
           while read line; do
-            echo "$line" >> $GITHUB_ENV
+            if  [[ $line =~ ^([a-z]|[A-Z]).+ ]]; then
+              echo "Settings the following ==> $line"
+              echo "$line" >> $GITHUB_ENV
+            fi
           done < .env.development
-      - name: Publish to NuGet
+      - name: Build the project, run all tests and publish to SonarCloud
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          # Host as "localhost" because the job will not run in the same network
+          ConnectionStrings__AppDbContext: "Host=localhost;Port=5432;Database=postgres;Username=boss_role;Password=boss_password;"
         run: |
-          ./scripts/start-nuget.sh ${{ secrets.NUGET_API_KEY }}
+          docker-compose up -d db
+          ./scripts/start-sonarcloud.sh ${{ secrets.SONAR_TOKEN }} ${{ github.sha }}
