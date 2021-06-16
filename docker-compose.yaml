@@ -96,8 +96,17 @@ services:
     build: *dockerfile-dev-build
     volumes:
       - .:/app
+    env_file:
+      - .env.development
+    depends_on:
+      - db
     command:
       [
+          "./scripts/wait-for-it.sh",
+          "db:5432",
+          "-t",
+          "120",
+          "--",
           "./scripts/start-sonarcloud.sh",
           "YOUR-SONAR-CLOUD-TOKEN",
           "YOUR-PROJECT-VERSION",

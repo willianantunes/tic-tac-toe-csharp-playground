@@ -5,7 +5,12 @@
 
 This project is a full implementation of the Tic Tac Toe game but playable through a REST API. All the game data is saved in the database to make this challenge more fun. Run it now and play an honest game 🎮!
 
-It's written in C# and uses ASP.NET Web API.
+It's written in C# and uses ASP.NET Web API. Some more details:
+
+- [CliFx](https://github.com/Tyrrrz/CliFx) is used to start the application. You can use it to start your worker, seed your database, and many more.
+- [AutoMapper](https://github.com/AutoMapper/AutoMapper) is used by the Core layer to return DTO objects to the Api layer.
+- [Serilog](https://github.com/serilog/serilog) handles everything concerning logging.
+- [Npgsql](https://github.com/npgsql/npgsql/issues) is responsible to bridge our EF to PostgreSQL.
 
 ## Playing with the project
 
