@@ -52,14 +52,15 @@ namespace TicTacToeCSharpPlayground.EntryCommands
                     swaggerGenOptions.SwaggerDoc("v1", new OpenApiInfo { Title = "TicTacToeCSharpPlayground", Version = "v1" });
                 });
                 // Database
+                var connectionString = Configuration.GetConnectionString("AppDbContext");
                 services.AddHttpContextAccessor().AddDbContext<AppDbContext>(optionsBuilder =>
                 {
-                    var connectionString = Configuration.GetConnectionString("AppDbContext");
                     optionsBuilder.UseNpgsql(connectionString);
                 });
                 // Helpers
                 // https://docs.automapper.org/en/latest/Dependency-injection.html#asp-net-core
                 services.AddAutoMapper(typeof(Startup));
+                services.AddHealthChecks().AddNpgSql(connectionString);             
                 // Repositories
                 services.AddScoped<ITicTacToeRepository, TicTacToeRepository>();
                 // Services
@@ -83,7 +84,11 @@ namespace TicTacToeCSharpPlayground.EntryCommands
                 app.UseSerilogRequestLogging();
                 app.UseRouting();
                 app.UseAuthorization();
-                app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+                app.UseEndpoints(endpoints =>
+                {
+                    endpoints.MapControllers();
+                    endpoints.MapHealthChecks("/health-check");
+                });
             }
         }
     }
