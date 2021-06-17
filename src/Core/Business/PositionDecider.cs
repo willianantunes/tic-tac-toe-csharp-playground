@@ -16,10 +16,12 @@ namespace TicTacToeCSharpPlayground.Core.Business
         {
             Random random = new();
 
-            var positionThatIWillSuggest = random.Next(1, positions.Count() + 1);
-            Log.Information("Will suggest the position {P}!", positionThatIWillSuggest);
+            var positionsAsList = positions.ToList();
+            var positionIndexThatIWillSuggest = random.Next(positionsAsList.Count());
+            var chosenPosition = positionsAsList[positionIndexThatIWillSuggest];
+            Log.Information("Will suggest the position {P}!", chosenPosition);
 
-            return positionThatIWillSuggest;
+            return chosenPosition;
         }
     }
 }
