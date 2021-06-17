@@ -48,10 +48,15 @@ namespace TicTacToeCSharpPlayground.Api.Controllers.V1
             return game;
         }
 
-        [HttpGet("{boardId}/{playerId}/{movementPosition}")]
-        public async Task<ActionResult<GameDTO>> ApplyMovementToTheGame(int boardId, int playerId, int movementPosition)
+        [HttpGet("play")]
+        public async Task<ActionResult<GameDTO>> ApplyMovementToTheGame([FromQuery] PlayGameDto playGameDto)
         {
-            Log.Information("Board, movement, and player: {B} / {M} / {P}", boardId, movementPosition, playerId);
+            Log.Information("Received PlayGameDto: {P}", playGameDto);
+
+            var boardId = playGameDto.BoardId;
+            var movementPosition = playGameDto.MovementPosition;
+            var playerId = playGameDto.PlayerId;
+
             try
             {
                 return await _gameService.ExecuteMovementAndRetrieveGameStatus(boardId, playerId, movementPosition);
@@ -59,12 +64,12 @@ namespace TicTacToeCSharpPlayground.Api.Controllers.V1
             catch (TicTacToeRequiredDataExceptions requiredDataExcep)
             {
                 var message = requiredDataExcep.Message;
-                throw new HttpException { StatusCode = (int)HttpStatusCode.NotFound, Details = message };
+                throw new HttpException {StatusCode = (int) HttpStatusCode.NotFound, Details = message};
             }
             catch (TicTacToeContractExceptions contractExcep)
             {
                 var message = contractExcep.Message;
-                throw new HttpException { StatusCode = (int)HttpStatusCode.BadRequest, Details = message };
+                throw new HttpException {StatusCode = (int) HttpStatusCode.BadRequest, Details = message};
             }
         }
     }

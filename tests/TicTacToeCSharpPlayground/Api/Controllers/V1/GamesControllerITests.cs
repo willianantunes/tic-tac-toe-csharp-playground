@@ -17,7 +17,8 @@ namespace Tests.TicTacToeCSharpPlayground.Api.Controllers.V1
 {
     public class GamesControllerITests : IntegrationTestsWithDependencyInjection
     {
-        private readonly string _requestUri;
+        private readonly string _baseRequestPath;
+        private readonly string _requestPathPlay;
 
         // In order to add the dummy decider
         private static Action<IServiceCollection> ProvideCustomSetup()
@@ -31,7 +32,8 @@ namespace Tests.TicTacToeCSharpPlayground.Api.Controllers.V1
 
         public GamesControllerITests() : base(ProvideCustomSetup())
         {
-            _requestUri = "api/v1/games";
+            _baseRequestPath = "api/v1/games";
+            _requestPathPlay = "api/v1/games/play";
         }
 
         [Fact]
@@ -46,8 +48,11 @@ namespace Tests.TicTacToeCSharpPlayground.Api.Controllers.V1
                 .WithPlayers(aladdin, rose)
                 .Build()).First();
             var movementPosition = 1;
-            var requestPath = $"{_requestUri}/{createdBoard.Id}/{aladdin.Id}/{movementPosition}";
-            // Act
+            string requestPath = new BuildUri(_requestPathPlay)
+                .AddParam("BoardId", createdBoard.Id)
+                .AddParam("PlayerId", aladdin.Id)
+                .AddParam("MovementPosition", movementPosition)
+                .Build();
             var response = await Client.GetAsync(requestPath);
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -77,7 +82,11 @@ namespace Tests.TicTacToeCSharpPlayground.Api.Controllers.V1
             var fakeBoardId = 42L;
             var fakePlayerId = 84L;
             var movementPosition = 1;
-            var requestPath = $"{_requestUri}/{fakeBoardId}/{fakePlayerId}/{movementPosition}";
+            string requestPath = new BuildUri(_requestPathPlay)
+                .AddParam("BoardId", fakeBoardId)
+                .AddParam("PlayerId", fakePlayerId)
+                .AddParam("MovementPosition", movementPosition)
+                .Build();
             // Act
             var response = await Client.GetAsync(requestPath);
             // Assert
@@ -97,7 +106,11 @@ namespace Tests.TicTacToeCSharpPlayground.Api.Controllers.V1
                 .Build()).First();
             var fakePlayerId = 42L;
             var movementPosition = 1;
-            var requestPath = $"{_requestUri}/{createdBoard.Id}/{fakePlayerId}/{movementPosition}";
+            string requestPath = new BuildUri(_requestPathPlay)
+                .AddParam("BoardId", createdBoard.Id)
+                .AddParam("PlayerId", fakePlayerId)
+                .AddParam("MovementPosition", movementPosition)
+                .Build();            
             // Act
             var response = await Client.GetAsync(requestPath);
             // Assert
@@ -124,7 +137,11 @@ namespace Tests.TicTacToeCSharpPlayground.Api.Controllers.V1
                 .PlayerOneWinning()
                 .Build();
             var movementPosition = 1;
-            var requestPath = $"{_requestUri}/{board.Id}/{aladdin.Id}/{movementPosition}";
+            string requestPath = new BuildUri(_requestPathPlay)
+                .AddParam("BoardId", board.Id)
+                .AddParam("PlayerId", aladdin.Id)
+                .AddParam("MovementPosition", movementPosition)
+                .Build();   
             // Act
             var response = await Client.GetAsync(requestPath);
             // Assert
