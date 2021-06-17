@@ -30,11 +30,11 @@ namespace Tests.TicTacToeCSharpPlayground.Core.Business
         }
 
         [Theory(DisplayName = "Should retrieve random position given list of available ones")]
-        [InlineData(new[] {2, 4, 6, 8})]
-        [InlineData(new[] {1, 5, 8, 9})]
-        [InlineData(new[] {1, 2, 8, 9})]
-        [InlineData(new[] {1, 7, 8, 9})]
-        [InlineData(new[] {3, 7, 8, 9})]
+        [InlineData(new[] { 2, 4, 6, 8 })]
+        [InlineData(new[] { 1, 5, 8, 9 })]
+        [InlineData(new[] { 1, 2, 8, 9 })]
+        [InlineData(new[] { 1, 7, 8, 9 })]
+        [InlineData(new[] { 3, 7, 8, 9 })]
         public void TestScenarioTwo(int[] availablePositions)
         {
             // Act

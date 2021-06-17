@@ -9,8 +9,8 @@ namespace Tests.Support
     public class BuildUri
     {
         private readonly string _requestUri;
-        private Dictionary<string, string> _queryParamsDictionary = new ();
-        
+        private Dictionary<string, string> _queryParamsDictionary = new();
+
         public BuildUri(string requestUri)
         {
             _requestUri = requestUri;
@@ -28,12 +28,12 @@ namespace Tests.Support
             var uriBuilder = new UriBuilder();
             uriBuilder.Path = _requestUri;
             var query = HttpUtility.ParseQueryString(string.Empty);
-            
-            foreach(KeyValuePair<string, string> entry in _queryParamsDictionary)
+
+            foreach (KeyValuePair<string, string> entry in _queryParamsDictionary)
             {
                 query[entry.Key] = entry.Value;
             }
-            
+
             uriBuilder.Query = query.ToString();
             return uriBuilder.Uri.PathAndQuery;
         }

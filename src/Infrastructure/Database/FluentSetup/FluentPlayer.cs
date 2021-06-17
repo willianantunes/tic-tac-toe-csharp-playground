@@ -12,7 +12,7 @@ namespace TicTacToeCSharpPlayground.Infrastructure.Database.FluentSetup
             {
                 entity.Property(p => p.Name).IsRequired().HasMaxLength(100);
                 entity.HasIndex(p => p.Name).IsUnique();
-            });            
+            });
         }
     }
 }

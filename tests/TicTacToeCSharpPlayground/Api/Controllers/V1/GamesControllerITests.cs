@@ -110,7 +110,7 @@ namespace Tests.TicTacToeCSharpPlayground.Api.Controllers.V1
                 .AddParam("BoardId", createdBoard.Id)
                 .AddParam("PlayerId", fakePlayerId)
                 .AddParam("MovementPosition", movementPosition)
-                .Build();            
+                .Build();
             // Act
             var response = await Client.GetAsync(requestPath);
             // Assert
@@ -141,7 +141,7 @@ namespace Tests.TicTacToeCSharpPlayground.Api.Controllers.V1
                 .AddParam("BoardId", board.Id)
                 .AddParam("PlayerId", aladdin.Id)
                 .AddParam("MovementPosition", movementPosition)
-                .Build();   
+                .Build();
             // Act
             var response = await Client.GetAsync(requestPath);
             // Assert

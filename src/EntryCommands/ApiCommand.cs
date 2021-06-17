@@ -60,7 +60,7 @@ namespace TicTacToeCSharpPlayground.EntryCommands
                 // Helpers
                 // https://docs.automapper.org/en/latest/Dependency-injection.html#asp-net-core
                 services.AddAutoMapper(typeof(Startup));
-                services.AddHealthChecks().AddNpgSql(connectionString);             
+                services.AddHealthChecks().AddNpgSql(connectionString);
                 // Repositories
                 services.AddScoped<ITicTacToeRepository, TicTacToeRepository>();
                 // Services
