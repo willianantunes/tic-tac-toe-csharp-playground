@@ -14,7 +14,6 @@ namespace TicTacToeCSharpPlayground.Core.DTOSetup
                 .ForMember(destinationMember => destinationMember.Players,
                     memberOptions => memberOptions.MapFrom(
                         source => source.PlayerBoards.Select(pb => pb.Player)));
-            CreateMap<Movement, MovementDTO>();
             CreateMap<Player, PlayerDTO>();
             CreateMap<Game, GameDTO>();
         }

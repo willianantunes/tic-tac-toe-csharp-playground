@@ -43,15 +43,10 @@ namespace Tests.TicTacToeCSharpPlayground.Core.DTOSetup
             boardDto.Id.Should().Be(board.Id);
             boardDto.NumberOfColumn.Should().Be(board.NumberOfColumn);
             boardDto.NumberOfRows.Should().Be(board.NumberOfRows);
-            boardDto.Movements.Should().HaveCount(1);
             boardDto.FieldsConfiguration.Should().HaveCount(board.NumberOfRows);
             foreach (var columns in boardDto.FieldsConfiguration)
                 columns.Should().HaveCount(board.NumberOfColumn);
             boardDto.FreeFields.Should().Equal(board.FreeFields);
-            var movementDto = boardDto.Movements.First();
-            movementDto.Position.Should().Be(movement.Position);
-            var expectedWhoMade = new PlayerDTO(movement.WhoMade.Id, movement.WhoMade.Name, movement.WhoMade.Computer);
-            movementDto.WhoMade.Should().Be(expectedWhoMade);
             boardDto.Players.Should().HaveCount(2);
             var playerOneDto = boardDto.Players.First(p => p.Name == playerOne.Name);
             playerOneDto.Computer.Should().Be(playerOne.Computer);

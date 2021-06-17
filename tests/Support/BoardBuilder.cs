@@ -142,7 +142,6 @@ namespace Tests.Support
         {
             private IList<Board> _boards = new List<Board>();
             private IList<Player> _players = new List<Player>();
-            private Game _configuredgame;
             private readonly AppDbContext _dbContext;
 
             public BoardBuilderDatabaseCreator(AppDbContext dbContext)
@@ -194,7 +193,5 @@ namespace Tests.Support
                 return boards.First();
             }
         }
-
-
     }
 }

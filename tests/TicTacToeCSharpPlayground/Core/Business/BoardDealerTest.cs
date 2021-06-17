@@ -52,6 +52,8 @@ namespace Tests.TicTacToeCSharpPlayground.Core.Business
             board.NumberOfColumn.Should().Be(boardSetup.columnSize);
             board.NumberOfRows.Should().Be(boardSetup.rowSize);
             board.PlayerBoards.Should().HaveCount(2);
+            board.FieldsConfiguration.Should().NotBeNull();
+            board.FreeFields.Should().NotBeNull();
             var expectedPlayerOne = board.PlayerBoards.First().Player;
             var expectedPlayerTwo = board.PlayerBoards.Last().Player;
             expectedPlayerOne.Should().Be(playerOne);

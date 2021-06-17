@@ -42,7 +42,6 @@ namespace Tests.TicTacToeCSharpPlayground.Api.Controllers.V1
             createdBoard.NumberOfColumn.Should().Be(4);
             createdBoard.NumberOfRows.Should().Be(4);
             createdBoard.Players.Count.Should().Be(2);
-            createdBoard.Movements.Should().BeEmpty();
         }
 
         [Fact]
@@ -70,7 +69,6 @@ namespace Tests.TicTacToeCSharpPlayground.Api.Controllers.V1
             playerBoards.Count.Should().Be(2);
             playerBoards.FirstOrDefault(p => p.Id == aladdin.Id).Should().NotBeNull();
             playerBoards.FirstOrDefault(p => p.Id == jasmine.Id).Should().NotBeNull();
-            createdBoard.Movements.Should().BeEmpty();
         }
 
         [Fact]

@@ -59,8 +59,7 @@ namespace Tests.TicTacToeCSharpPlayground.Api.Controllers.V1
             gameStatus.Winner.Should().BeNull();
             var boardUsedToPlay = gameStatus.ConfiguredBoard;
             var boardPositions = boardUsedToPlay.NumberOfRows * boardUsedToPlay.NumberOfColumn;
-            boardUsedToPlay.Movements.Count.Should().Be(2);
-            var expectedFreeFields = boardPositions - boardUsedToPlay.Movements.Count;
+            var expectedFreeFields = boardPositions - AppDbContext.Movements.Count();
             boardUsedToPlay.FreeFields.Count.Should().Be(expectedFreeFields);
             // All board positions
             boardUsedToPlay.FieldsConfiguration[0][0].Name.Should().Be(aladdin.Name);

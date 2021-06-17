@@ -44,6 +44,7 @@ namespace TicTacToeCSharpPlayground.Core.Business
             var playerBoardOne = new PlayerBoard { Player = playerOne, Board = board };
             var playerBoarTwo = new PlayerBoard { Player = playerTwo, Board = board };
             board.PlayerBoards = new List<PlayerBoard> { playerBoardOne, playerBoarTwo };
+            board.InitializeBoardConfiguration();
 
             return board;
         }

@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
@@ -231,8 +232,7 @@ namespace Tests.TicTacToeCSharpPlayground.Core.Services
                 lastGameStatus.Winner.Id.Should().Be(aladdin.Id);
                 var boardUsedToPlay = lastGameStatus.ConfiguredBoard;
                 var boardPositions = boardUsedToPlay.NumberOfRows * boardUsedToPlay.NumberOfColumn;
-                boardUsedToPlay.Movements.Count.Should().Be(5);
-                var expectedFreeFields = boardPositions - boardUsedToPlay.Movements.Count;
+                var expectedFreeFields = boardPositions - AppDbContext.Movements.Count();
                 boardUsedToPlay.FreeFields.Count.Should().Be(expectedFreeFields);
                 // All board positions
                 boardUsedToPlay.FieldsConfiguration[2][0].Name.Should().Be(aladdin.Name);
