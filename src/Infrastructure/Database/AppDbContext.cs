@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using TicTacToeCSharpPlayground.Core.Models;
+using TicTacToeCSharpPlayground.Infrastructure.Database.FluentSetup;
 
 namespace TicTacToeCSharpPlayground.Infrastructure.Database
 {
@@ -22,23 +23,13 @@ namespace TicTacToeCSharpPlayground.Infrastructure.Database
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            void CreateManyToManyBetweenPlayerAndBoard()
-            {
-                modelBuilder.Entity<PlayerBoard>()
-                    .HasKey(t => new { t.PlayerId, t.BoardId });
-
-                modelBuilder.Entity<PlayerBoard>()
-                    .HasOne(pt => pt.Player)
-                    .WithMany(p => p.PlayerBoards)
-                    .HasForeignKey(pt => pt.PlayerId);
-
-                modelBuilder.Entity<PlayerBoard>()
-                    .HasOne(pt => pt.Board)
-                    .WithMany(t => t.PlayerBoards)
-                    .HasForeignKey(pt => pt.BoardId);
-            }
-
-            CreateManyToManyBetweenPlayerAndBoard();
+            // More details about the EF Fluent API in the following links:
+            // https://docs.microsoft.com/en-us/ef/ef6/modeling/code-first/fluent/relationships#configuring-a-many-to-many-relationship
+            // https://docs.microsoft.com/en-us/ef/ef6/modeling/code-first/fluent/types-and-properties
+            FluentPlayer.Setup(modelBuilder);
+            FluentBoard.Setup(modelBuilder);
+            FluentPlayerBoard.Setup(modelBuilder);
+            FluentMovement.Setup(modelBuilder);
         }
 
         public override int SaveChanges()

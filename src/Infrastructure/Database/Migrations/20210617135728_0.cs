@@ -14,8 +14,8 @@ namespace TicTacToeCSharpPlayground.Infrastructure.Database.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    NumberOfColumn = table.Column<int>(type: "integer", nullable: false),
-                    NumberOfRows = table.Column<int>(type: "integer", nullable: false),
+                    NumberOfColumn = table.Column<int>(type: "integer", maxLength: 1, nullable: false),
+                    NumberOfRows = table.Column<int>(type: "integer", maxLength: 1, nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
                 },
@@ -30,7 +30,7 @@ namespace TicTacToeCSharpPlayground.Infrastructure.Database.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "text", nullable: false),
+                    Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     Computer = table.Column<bool>(type: "boolean", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
@@ -137,9 +137,10 @@ namespace TicTacToeCSharpPlayground.Infrastructure.Database.Migrations
                 column: "WinnerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Movements_BoardId",
+                name: "IX_Movements_BoardId_Position",
                 table: "Movements",
-                column: "BoardId");
+                columns: new[] { "BoardId", "Position" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Movements_WhoMadeId",
@@ -147,9 +148,16 @@ namespace TicTacToeCSharpPlayground.Infrastructure.Database.Migrations
                 column: "WhoMadeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PlayerBoards_BoardId",
+                name: "IX_PlayerBoards_BoardId_PlayerId",
                 table: "PlayerBoards",
-                column: "BoardId");
+                columns: new[] { "BoardId", "PlayerId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Players_Name",
+                table: "Players",
+                column: "Name",
+                unique: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

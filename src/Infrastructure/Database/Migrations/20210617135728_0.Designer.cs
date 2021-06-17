@@ -10,7 +10,7 @@ using TicTacToeCSharpPlayground.Infrastructure.Database;
 namespace TicTacToeCSharpPlayground.Infrastructure.Database.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20210616193438_0")]
+    [Migration("20210617135728_0")]
     partial class _0
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -32,9 +32,11 @@ namespace TicTacToeCSharpPlayground.Infrastructure.Database.Migrations
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<int>("NumberOfColumn")
+                        .HasMaxLength(1)
                         .HasColumnType("integer");
 
                     b.Property<int>("NumberOfRows")
+                        .HasMaxLength(1)
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("UpdatedAt")
@@ -103,9 +105,10 @@ namespace TicTacToeCSharpPlayground.Infrastructure.Database.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("BoardId");
-
                     b.HasIndex("WhoMadeId");
+
+                    b.HasIndex("BoardId", "Position")
+                        .IsUnique();
 
                     b.ToTable("Movements");
                 });
@@ -125,12 +128,16 @@ namespace TicTacToeCSharpPlayground.Infrastructure.Database.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp without time zone");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("Players");
                 });
@@ -154,7 +161,8 @@ namespace TicTacToeCSharpPlayground.Infrastructure.Database.Migrations
 
                     b.HasKey("PlayerId", "BoardId");
 
-                    b.HasIndex("BoardId");
+                    b.HasIndex("BoardId", "PlayerId")
+                        .IsUnique();
 
                     b.ToTable("PlayerBoards");
                 });
