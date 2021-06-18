@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using CliFx;
 using CliFx.Attributes;
 using CliFx.Infrastructure;
+using DrfLikePaginations;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
@@ -61,6 +62,8 @@ namespace TicTacToeCSharpPlayground.EntryCommands
                 // https://docs.automapper.org/en/latest/Dependency-injection.html#asp-net-core
                 services.AddAutoMapper(typeof(Startup));
                 services.AddHealthChecks().AddNpgSql(connectionString);
+                var paginationSize = int.Parse(Configuration["Pagination:Size"]);
+                services.AddSingleton<IPagination>(new Pagination(paginationSize));                
                 // Repositories
                 services.AddScoped<ITicTacToeRepository, TicTacToeRepository>();
                 // Services

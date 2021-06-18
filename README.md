@@ -27,8 +27,10 @@ Then you can create players, a board, and play your game! Below you can check so
 http POST :8000/api/v1/players name=Jafar
 # Then to someone who can play with you, let's say a computer
 http POST :8000/api/v1/players name=Rose computer:=true
-# You can list them
+# You can list them with pagination!
 http GET :8000/api/v1/players
+# You can filter also! Know this project: https://github.com/willianantunes/drf-like-paginations/
+http GET :8000/api/v1/players computer==false
 # In order to have a game, you first need to create a board
 http POST :8000/api/v1/boards firstPlayerId=1 secondPlayerId=2
 # Then you are good to go!

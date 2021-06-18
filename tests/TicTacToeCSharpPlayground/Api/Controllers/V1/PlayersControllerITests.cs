@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
+using DrfLikePaginations;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -133,8 +134,9 @@ namespace Tests.TicTacToeCSharpPlayground.Api.Controllers.V1
             var response = await Client.GetAsync(_requestUri);
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
-            var players = await response.Content.ReadFromJsonAsync<List<Player>>();
-            players.Count.Should().Be(2);
+            var paginatedPlayer = await response.Content.ReadFromJsonAsync<Paginated<Player>>();
+            paginatedPlayer.Count.Should().Be(2);
+            paginatedPlayer.Results.Should().HaveCount(2);
         }
     }
 }

@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DrfLikePaginations;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
@@ -14,17 +16,23 @@ namespace TicTacToeCSharpPlayground.Api.Controllers.V1
     public class PlayersController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly IPagination _pagination;
 
-        public PlayersController(AppDbContext context)
+        public PlayersController(AppDbContext context, IPagination pagination)
         {
             _context = context;
+            _pagination = pagination;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Player>>> GetAllPlayers()
+        public async Task<Paginated<Player>> GetAllPlayers()
         {
             Log.Information("Getting all players...");
-            return await _context.Players.ToListAsync();
+            var query = _context.Players.AsNoTracking().AsQueryable();
+            var displayUrl = Request.GetDisplayUrl();
+            var queryParams = Request.Query;
+            
+            return await _pagination.CreateAsync(query, displayUrl, queryParams);
         }
 
         [HttpGet("{id}")]
