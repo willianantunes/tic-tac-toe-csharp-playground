@@ -1,11 +1,14 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using DrfLikePaginations;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
+using TicTacToeCSharpPlayground.Core.DTOSetup;
 using TicTacToeCSharpPlayground.Core.Models;
 using TicTacToeCSharpPlayground.Infrastructure.Database;
 
@@ -17,22 +20,25 @@ namespace TicTacToeCSharpPlayground.Api.Controllers.V1
     {
         private readonly AppDbContext _context;
         private readonly IPagination _pagination;
+        private readonly IMapper _mapper;
 
-        public PlayersController(AppDbContext context, IPagination pagination)
+        public PlayersController(AppDbContext context, IPagination pagination, IMapper mapper)
         {
             _context = context;
             _pagination = pagination;
+            _mapper = mapper;
         }
 
         [HttpGet]
-        public async Task<Paginated<Player>> GetAllPlayers()
+        public async Task<Paginated<PlayerDTO>> GetAllPlayers()
         {
             Log.Information("Getting all players...");
             var query = _context.Players.AsNoTracking().AsQueryable();
             var displayUrl = Request.GetDisplayUrl();
             var queryParams = Request.Query;
-            
-            return await _pagination.CreateAsync(query, displayUrl, queryParams);
+            Func<Player, PlayerDTO> transform = p => _mapper.Map<Player, PlayerDTO>(p);
+
+            return await _pagination.CreateAsync(query, displayUrl, queryParams, transform);
         }
 
         [HttpGet("{id}")]

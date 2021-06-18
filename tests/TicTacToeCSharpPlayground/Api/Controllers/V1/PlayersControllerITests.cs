@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Tests.Support;
+using TicTacToeCSharpPlayground.Core.DTOSetup;
 using TicTacToeCSharpPlayground.Core.Models;
 using Xunit;
 
@@ -134,7 +135,7 @@ namespace Tests.TicTacToeCSharpPlayground.Api.Controllers.V1
             var response = await Client.GetAsync(_requestUri);
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
-            var paginatedPlayer = await response.Content.ReadFromJsonAsync<Paginated<Player>>();
+            var paginatedPlayer = await response.Content.ReadFromJsonAsync<Paginated<PlayerDTO>>();
             paginatedPlayer.Count.Should().Be(2);
             paginatedPlayer.Results.Should().HaveCount(2);
         }
