@@ -5,7 +5,7 @@
 
 ![It has a tic tac toe board with some moves and two players](docs/ttt-csharp-playground.png)
 
-This project is a full implementation of the Tic Tac Toe game but playable through a REST API. All the game data is saved in the database to make this challenge more fun. Run it now and play an honest game 🎮!
+This project is a full implementation of the [Tic Tac Toe](https://en.wikipedia.org/wiki/Tic-tac-toe) game but playable through a REST API. All the game data is saved in the database to make this challenge more fun. Run it now and play an honest game 🎮!
 
 It's written in C# and uses ASP.NET Web API. Some more details:
 
@@ -51,7 +51,7 @@ This project has 4 layers:
 - API: ASP.NET Core stuff.
 - Core: All business logic.
 - Infrastructure: The database is fully configured in this layer.
-- EntryCommands: It's like the `Startup.cs`.
+- EntryCommands: It's like the [`Startup.cs`](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/startup?view=aspnetcore-5.0#the-startup-class).
 
 ![It shows four layers which represent how the program was organized](docs/ttt-architecture.png) 
 
@@ -75,5 +75,5 @@ To allow each integration test to be executed isolated without worries of race c
 
 ## Robot logic 
 
-If you look at the [PositionDecider class](https://github.com/willianantunes/tic-tac-toe-csharp-playground/blob/c78d68642bced98161bbbfaffb8f8d871ffbc506/src/Core/Business/PositionDecider.cs#L13), you'll notice that I simply choose a random available position available from the list. During the tests, I used an even simpler version ([CustomPositionDecider
- class](https://github.com/willianantunes/tic-tac-toe-csharp-playground/blob/157dc10375a19e0aa00bf209b27227b4fbdf560f/tests/Support/CustomPositionDecider.cs#L7)) that merely select the first open position. I could create a test that asserts a winning movement with three movements only (7, 8, and 9) on a 3x3 board with this approach (see it in [this test in GameServiceITests class](https://github.com/willianantunes/tic-tac-toe-csharp-playground/blob/ca91927d303706b65611ab9c5628945f70f9fdd8/tests/TicTacToeCSharpPlayground/Core/Services/GameServiceITests.cs#L203-L250)).
+If you look at the [PositionDecider class](https://github.com/willianantunes/tic-tac-toe-csharp-playground/blob/c78d68642bced98161bbbfaffb8f8d871ffbc506/src/Core/Business/PositionDecider.cs#L13), you'll notice that I simply choose a random available position from the list. During the tests, I used an even simpler version ([CustomPositionDecider
+ class](https://github.com/willianantunes/tic-tac-toe-csharp-playground/blob/157dc10375a19e0aa00bf209b27227b4fbdf560f/tests/Support/CustomPositionDecider.cs#L7)) that merely select the first item from the ordered list. I could create a test that asserts a winning game with three movements only (7, 8, and 9) on a 3x3 board with this approach (see it in [this test in GameServiceITests class](https://github.com/willianantunes/tic-tac-toe-csharp-playground/blob/ca91927d303706b65611ab9c5628945f70f9fdd8/tests/TicTacToeCSharpPlayground/Core/Services/GameServiceITests.cs#L203-L250)).
