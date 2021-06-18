@@ -1,9 +1,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Net.Http.Json;
+using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Tests.Support;
 using TicTacToeCSharpPlayground.Core.Models;
@@ -18,6 +22,16 @@ namespace Tests.TicTacToeCSharpPlayground.Api.Controllers.V1
         public PlayersControllerITests()
         {
             _requestUri = "api/v1/players";
+        }
+
+        [Fact]
+        public async Task ShouldReturn404GivenNoPlayerIsFound()
+        {
+            // Arrange
+            var fakePlayerId = 42;
+            // Act
+            var response = await Client.GetAsync($"{_requestUri}/{fakePlayerId}");
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
 
         [Fact]
@@ -72,13 +86,41 @@ namespace Tests.TicTacToeCSharpPlayground.Api.Controllers.V1
         }
 
         [Fact]
-        public async Task ShouldReturn404GivenNoPlayerIsFound()
+        public async Task ShouldDeletePlayer()
         {
             // Arrange
-            var fakePlayerId = 42;
+            var bear = new Player { Name = "Bear" };
+            AppDbContext.Players.AddRange(bear, new Player { Name = "Salted Man" });
+            await AppDbContext.SaveChangesAsync();
+            AppDbContext.Players.Count().Should().Be(2);
             // Act
-            var response = await Client.GetAsync($"{_requestUri}/{fakePlayerId}");
-            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            var response = await Client.DeleteAsync($"{_requestUri}/{bear.Id}");
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            var player = await response.Content.ReadFromJsonAsync<Player>();
+            player.Id.Should().Be(bear.Id);
+            AppDbContext.Players.Count().Should().Be(1);
+        }
+
+        [Fact]
+        public async Task ShouldUpdatePlayer()
+        {
+            // Arrange
+            var bear = new Player { Name = "Bear" };
+            AppDbContext.Players.Add(bear);
+            await AppDbContext.SaveChangesAsync();
+            // This is needed because DbContext is Singleton (only during tests)
+            AppDbContext.Entry(bear).State = EntityState.Detached;
+            var bearWithNewName = new { bear.Id, Name = "Salted Bear", bear.Computer };
+            var serializeObject = JsonConvert.SerializeObject(bearWithNewName);
+            var contentRequest = new StringContent(serializeObject, Encoding.UTF8, "application/json");
+            // Act
+            var response = await Client.PutAsync(_requestUri, contentRequest);
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+            AppDbContext.Players.Count().Should().Be(1);
+            var refreshedBear = AppDbContext.Players.First();
+            refreshedBear.Name.Should().Be(bearWithNewName.Name);
         }
 
         [Fact]

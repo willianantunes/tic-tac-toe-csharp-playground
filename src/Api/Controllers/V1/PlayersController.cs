@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -13,26 +14,24 @@ namespace TicTacToeCSharpPlayground.Api.Controllers.V1
     public class PlayersController : ControllerBase
     {
         private readonly AppDbContext _context;
-        private readonly DbSet<Player> _databaseSet;
 
         public PlayersController(AppDbContext context)
         {
             _context = context;
-            _databaseSet = context.Players;
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Player>>> GetAllPlayers()
         {
             Log.Information("Getting all players...");
-            return await _databaseSet.ToListAsync();
+            return await _context.Players.ToListAsync();
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Player>> GetSpecificPlayer(int id)
         {
             Log.Information("Getting specific player given ID: {Id}", id);
-            var player = await _databaseSet.FindAsync(id);
+            var player = await _context.Players.FindAsync(id);
 
             if (player is null)
             {
@@ -46,10 +45,46 @@ namespace TicTacToeCSharpPlayground.Api.Controllers.V1
         [HttpPost]
         public async Task<ActionResult<Player>> CreateNewPlayer(Player player)
         {
-            await _databaseSet.AddAsync(player);
+            _context.Players.Add(player);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetSpecificPlayer", new { id = player.Id }, player);
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> PutTodoItem(Player player)
+        {
+            _context.Entry(player).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (_context.Players.Any(p => p.Id == player.Id) is false)
+                    return NotFound();
+                throw;
+            }
+
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult<Player>> DeletePlayer(int id)
+        {
+            var player = await _context.Players.FindAsync(id);
+
+            if (player is null)
+            {
+                Log.Information("No player has been found");
+                return NotFound();
+            }
+
+            _context.Players.Remove(player);
+            await _context.SaveChangesAsync();
+
+            return player;
         }
     }
 }
