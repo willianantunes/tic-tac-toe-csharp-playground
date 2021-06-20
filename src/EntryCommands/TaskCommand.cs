@@ -19,24 +19,31 @@ namespace TicTacToeCSharpPlayground.EntryCommands
         [CommandOption("amount-of-players", IsRequired = false, Description = "Amount of players to be created")]
         public int AmountOfPlayers { get; init; } = 1000;
 
-        [CommandOption("connection-string", EnvironmentVariable = "ConnectionStrings__AppDbContext")]
-        public string? ConnectionString { get; set; }
+        [CommandOption("connection-string", IsRequired = true, EnvironmentVariable = "ConnectionStrings__AppDbContext")]
+        public string ConnectionString { get; init; }
+
+        [CommandOption("migrate", IsRequired = false, Description = "Apply migrations")]
+        public bool Migrate { get; init; } = false;
 
         public async ValueTask ExecuteAsync(IConsole console)
         {
-            if (SeedDatabase is true)
+            if (SeedDatabase is true || Migrate is true)
             {
-                if (ConnectionString is not null)
+                var dbContext = AppDbContext.CreateContext(ConnectionString);
+                if (Migrate)
                 {
-                    var dbContext = AppDbContext.CreateContext(ConnectionString);
+                    if (dbContext.Database.GetPendingMigrations().ToList().Any() is true)
+                    {
+                        await dbContext.Database.MigrateAsync();
+                        await console.Output.WriteLineAsync("Migrate executed!");
+                    }
+                }
+                if (SeedDatabase)
+                {
                     await CreateScenarioWithGivenAmountOfPlayers(dbContext, AmountOfPlayers);
                     await console.Output.WriteLineAsync("Seed has been executed!");
                 }
-                else
-                {
-                    var errorMessage = "You should add connection string using --connection-string option";
-                    await console.Error.WriteLineAsync(errorMessage);
-                }
+                await console.Output.WriteLineAsync("Done 🤙");
             }
             else
             {
