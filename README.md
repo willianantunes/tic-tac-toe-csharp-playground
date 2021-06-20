@@ -80,6 +80,32 @@ To allow each integration test to be executed isolated without worries of race c
 If you look at the [PositionDecider class](https://github.com/willianantunes/tic-tac-toe-csharp-playground/blob/c78d68642bced98161bbbfaffb8f8d871ffbc506/src/Core/Business/PositionDecider.cs#L13), you'll notice that I simply choose a random available position from the list. During the tests, I used an even simpler version ([CustomPositionDecider
  class](https://github.com/willianantunes/tic-tac-toe-csharp-playground/blob/157dc10375a19e0aa00bf209b27227b4fbdf560f/tests/Support/CustomPositionDecider.cs#L7)) that merely select the first item from the ordered list. I could create a test that asserts a winning game with three movements only (7, 8, and 9) on a 3x3 board with this approach (see it in [this test in GameServiceITests class](https://github.com/willianantunes/tic-tac-toe-csharp-playground/blob/ca91927d303706b65611ab9c5628945f70f9fdd8/tests/TicTacToeCSharpPlayground/Core/Services/GameServiceITests.cs#L203-L250)).
 
+## Load testing
+
+The test plan [jmeter-test-plan.jmx](./tests/LoadTesting/jmeter-test-plan.jmx) can be opened with JMeter 5.4.1. The `Thread Group` basically has the following configurations:
+
+![JMeter Thread Group Configuration](docs/ttt-jmeter-thread-group.png)
+
+In order to run it, first you should apply the migrations with the command:
+
+    docker-compose up apply-migrations
+
+As the database is ready to be used, you can run the production version of the Tic Tac Toe program:
+
+    docker-compose up app
+
+Then you can open a new terminal and finally run:
+
+    docker-compose up load-test
+
+When the load testing is concluded, you can open the file `tests-jmeter/index.html`. Check out this statistics:
+
+![It shows a table containing statistics about the consumption of the REST API regarding Tic Tac Toe program](docs/ttt-jmeter-statistics.png)
+
+The output with regards to [APDEX](https://en.wikipedia.org/wiki/Apdex):
+
+![Chart containing requests summary and a table showing application performance index](docs/ttt-jmeter-apdex.png)
+
 ## Why did I create this project 🤔?
 
 The best way to learn a new language, apart from reading documentation and books, is by coding, focusing on practice instead of theory, at least that's what I believe. But, of course, this is even better when you have some programming background. The problem is, though, which project can we do to learn a new language? I don't think a CRUD application is good because it doesn't provide challenges concerning abstractions, data structures, iteration statements, conditionals, and many more. Now a project related to an actual game can really bring you benefits, but not a too complicated one because, in the end, it consumes lots of time. 
