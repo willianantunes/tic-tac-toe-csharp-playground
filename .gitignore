@@ -1,2 +1,4 @@
 tests-reports
 .sonarqube
+logs-jmeter
+tests-jmeter

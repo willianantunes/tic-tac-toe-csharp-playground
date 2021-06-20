@@ -21,20 +21,24 @@ namespace Tests.Support
         protected readonly HttpClient Client;
         protected readonly AppDbContext AppDbContext;
         protected readonly IServiceProvider Services;
+        protected readonly string ConnectionString;
         private readonly IDbContextTransaction _transaction;
 
         protected IntegrationTestsFixture(Action<IServiceCollection> customSetup = null)
         {
             // Basic setup
             var configuration = Program.BuildConfiguration();
-            var builder = WebHost.CreateDefaultBuilder()
-                .UseStartup<TStartup>()
-                .UseSerilog();
-            // You can create new clients with mocked services if required (see ConfigureTestServices)
+            var builder = WebHost.CreateDefaultBuilder().UseStartup<TStartup>().UseSerilog();
+            // Custom database per test method
             var dbName = $"test_{Guid.NewGuid()}";
+            var oldDbValue = "Database=postgres;";
+            var newDbValue = $"Database={dbName};";
+            var connectionString = configuration.GetConnectionString("AppDbContext");
+            ConnectionString = connectionString.Replace(oldDbValue, newDbValue);
             // https://github.com/dotnet/aspnetcore/issues/12079
             builder.UseEnvironment("Production");
-            builder.ConfigureTestServices(ConfigureDatabaseAsSingleton(configuration, dbName));
+            builder.ConfigureTestServices(ConfigureDatabaseAsSingleton(ConnectionString));
+            // You can create new clients with mocked services if required (see ConfigureTestServices)
             if (customSetup is not null)
                 builder.ConfigureTestServices(customSetup);
             var server = new TestServer(builder);
@@ -54,19 +58,14 @@ namespace Tests.Support
             AppDbContext.Database.EnsureCreated();
         }
 
-        private Action<IServiceCollection> ConfigureDatabaseAsSingleton(IConfiguration configuration, string dbName)
+        private Action<IServiceCollection> ConfigureDatabaseAsSingleton(string newConnectionString)
         {
-            var oldDbValue = "Database=postgres;";
-            var newDbValue = $"Database={dbName};";
-
             return services =>
             {
                 services.RemoveAll<AppDbContext>();
                 services.RemoveAll<DbContextOptions<AppDbContext>>();
                 services.AddDbContext<AppDbContext>(options =>
                 {
-                    var connectionString = configuration.GetConnectionString("AppDbContext");
-                    var newConnectionString = connectionString.Replace(oldDbValue, newDbValue);
                     options.UseNpgsql(newConnectionString);
                 }, ServiceLifetime.Singleton);
             };

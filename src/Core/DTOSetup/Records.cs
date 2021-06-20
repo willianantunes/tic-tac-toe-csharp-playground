@@ -6,7 +6,7 @@ namespace TicTacToeCSharpPlayground.Core.DTOSetup
 
     public record PlayerBoardDTO(PlayerDTO Player);
 
-    public record GameDTO(PlayerDTO Winner, bool Draw, bool Finished, BoardDTO ConfiguredBoard);
+    public record GameDTO(long Id, PlayerDTO Winner, bool Draw, bool Finished, BoardDTO ConfiguredBoard);
 
     public class BoardDTO
     {
