@@ -20,7 +20,7 @@ namespace TicTacToeCSharpPlayground.Infrastructure.Database
         {
             // Bodyless constructor
         }
-        
+
         public static AppDbContext CreateContext(string connectionString, DbContextOptionsBuilder<AppDbContext>? optionsBuilder = null)
         {
             if (optionsBuilder is null)
@@ -30,7 +30,7 @@ namespace TicTacToeCSharpPlayground.Infrastructure.Database
             var options = optionsBuilder.Options;
 
             return new AppDbContext(options);
-        }        
+        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

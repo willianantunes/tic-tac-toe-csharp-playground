@@ -76,12 +76,12 @@ namespace TicTacToeCSharpPlayground.Api.Controllers.V1
             catch (TicTacToeRequiredDataExceptions requiredDataExcep)
             {
                 var message = requiredDataExcep.Message;
-                throw new HttpException {StatusCode = (int) HttpStatusCode.NotFound, Details = message};
+                throw new HttpException { StatusCode = (int)HttpStatusCode.NotFound, Details = message };
             }
             catch (TicTacToeContractExceptions contractExcep)
             {
                 var message = contractExcep.Message;
-                throw new HttpException {StatusCode = (int) HttpStatusCode.BadRequest, Details = message};
+                throw new HttpException { StatusCode = (int)HttpStatusCode.BadRequest, Details = message };
             }
         }
     }

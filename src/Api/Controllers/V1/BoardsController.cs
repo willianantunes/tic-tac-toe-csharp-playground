@@ -30,7 +30,7 @@ namespace TicTacToeCSharpPlayground.Api.Controllers.V1
         {
             _context = context;
             _gameService = gameService;
-            _pagination = pagination;            
+            _pagination = pagination;
             _mapper = mapper;
         }
 
@@ -73,17 +73,17 @@ namespace TicTacToeCSharpPlayground.Api.Controllers.V1
             try
             {
                 var board = await _gameService.CreateNewBoard(boardSize, firstPlayerId, secondPlayerId);
-                return CreatedAtAction("GetSpecificBoard", new {id = board.Id}, board);
+                return CreatedAtAction("GetSpecificBoard", new { id = board.Id }, board);
             }
             catch (TicTacToeRequiredDataExceptions requiredDataExcep)
             {
                 var message = requiredDataExcep.Message;
-                throw new HttpException {StatusCode = (int) HttpStatusCode.NotFound, Details = message};
+                throw new HttpException { StatusCode = (int)HttpStatusCode.NotFound, Details = message };
             }
             catch (TicTacToeContractExceptions contractExcep)
             {
                 var message = contractExcep.Message;
-                throw new HttpException {StatusCode = (int) HttpStatusCode.BadRequest, Details = message};
+                throw new HttpException { StatusCode = (int)HttpStatusCode.BadRequest, Details = message };
             }
         }
     }

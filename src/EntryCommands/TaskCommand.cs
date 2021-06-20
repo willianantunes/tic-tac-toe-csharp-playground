@@ -54,7 +54,7 @@ namespace TicTacToeCSharpPlayground.EntryCommands
                 foreach (int index in Enumerable.Range(1, amount))
                 {
                     var isComputer = index % 2 == 0;
-                    var player = new Player {Name = $"Player {index}", Computer = isComputer};
+                    var player = new Player { Name = $"Player {index}", Computer = isComputer };
                     playersToBeSaved.Add(player);
                 }
 
