@@ -22,7 +22,7 @@ namespace Tests.TicTacToeCSharpPlayground.EntryCommands
                 .AddCommand<TaskCommand>()
                 .UseConsole(console)
                 .Build();
-            var invokingTaskWithoutArguments = new[] {"task"};
+            var invokingTaskWithoutArguments = new[] { "task" };
             var emptyEnvVars = new Dictionary<string, string>();
             // Act
             await app.RunAsync(invokingTaskWithoutArguments, emptyEnvVars);
@@ -42,7 +42,7 @@ namespace Tests.TicTacToeCSharpPlayground.EntryCommands
                 .AddCommand<TaskCommand>()
                 .UseConsole(console)
                 .Build();
-            var invokingTaskWithSeed = new[] {"task", "--seed"};
+            var invokingTaskWithSeed = new[] { "task", "--seed" };
             var emptyEnvVars = new Dictionary<string, string>();
             // Act
             await app.RunAsync(invokingTaskWithSeed, emptyEnvVars);
@@ -64,7 +64,7 @@ namespace Tests.TicTacToeCSharpPlayground.EntryCommands
                     .AddCommand<TaskCommand>()
                     .UseConsole(console)
                     .Build();
-                var invokingTaskWithSeed = new[] {"task", "--seed"};
+                var invokingTaskWithSeed = new[] { "task", "--seed" };
                 var envKey = "ConnectionStrings__AppDbContext";
                 var connectionString = ConnectionString;
                 var envVars = new Dictionary<string, string>
