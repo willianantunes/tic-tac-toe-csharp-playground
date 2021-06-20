@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -30,7 +29,7 @@ namespace TicTacToeCSharpPlayground.Api.Controllers.V1
         }
 
         [HttpGet]
-        public async Task<Paginated<PlayerDTO>> GetAllPlayers()
+        public async Task<ActionResult<Paginated<PlayerDTO>>> GetAllPlayers()
         {
             Log.Information("Getting all players...");
             var query = _context.Players.AsNoTracking().AsQueryable();

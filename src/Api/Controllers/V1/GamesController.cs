@@ -1,6 +1,10 @@
-using System.Collections.Generic;
+using System;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using AutoMapper;
+using DrfLikePaginations;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
@@ -18,19 +22,27 @@ namespace TicTacToeCSharpPlayground.Api.Controllers.V1
     {
         private readonly AppDbContext _context;
         private readonly IGameService _gameService;
+        private readonly IPagination _pagination;
+        private readonly IMapper _mapper;
 
-        public GamesController(AppDbContext context, IGameService gameService)
+        public GamesController(AppDbContext context, IGameService gameService, IPagination pagination, IMapper mapper)
         {
             _context = context;
             _gameService = gameService;
+            _pagination = pagination;
+            _mapper = mapper;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Game>>> GetAllGames()
+        public async Task<ActionResult<Paginated<GameDTO>>> GetAllGames()
         {
             Log.Information("Getting all games...");
+            var query = _context.Games.AsNoTracking().AsQueryable();
+            var displayUrl = Request.GetDisplayUrl();
+            var queryParams = Request.Query;
+            Func<Game, GameDTO> transform = p => _mapper.Map<Game, GameDTO>(p);
 
-            return await _context.Games.ToListAsync();
+            return await _pagination.CreateAsync(query, displayUrl, queryParams, transform);
         }
 
         [HttpGet("{id}")]
@@ -64,12 +76,12 @@ namespace TicTacToeCSharpPlayground.Api.Controllers.V1
             catch (TicTacToeRequiredDataExceptions requiredDataExcep)
             {
                 var message = requiredDataExcep.Message;
-                throw new HttpException { StatusCode = (int)HttpStatusCode.NotFound, Details = message };
+                throw new HttpException {StatusCode = (int) HttpStatusCode.NotFound, Details = message};
             }
             catch (TicTacToeContractExceptions contractExcep)
             {
                 var message = contractExcep.Message;
-                throw new HttpException { StatusCode = (int)HttpStatusCode.BadRequest, Details = message };
+                throw new HttpException {StatusCode = (int) HttpStatusCode.BadRequest, Details = message};
             }
         }
     }
