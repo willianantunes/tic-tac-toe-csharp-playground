@@ -595,15 +595,6 @@
             <boolProp name="ISREGEX">false</boolProp>
           </JSONPathAssertion>
           <hashTree/>
-          <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="Extract created ID" enabled="false">
-            <stringProp name="RegexExtractor.useHeaders">true</stringProp>
-            <stringProp name="RegexExtractor.refname">createdIdForBoard</stringProp>
-            <stringProp name="RegexExtractor.regex">.*\/api\/v1\/boards\/([0-9]+)\n</stringProp>
-            <stringProp name="RegexExtractor.template">$1$</stringProp>
-            <stringProp name="RegexExtractor.default"></stringProp>
-            <stringProp name="RegexExtractor.match_number"></stringProp>
-          </RegexExtractor>
-          <hashTree/>
           <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="Extract created ID" enabled="true">
             <stringProp name="JSONPostProcessor.referenceNames">createdIdForGame</stringProp>
             <stringProp name="JSONPostProcessor.jsonPathExprs">$.id</stringProp>
