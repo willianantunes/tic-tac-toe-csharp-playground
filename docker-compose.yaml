@@ -4,6 +4,10 @@ x-build: &dockerfile-dev-build
   context: .
   dockerfile: Dockerfile.dev
 
+x-prd-build: &dockerfile-prd-build
+  context: .
+  dockerfile: Dockerfile
+
 services:
   db:
     image: postgres:13.3-alpine
@@ -32,6 +36,14 @@ services:
           "--",
           "./scripts/start-web-development.sh",
       ]
+  app:
+    build: *dockerfile-prd-build
+    env_file:
+      - .env.development
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
   tests:
     build: *dockerfile-dev-build
     volumes:
@@ -46,7 +58,7 @@ services:
           "db:5432",
           "-t",
           "120",
-          "--",        
+          "--",
           "./scripts/start-tests.sh",
       ]
   lint:
@@ -110,4 +122,19 @@ services:
           "./scripts/start-sonarcloud.sh",
           "YOUR-SONAR-CLOUD-TOKEN",
           "YOUR-PROJECT-VERSION",
+      ]
+  load-test:
+    image: justb4/jmeter
+    working_dir: /app
+    volumes:
+      - .:/app
+    env_file:
+      - .env.development
+    depends_on:
+      - db
+      - app
+    entrypoint: "/bin/bash -c"
+    command:
+      [
+          "./scripts/start-load-testing.sh"
       ]

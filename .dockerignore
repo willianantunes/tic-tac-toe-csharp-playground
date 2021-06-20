@@ -1,0 +1,8 @@
+# https://docs.docker.com/engine/reference/builder/#dockerignore-file
+*
+!src
+**/bin
+**/obj
+!TicTacToeCSharpPlayground.sln
+!scripts/build-production.sh
+!scripts/start-web.sh
