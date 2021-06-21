@@ -38,7 +38,7 @@ namespace TicTacToeCSharpPlayground.Api.Controllers.V1
         public async Task<ActionResult<Paginated<BoardDTO>>> GetAllBoards()
         {
             Log.Information("Getting all boards...");
-            var query = _context.Boards.AsNoTracking().AsQueryable();
+            var query = _context.Boards.AsNoTracking().OrderBy(b => b.CreatedAt);
             var displayUrl = Request.GetDisplayUrl();
             var queryParams = Request.Query;
             Func<Board, BoardDTO> transform = p => _mapper.Map<Board, BoardDTO>(p);
