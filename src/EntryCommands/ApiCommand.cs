@@ -27,6 +27,7 @@ namespace TicTacToeCSharpPlayground.EntryCommands
     {
         public async ValueTask ExecuteAsync(IConsole console)
         {
+            Log.Information("Initializing API...");
             // We create our host and run our web api!
             await Program.CreateHostBuilder(Array.Empty<string>()).Build().RunAsync();
         }
@@ -92,6 +93,8 @@ namespace TicTacToeCSharpPlayground.EntryCommands
                     endpoints.MapControllers();
                     endpoints.MapHealthChecks("/health-check");
                 });
+
+                Log.Information("'Configure' step is done! Ready to go!");
             }
         }
     }
