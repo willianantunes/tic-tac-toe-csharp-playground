@@ -12,7 +12,8 @@ It's written in C# and uses ASP.NET Web API. Some more details:
 - [CliFx](https://github.com/Tyrrrz/CliFx) is used to start the application. You can use it to start your worker, seed your database, and many more.
 - [AutoMapper](https://github.com/AutoMapper/AutoMapper) is used by the Core layer to return DTO objects to the Api layer.
 - [Serilog](https://github.com/serilog/serilog) handles everything concerning logging.
-- [Npgsql](https://github.com/npgsql/npgsql/issues) is responsible to bridge our EF to PostgreSQL.
+- [Npgsql](https://github.com/npgsql/npgsql) is the data provider for PostgreSQL that is used by Entity Framework.
+- [DrfLikePaginations](https://github.com/willianantunes/drf-like-paginations/) handles the pagination.
 
 ## Playing a game!
 
@@ -73,7 +74,7 @@ To run all tests, you can simply execute the command:
 
 It will wait until the database is up and execute all the tests using the project's actual database (PostgreSQL).
 
-To allow each integration test to be executed isolated without worries of race conditions or dirty data, I create one dedicated database per method test. You can check how I handled it by looking at the class [IntegrationTestsFixture](https://github.com/willianantunes/tic-tac-toe-csharp-playground/blob/08ce0cd9c2c75931a369f7af3a49d82478756cd9/tests/Support/IntegrationTestsFixture.cs).
+To allow each integration test to be executed isolated without worries of race conditions or dirty data, I create one dedicated database per method test. You can check how I handled it by looking at the class [IntegrationTestsFixture](https://github.com/willianantunes/tic-tac-toe-csharp-playground/blob/922d1dc5d902e8e9911864af06ff98f332a8ceb8/tests/Support/IntegrationTestsFixture.cs#L27-L54).
 
 ## Robot logic 
 
