@@ -13,7 +13,7 @@ It's written in C# and uses ASP.NET Web API. Some more details:
 - [AutoMapper](https://github.com/AutoMapper/AutoMapper) is used by the Core layer to return DTO objects to the Api layer.
 - [Serilog](https://github.com/serilog/serilog) handles everything concerning logging.
 - [Npgsql](https://github.com/npgsql/npgsql) is the data provider for PostgreSQL that is used by Entity Framework.
-- [DrfLikePaginations](https://github.com/willianantunes/drf-like-paginations/) handles the pagination.
+- [DrfLikePaginations](https://github.com/willianantunes/drf-like-paginations/) handles the pagination. It supports [Cursor](https://github.com/willianantunes/drf-like-paginations/blob/e40ab8c79ccec34c75dd3acf79c87e4023df0dbf/src/CursorPagination.cs) and [Offset](https://github.com/willianantunes/drf-like-paginations/blob/e40ab8c79ccec34c75dd3acf79c87e4023df0dbf/src/LimitOffsetPagination.cs) paginations.
 
 ## Playing a game!
 
