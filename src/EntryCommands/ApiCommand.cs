@@ -64,7 +64,7 @@ namespace TicTacToeCSharpPlayground.EntryCommands
                 services.AddAutoMapper(typeof(Startup));
                 services.AddHealthChecks().AddNpgSql(connectionString);
                 var paginationSize = int.Parse(Configuration["Pagination:Size"]);
-                services.AddSingleton<IPagination>(new Pagination(paginationSize));
+                services.AddSingleton<IPagination>(new LimitOffsetPagination(paginationSize));
                 // Repositories
                 services.AddScoped<ITicTacToeRepository, TicTacToeRepository>();
                 // Services
