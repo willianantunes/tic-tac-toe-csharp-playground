@@ -6,6 +6,8 @@ set -eu -o pipefail
 LOGS_FOLDER_PATH=logs-jmeter
 REPORTS_FOLDER_PATH=tests-jmeter
 
+rm -rf $LOGS_FOLDER_PATH $REPORTS_FOLDER_PATH
+
 # If you'd like to see all options type "jmeter -?" after you enter in the container: 
 # docker run -it --entrypoint /bin/sh justb4/jmeter --
 

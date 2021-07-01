@@ -26,7 +26,11 @@ ARG PROJECT_NAME
 
 WORKDIR /app
 
-COPY --from=build-env /app/out .
-COPY scripts/*.sh ./scripts/
+RUN useradd appuser && chown appuser /app
+
+USER appuser
+
+COPY --chown=appuser --from=build-env /app/out .
+COPY --chown=appuser scripts/*.sh ./scripts/
 
 CMD [ "./scripts/start-web.sh" ]
