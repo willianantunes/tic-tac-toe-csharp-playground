@@ -81,9 +81,9 @@ To allow each integration test to be executed isolated without worries of race c
 If you look at the [PositionDecider class](https://github.com/willianantunes/tic-tac-toe-csharp-playground/blob/c78d68642bced98161bbbfaffb8f8d871ffbc506/src/Core/Business/PositionDecider.cs#L13), you'll notice that I simply choose a random available position from the list. During the tests, I used an even simpler version ([CustomPositionDecider
  class](https://github.com/willianantunes/tic-tac-toe-csharp-playground/blob/157dc10375a19e0aa00bf209b27227b4fbdf560f/tests/Support/CustomPositionDecider.cs#L7)) that merely select the first item from the ordered list. I could create a test that asserts a winning game with three movements only (7, 8, and 9) on a 3x3 board with this approach (see it in [this test in GameServiceITests class](https://github.com/willianantunes/tic-tac-toe-csharp-playground/blob/ca91927d303706b65611ab9c5628945f70f9fdd8/tests/TicTacToeCSharpPlayground/Core/Services/GameServiceITests.cs#L203-L250)).
 
-## Load testing
+## Performance testing
 
-The test plan [jmeter-test-plan.jmx](./tests/LoadTesting/jmeter-test-plan.jmx) can be opened with JMeter 5.4.1. The `Thread Group` basically has the following configurations:
+The test plan [jmeter-test-plan.jmx](./tests/PerformanceTesting/jmeter-test-plan.jmx) can be opened with JMeter 5.4.1. The `Thread Group` basically has the following configurations:
 
 ![JMeter Thread Group Configuration](docs/ttt-jmeter-thread-group.png)
 
@@ -97,9 +97,9 @@ As the database is ready to be used, you can run the production version of the T
 
 Then you can open a new terminal and finally run:
 
-    docker-compose up load-test
+    docker-compose up performance-test
 
-When the load testing is concluded, you can open the file `tests-jmeter/index.html`. Check out this statistics:
+When the performance testing is concluded, you can open the file `tests-jmeter/index.html` and run [`PerformanceTestingResultTest.cs`](./tests/PerformanceTesting/PerformanceTestingResultTest.cs). Check out this statistics:
 
 ![It shows a table containing statistics about the consumption of the REST API regarding Tic Tac Toe program](docs/ttt-jmeter-statistics.png)
 
