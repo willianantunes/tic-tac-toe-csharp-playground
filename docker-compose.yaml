@@ -123,8 +123,8 @@ services:
           "YOUR-SONAR-CLOUD-TOKEN",
           "YOUR-PROJECT-VERSION",
       ]
-  load-test:
-    image: justb4/jmeter
+  performance-test:
+    image: willianantunes/containerized-jmeter
     working_dir: /app
     volumes:
       - .:/app
@@ -133,8 +133,7 @@ services:
     depends_on:
       - db
       - app
-    entrypoint: "/bin/bash -c"
     command:
       [
-          "./scripts/start-load-testing.sh"
+          "./scripts/start-performance-testing.sh"
       ]

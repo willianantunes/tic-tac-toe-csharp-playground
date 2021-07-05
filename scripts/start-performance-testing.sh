@@ -9,10 +9,10 @@ REPORTS_FOLDER_PATH=tests-jmeter
 rm -rf $LOGS_FOLDER_PATH $REPORTS_FOLDER_PATH
 
 # If you'd like to see all options type "jmeter -?" after you enter in the container: 
-# docker run -it --entrypoint /bin/sh justb4/jmeter --
+# docker run -it willianantunes/containerized-jmeter bash
 
-/entrypoint.sh --nongui \
-    --testfile ./tests/LoadTesting/jmeter-test-plan.jmx \
+jmeter --nongui \
+    --testfile ./tests/PerformanceTesting/jmeter-test-plan.jmx \
     --jmeterproperty APP_ADDRESS=app \
     --jmeterproperty APP_PORT=8000 \
     --logfile $LOGS_FOLDER_PATH/log-sample-results.jtl \
