@@ -24,6 +24,7 @@ namespace TicTacToeCSharpPlayground
         {
             // Know more at: https://github.com/Tyrrrz/CliFx
             return await new CliApplicationBuilder()
+                .SetExecutableName("TicTacToeCSharpPlayground")
                 .AddCommandsFromThisAssembly()
                 .Build()
                 .RunAsync();

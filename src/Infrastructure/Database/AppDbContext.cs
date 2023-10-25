@@ -64,13 +64,13 @@ namespace TicTacToeCSharpPlayground.Infrastructure.Database
 
             foreach (var item in entitiesOnDbContext.Where(t => t.State == EntityState.Added))
             {
-                item.Entity.CreatedAt = DateTime.Now;
-                item.Entity.UpdatedAt = DateTime.Now;
+                item.Entity.CreatedAt = DateTime.Now.ToUniversalTime();
+                item.Entity.UpdatedAt = DateTime.Now.ToUniversalTime();
             }
 
             foreach (var item in entitiesOnDbContext.Where(t => t.State == EntityState.Modified))
             {
-                item.Entity.UpdatedAt = DateTime.Now;
+                item.Entity.UpdatedAt = DateTime.Now.ToUniversalTime();
             }
         }
     }

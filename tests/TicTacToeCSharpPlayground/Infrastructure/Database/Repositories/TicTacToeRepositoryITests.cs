@@ -42,7 +42,7 @@ namespace Tests.TicTacToeCSharpPlayground.Infrastructure.Database.Repositories
             // Act
             var foundBoard = await _ticTacToeRepository.GetBoardByItsId(createdBoard.Id);
             // Assert
-            foundBoard.Should().Equals(createdBoard);
+            foundBoard.Should().Be(createdBoard);
         }
 
         [Fact]

@@ -1,7 +1,8 @@
 ARG MAIN_PROJECT_SRC=./src
 ARG TEST_PROJECT_SRC=./tests
+ARG DOTNET_VERSION=7.0
 
-FROM mcr.microsoft.com/dotnet/sdk:5.0
+FROM mcr.microsoft.com/dotnet/sdk:$DOTNET_VERSION
 
 # Add Microsoft Debian apt-get feed
 RUN wget https://packages.microsoft.com/config/debian/10/packages-microsoft-prod.deb -O packages-microsoft-prod.deb \

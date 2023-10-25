@@ -10,13 +10,25 @@ x-prd-build: &dockerfile-prd-build
 
 services:
   db:
-    image: postgres:13.3-alpine
+    image: postgres:16-alpine
     user: postgres
     environment:
       POSTGRES_USER: boss_role
       POSTGRES_PASSWORD: boss_password
     ports:
       - "5432:5432"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "pg_isready",
+          "--dbname=postgres",
+          "--username=boss_role"
+        ]
+      interval: 2s
+      timeout: 1m
+      retries: 5
+      start_period: 10s
   app-development:
     build: *dockerfile-dev-build
     volumes:
@@ -26,15 +38,11 @@ services:
     ports:
       - "8000:8000"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     command:
       [
-          "./scripts/wait-for-it.sh",
-          "db:5432",
-          "-t",
-          "120",
-          "--",
-          "./scripts/start-web-development.sh",
+          "./scripts/start-web-development.sh"
       ]
   app:
     build: *dockerfile-prd-build
@@ -43,7 +51,8 @@ services:
     ports:
       - "8000:8000"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
   tests:
     build: *dockerfile-dev-build
     volumes:
@@ -51,15 +60,11 @@ services:
     env_file:
       - .env.development
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     command:
       [
-          "./scripts/wait-for-it.sh",
-          "db:5432",
-          "-t",
-          "120",
-          "--",
-          "./scripts/start-tests.sh",
+          "./scripts/start-tests.sh"
       ]
   lint:
     build: *dockerfile-dev-build
@@ -67,7 +72,7 @@ services:
       - .:/app
     command:
       [
-          "./scripts/start-lint.sh",
+          "./scripts/start-lint.sh"
       ]
   formatter:
     build: *dockerfile-dev-build
@@ -94,14 +99,10 @@ services:
     env_file:
       - .env.development
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     command:
       [
-          "./scripts/wait-for-it.sh",
-          "db:5432",
-          "-t",
-          "120",
-          "--",
           "./scripts/apply-migrations.sh",
       ]
   sonarcloud:
@@ -111,17 +112,13 @@ services:
     env_file:
       - .env.development
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     command:
       [
-          "./scripts/wait-for-it.sh",
-          "db:5432",
-          "-t",
-          "120",
-          "--",
           "./scripts/start-sonarcloud.sh",
           "YOUR-SONAR-CLOUD-TOKEN",
-          "YOUR-PROJECT-VERSION",
+          "YOUR-PROJECT-VERSION"
       ]
   performance-test:
     image: willianantunes/containerized-jmeter
@@ -131,8 +128,10 @@ services:
     env_file:
       - .env.development
     depends_on:
-      - db
-      - app
+      db:
+        condition: service_healthy
+      app:
+        condition: service_healthy
     command:
       [
           "./scripts/start-performance-testing.sh"

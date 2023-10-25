@@ -1,8 +1,5 @@
 # Tic Tac Toe C# Playground
 
-[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=willianantunes_tic-tac-toe-csharp-playground&metric=coverage)](https://sonarcloud.io/dashboard?id=willianantunes_tic-tac-toe-csharp-playground)
-[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=willianantunes_tic-tac-toe-csharp-playground&metric=ncloc)](https://sonarcloud.io/dashboard?id=willianantunes_tic-tac-toe-csharp-playground)
-
 ![It has a tic tac toe board with some moves and two players](docs/ttt-csharp-playground.png)
 
 This project is a full implementation of the [Tic Tac Toe](https://en.wikipedia.org/wiki/Tic-tac-toe) game but playable through a REST API. All the game data is saved in the database to make this challenge more fun. Run it now and play an honest game 🎮!
