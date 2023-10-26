@@ -5,6 +5,7 @@ using CliFx.Attributes;
 using CliFx.Infrastructure;
 using DrfLikePaginations;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.EntityFrameworkCore;
@@ -62,7 +63,9 @@ namespace TicTacToeCSharpPlayground.EntryCommands
                 // Helpers
                 // https://docs.automapper.org/en/latest/Dependency-injection.html#asp-net-core
                 services.AddAutoMapper(typeof(Startup));
-                services.AddHealthChecks().AddNpgSql(connectionString);
+                services.AddHealthChecks()
+                    .AddNpgSql(connectionString,
+                        healthQuery: "SELECT 1");
                 var paginationSize = int.Parse(Configuration["Pagination:Size"]);
                 services.AddSingleton<IPagination>(new LimitOffsetPagination(paginationSize));
                 // Repositories
@@ -91,7 +94,17 @@ namespace TicTacToeCSharpPlayground.EntryCommands
                 app.UseEndpoints(endpoints =>
                 {
                     endpoints.MapControllers();
-                    endpoints.MapHealthChecks("/health-check");
+                    // https://learn.microsoft.com/en-us/aspnet/core/host-and-deploy/health-checks?view=aspnetcore-7.0#filter-health-checks
+                    endpoints.MapHealthChecks("/healthcheck/liveness", new HealthCheckOptions()
+                    {
+                        Predicate = _ => false,
+                        AllowCachingResponses = false
+                    });
+                    endpoints.MapHealthChecks("/healthcheck/readiness", new HealthCheckOptions()
+                    {
+                        Predicate = _ => true,
+                        AllowCachingResponses = false
+                    });                    
                 });
 
                 Log.Information("'Configure' step is done! Ready to go!");

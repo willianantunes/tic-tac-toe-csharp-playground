@@ -37,6 +37,6 @@ COPY --chown=appuser --from=build-env /app/out .
 COPY --chown=appuser scripts/*.sh ./scripts/
 
 HEALTHCHECK --interval=10s --timeout=3s \
-    CMD curl --fail http://localhost:$ASPNETCORE_SOCKET_BIND_PORT/health-check || exit 1
+    CMD curl --fail http://localhost:$ASPNETCORE_SOCKET_BIND_PORT/healthcheck/readiness || exit 1
 
 CMD [ "./scripts/start-web.sh" ]
