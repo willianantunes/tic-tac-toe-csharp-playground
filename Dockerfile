@@ -12,7 +12,7 @@ WORKDIR /app
 
 # Restores (downloads) all NuGet packages from the main project
 COPY ${MAIN_PROJECT_SRC}/*.csproj ${MAIN_PROJECT_SRC}/
-RUN dotnet restore --runtime ${RUNTIME} ${MAIN_PROJECT_SRC} && mv ${MAIN_PROJECT_SRC}/obj .
+RUN dotnet restore --locked-mode --runtime ${RUNTIME} ${MAIN_PROJECT_SRC} && mv ${MAIN_PROJECT_SRC}/obj .
 
 COPY ${MAIN_PROJECT_SRC} ./src
 COPY TicTacToeCSharpPlayground.sln ./
