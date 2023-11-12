@@ -80,8 +80,12 @@ services:
     ports:
       - "8000:8000"
     depends_on:
-      db:
-        condition: service_healthy
+      apply-migrations:
+        condition: service_completed_successfully
+    # In case you want to run the consumer instead of the web app, just uncomment the lines below:
+    #  rabbitmq:
+    #    condition: service_healthy
+    #command: ["./scripts/start-consumer.sh"]
   tests:
     build: *dockerfile-dev-build
     volumes:

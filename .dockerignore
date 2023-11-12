@@ -7,3 +7,5 @@
 !TicTacToeCSharpPlayground.sln
 !scripts/build-production.sh
 !scripts/start-web.sh
+!scripts/start-consumer.sh
+!appsettings.json

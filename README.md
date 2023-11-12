@@ -131,3 +131,23 @@ curl -i -u guest:guest 'http://localhost:15672/api/exchanges/%2F/amq.default/pub
 ```
 
 Look at the class [PlayerConsumer](./src/Consumers/PlayerConsumer.cs) to see how the message is handled. 
+
+### Production Dockerfile and its content
+
+The image built from [Dockerfile](./Dockerfile) is the one you should use in production. When you access the container through the command `docker-compose run app bash` and execute `ls -l` you'll see something like the following:
+
+```
+-rwxr-xr-x 1 appuser appuser 48192516 Nov 12 22:21 TicTacToeCSharpPlayground
+-rw-r--r-- 1 appuser appuser    44120 Nov 12 22:21 TicTacToeCSharpPlayground.pdb
+-rw-rw-r-- 1 appuser appuser      815 Nov 12 22:14 appsettings.json
+-rw-r--r-- 1 appuser appuser    23304 Nov 12 22:21 packages.lock.json
+drwxr-xr-x 2 appuser appuser     4096 Nov 12 23:11 scripts
+```
+
+Files in folder `scripts`:
+
+```
+-rwxrwxr-x 1 appuser appuser 985 Sep 14  2022 build-production.sh
+-rwxrwxr-x 1 appuser appuser 198 Nov 12 23:09 start-consumer.sh
+-rwxrwxr-x 1 appuser appuser 163 Nov 12 23:09 start-web.sh
+```

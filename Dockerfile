@@ -16,8 +16,8 @@ RUN dotnet restore --locked-mode --runtime ${RUNTIME} ${MAIN_PROJECT_SRC} && mv 
 
 COPY ${MAIN_PROJECT_SRC} ./src
 COPY TicTacToeCSharpPlayground.sln ./
+COPY appsettings.json ./
 COPY scripts/build-production.sh ./scripts/
-RUN mv obj ${MAIN_PROJECT_SRC}/obj
 
 RUN ./scripts/build-production.sh ${RUNTIME}
 

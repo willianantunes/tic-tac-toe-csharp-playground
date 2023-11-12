@@ -4,6 +4,7 @@ using CliFx;
 using CliFx.Attributes;
 using CliFx.Infrastructure;
 using DrfLikePaginations;
+using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
@@ -96,12 +97,14 @@ namespace TicTacToeCSharpPlayground.EntryCommands
                     endpoints.MapHealthChecks("/healthcheck/liveness", new HealthCheckOptions()
                     {
                         Predicate = _ => false,
-                        AllowCachingResponses = false
+                        AllowCachingResponses = false,
+                        ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
                     });
                     endpoints.MapHealthChecks("/healthcheck/readiness", new HealthCheckOptions()
                     {
                         Predicate = _ => true,
-                        AllowCachingResponses = false
+                        AllowCachingResponses = false,
+                        ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
                     });                    
                 });
 
