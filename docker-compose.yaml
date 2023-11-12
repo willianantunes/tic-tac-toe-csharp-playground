@@ -29,6 +29,16 @@ services:
       timeout: 1m
       retries: 5
       start_period: 10s
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - 5672:5672
+      - 15672:15672
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 10s
+      timeout: 5s
+      retries: 5     
   app-development:
     build: *dockerfile-dev-build
     volumes:
@@ -40,10 +50,29 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
     command:
       [
           "./scripts/start-web-development.sh"
       ]
+  app-consumer:
+    build: *dockerfile-dev-build
+    volumes:
+      - .:/app
+    env_file:
+      - .env.development
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    command:
+      [
+        "./scripts/start-consumer-development.sh"
+      ]    
   app:
     build: *dockerfile-prd-build
     env_file:

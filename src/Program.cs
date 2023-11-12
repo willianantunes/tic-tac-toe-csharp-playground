@@ -53,5 +53,10 @@ namespace TicTacToeCSharpPlayground
             Host.CreateDefaultBuilder(args)
                 .UseSerilog()
                 .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<ApiCommand.Startup>(); });
+        
+        public static IHostBuilder CreateWorkerHostBuilder(string[] args) =>
+        Host.CreateDefaultBuilder(args)
+            .UseSerilog()
+            .ConfigureWebHostDefaults(builder => { builder.UseStartup<WorkerCommand.Startup>(); });
     }
 }

@@ -109,3 +109,25 @@ The output with regards to [APDEX](https://en.wikipedia.org/wiki/Apdex):
 The best way to learn a new language, apart from reading documentation and books, is by coding, focusing on practice instead of theory, at least that's what I believe. But, of course, this is even better when you have some programming background. The problem is, though, which project can we do to learn a new language? I don't think a CRUD application is good because it doesn't provide challenges concerning abstractions, data structures, iteration statements, conditionals, and many more. Now a project related to an actual game can really bring you benefits, but not a too complicated one because, in the end, it consumes lots of time. 
 
 I think Hangman and Tic Tac Toe are good examples to start with. It's a good idea to start with a console application, then evolve it to be more challenging, like including a REST API with a Database, thus bringing a taste about how an actual project is in a company. So, to learn C#, I followed this path. I suggest it to everyone!
+
+## Additional features
+
+I use this project to test some features that I'm interested in. Then I can use them as a reference for future projects. Below you can check some of them:
+
+- MassTransit and its integration with ASP.NET Core.
+- Serilog.
+- Liveness and readiness concepts.
+- Pagination.
+- Integration tests with a real database.
+
+### Publishing messages to RabbitMQ
+
+It supposes the queue is named `tic-tac-toe-player`. The player name is 'Iago'. Change it if you want.
+
+```shell
+curl -i -u guest:guest 'http://localhost:15672/api/exchanges/%2F/amq.default/publish' \
+  -H 'Content-Type: text/plain;charset=UTF-8' \
+  --data-raw '{"vhost":"/","name":"amq.default","properties":{"delivery_mode":1,"headers":{},"content_type":"application/json"},"routing_key":"tic-tac-toe-player","delivery_mode":"1","payload":"{\"name\":\"Iago\"}","payload_encoding":"string","headers":{},"props":{"content_type":"application/json"}}'
+```
+
+Look at the class [PlayerConsumer](./src/Consumers/PlayerConsumer.cs) to see how the message is handled. 

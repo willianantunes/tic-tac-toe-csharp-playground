@@ -29,7 +29,6 @@ namespace TicTacToeCSharpPlayground.EntryCommands
         public async ValueTask ExecuteAsync(IConsole console)
         {
             Log.Information("Initializing API...");
-            // We create our host and run our web api!
             await Program.CreateHostBuilder(Array.Empty<string>()).Build().RunAsync();
         }
 
@@ -64,8 +63,7 @@ namespace TicTacToeCSharpPlayground.EntryCommands
                 // https://docs.automapper.org/en/latest/Dependency-injection.html#asp-net-core
                 services.AddAutoMapper(typeof(Startup));
                 services.AddHealthChecks()
-                    .AddNpgSql(connectionString,
-                        healthQuery: "SELECT 1");
+                    .AddNpgSql(connectionString, healthQuery: "SELECT 1");
                 var paginationSize = int.Parse(Configuration["Pagination:Size"]);
                 services.AddSingleton<IPagination>(new LimitOffsetPagination(paginationSize));
                 // Repositories
